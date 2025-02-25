@@ -1,5 +1,5 @@
 interface NavSocialMediaLinkProps {
-  social: string;
+  socialMediaName: string;
   image: string;
   link: string;
 }
@@ -7,15 +7,11 @@ interface NavSocialMediaLinkProps {
 const NavSocialMediaLink: React.FC<NavSocialMediaLinkProps> = ({
   link,
   image,
-  social,
+  socialMediaName,
 }) => {
   return (
-    <a href={link} className="w-4 h-4 xs:w-8 xs:h-8">
-      <img
-        src={image}
-        alt={social}
-        className="w-full h-full bg-verde_turquesa rounded-full p-[5px]"
-      />
+    <a href={link} className="max-w-5">
+      <img src={image} alt={socialMediaName} className="w-full h-full" />
     </a>
   );
 };

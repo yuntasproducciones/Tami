@@ -8,11 +8,12 @@ const NavLink: React.FC<NavLinkProps> = ({ isForNavBar, to, children }) => (
   <>
     <a
       href={to}
-      className={
+      className={`text-white ${
         isForNavBar
-          ? "text-white hover:text-teal-300 transition-colors duration-500 text-lg font-bold relative group"
-          : "text-verde_turquesa hover:underline xs:text-4xl block xs:pb-5 pt-5 md:font-normal"
+          ? "hover:text-teal-300 transition-colors duration-500 text-lg font-bold relative group"
+          : "hover:underline underline-offset-4 text-base sm:text-lg block py-1 my-4 hover:bg-linear-to-r hover:from-teal-950 hover:from-5% transition-colors duration-500 pl-4 rounded-l-xl"
       }
+      `}
     >
       {children}
       {isForNavBar && (

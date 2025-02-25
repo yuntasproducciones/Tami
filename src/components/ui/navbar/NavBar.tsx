@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import logoMovil from "../../../assets/images/logos/logo_movil.webp";
 import logoTami from "../../../assets/images/logos/logo_animado.gif";
-import userIcon from "../../../assets/icons/icon_user.webp";
 import NavLink from "./NavLink";
 import SideMenu from "../sideMenu/SideMenu";
 import navLinks from "../../../data/navlinks.data";

@@ -1,6 +1,7 @@
 import NavLink from "../navbar/NavLink";
 import NavSocialMediaLink from "./NavSocialMediaLink";
 import socialMediaLinks from "../../../data/socialMedia.data";
+import userIcon from "../../../assets/icons/icon_user.webp";
 import { useState } from "react";
 
 interface NavLink {
@@ -16,7 +17,6 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   function changeSideBarStatus() {
     setIsSidebarOpen((x) => !x);
-    console.log(isSidebarOpen);
   }
   return (
     <>
@@ -42,54 +42,59 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
           ></path>
         </svg>
       </button>
-      {isSidebarOpen && (
-        <div className="fixed top-32 left-0 z-[1] min-h-[calc(100vh-8rem)] max-h-[calc(100vh-8rem)] bg-white px-1 xs:px-8 py-8 w-full xs:max-w-[425px] rounded-l-none rounded-r-[50px] overflow-scroll">
-          <div className="border-b-4 border-verde_turquesa pb-5">
-            <div className="flex pl-5">
-              <img
-                src="aa"
-                className="max-w-[50px] xs:max-w-[100px]"
-                alt="Ícono de usuario"
-              />
-              <div className="flex flex-col justify-center font-semibold xs:text-4xl">
-                <p>HOLA!</p>
-                <p>Usuario</p>
-              </div>
-            </div>
-          </div>
-          <div className="pl-4">
-            {links.map((item, index: number) => (
-              <NavLink key={index} isForNavBar={false} to={item.url}>
+      <div
+        className={`transition-transform duration-700 ease-in-out fixed top-20 left-0 bg-linear-to-t from-teal-700 to-slate-600 from-55% sm:from-35% border-2 border-l-0 z-20 px-2 py-6 w-full sm:max-w-md rounded-l-none rounded-r-[50px] h-[calc(100vh-7rem)] overflow-y-scroll ${
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="border-b-2 border-white pb-5 flex items-center gap-3 pl-5">
+          <img
+            src={userIcon.src}
+            className="max-w-12 sm:max-w-16"
+            alt="Icono de usuario"
+          />
+          <p className="sm:text-2xl">
+            Bienvenido
+            <br />
+            <span className="font-bold">Usuario</span>!
+          </p>
+        </div>
+        <ul>
+          {links.map((item, index: number) => (
+            <li key={index}>
+              <NavLink isForNavBar={false} to={item.url}>
                 {item.texto}
               </NavLink>
+            </li>
+          ))}
+        </ul>
+        <div className="border-y-2 py-3">
+          <p className="font-semibold text-center text-base">
+            Síguenos en nuestras redes
+          </p>
+          <div className="mt-4 mb-2 px-3 sm:px-6 flex flex-wrap justify-between">
+            {socialMediaLinks.map((item, index) => (
+              <NavSocialMediaLink
+                key={index}
+                image={item.image.src}
+                link={item.url}
+                socialMediaName={item.socialMediaName}
+              />
             ))}
           </div>
+        </div>
+        <div>
+          <p className="font-semibold pt-2">Horario de atención</p>
           <div>
-            <p className="border-t-4 border-verde_turquesa text-verde_turquesa font-bold text-center pt-1">
-              Síguenos en
+            <p>
+              Lunes a Viernes
+              <br />
+              de <span className="italic font-semibold">9:00 AM</span> a{" "}
+              <span className="italic font-semibold">9:00 PM</span>
             </p>
-            <div className="mt-2 flex flex-wrap justify-around space-x-4 border-b-4 border-verde_turquesa pb-2">
-              {socialMediaLinks.map((item, index) => (
-                <NavSocialMediaLink
-                  key={index}
-                  image={item.image.src}
-                  link={item.url}
-                  social={item.social}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="pl-4">
-            <p className="text-verde_turquesa font-bold pt-2">
-              Horario de atención
-            </p>
-            <div className="font-semibold">
-              <p>Lunes a Viernes</p>
-              <p>9:00 am a 9:00 pm</p>
-            </div>
           </div>
         </div>
-      )}
+      </div>
     </>
   );
 };
