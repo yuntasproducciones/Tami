@@ -7,27 +7,27 @@ import whatsappIcon from "../assets/icons/smi_whatsapp.svg";
 const socialMediaLinks = [
   {
     url: "#",
-    social: "Tiktok",
+    socialMediaName: "Tiktok",
     image: tiktokIcon,
   },
   {
     url: "#",
-    social: "Instagram",
+    socialMediaName: "Instagram",
     image: instagramIcon,
   },
   {
     url: "#",
-    social: "Twitter",
+    socialMediaName: "Twitter",
     image: twitterIcon,
   },
   {
     url: "#",
-    social: "Facebook",
+    socialMediaName: "Facebook",
     image: facebookIcon,
   },
   {
     url: "https://api.whatsapp.com/send?phone=51978883199",
-    social: "Whatsapp",
+    socialMediaName: "Whatsapp",
     image: whatsappIcon,
   },
 ];
