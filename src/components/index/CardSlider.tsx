@@ -8,6 +8,7 @@ interface CardSliderProps {
     paragraph: string;
   }[];
 }
+/* deslizar automatico akspdjapsdawd */
 const CardSlider: React.FC<CardSliderProps> = ({ cardList }) => {
   const [currentCard, setCurrentCard] = useState(0);
   return (
