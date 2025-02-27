@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "./Card";
 
 interface CardSliderProps {
@@ -8,9 +8,13 @@ interface CardSliderProps {
     paragraph: string;
   }[];
 }
-/* deslizar automatico akspdjapsdawd */
 const CardSlider: React.FC<CardSliderProps> = ({ cardList }) => {
   const [currentCard, setCurrentCard] = useState(0);
+  useEffect(() => {
+    const interval = setTimeout(() => {
+      setCurrentCard((prev) => (prev + 1) % cardList.length);
+    }, 3000);
+  });
   return (
     <>
       <div className="w-full h-full flex flex-col items-center justify-center lg:hidden">
