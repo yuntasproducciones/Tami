@@ -53,7 +53,7 @@ const Hero = () => {
             ))}
           </ul>
         )}
-        <button className="mt-6 bg-white rounded-3xl border-2 border-slate-300 font-bold text-teal-700 hover:text-white hover:bg-gradient-to-t hover:from-teal-600 hover:to-teal-800 transition-all ease-in-out duration-500 px-5 py-2 text-lg lg:text-2xl lg:px-8 lg:py-3 xl:text-3xl 2xl:text-5xl 2xl:px-14 2xl:py-6">
+        <button className="cursor-pointer mt-6 bg-white rounded-3xl border-2 border-slate-300 font-bold text-teal-700 hover:text-white hover:bg-gradient-to-t hover:from-teal-600 hover:to-teal-800 transition-all ease-in-out duration-500 px-5 py-2 text-lg lg:text-2xl lg:px-8 lg:py-3 xl:text-3xl 2xl:text-5xl 2xl:px-14 2xl:py-6">
           Descubre más
         </button>
       </div>
