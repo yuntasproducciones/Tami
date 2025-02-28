@@ -6,12 +6,12 @@ import whatsappIcon from "../assets/icons/smi_whatsapp.svg";
 
 const socialMediaLinks = [
   {
-    url: "#",
+    url: "https://www.tiktok.com/@tami_maquinarias",
     socialMediaName: "Tiktok",
     image: tiktokIcon,
   },
   {
-    url: "#",
+    url: "https://www.instagram.com/tamiperu01/",
     socialMediaName: "Instagram",
     image: instagramIcon,
   },
@@ -21,7 +21,7 @@ const socialMediaLinks = [
     image: twitterIcon,
   },
   {
-    url: "#",
+    url: "https://www.facebook.com/tamiperu01",
     socialMediaName: "Facebook",
     image: facebookIcon,
   },

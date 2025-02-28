@@ -10,7 +10,7 @@ const NavSocialMediaLink: React.FC<NavSocialMediaLinkProps> = ({
   socialMediaName,
 }) => {
   return (
-    <a href={link} className="max-w-5">
+    <a href={link} className="max-w-5" target="_blank">
       <img src={image} alt={socialMediaName} className="w-full h-full" />
     </a>
   );
