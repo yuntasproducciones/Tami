@@ -34,7 +34,7 @@ function NavBar() {
 
   return (
     <header
-      className={`items-center text-white fixed w-full py-2 px-4 transition-all z-50 duration-700 grid grid-cols-2 lg:grid-cols-12 ${
+      className={`items-center justify-between text-white fixed w-full py-2 px-4 lg:px-12 transition-all z-50 duration-700 grid grid-cols-2 lg:grid-cols-12 ${
         isScrolled ? "bg-teal-700 shadow-lg" : "border-b border-white"
       }`}
     >
@@ -51,8 +51,8 @@ function NavBar() {
           className="h-full hidden lg:block"
         />
       </a>
-      <nav className="hidden lg:block col-span-11 w-full h-full">
-        <ul className="flex justify-between w-full h-full items-center">
+      <nav className="hidden lg:block col-span-9 w-full h-full">
+        <ul className="flex gap-10 w-full h-full items-center place-content-center">
           {navLinks.map((item, index) => (
             <li key={index}>
               <NavLink to={item.url} isForNavBar={true}>
@@ -82,16 +82,16 @@ function NavBar() {
               </li>
             </ul>
           </li>
-          <li>
-            <a
-              href="https://api.whatsapp.com/send?phone=51978883199"
-              className="bg-white rounded-2xl border-2 border-slate-300 py-2 px-5 text-teal-700 hover:bg-linear-to-t hover:from-teal-600 hover:to-teal-800 hover:text-white transition-all ease-in-out duration-500 font-bold"
-            >
-              Contáctanos
-            </a>
-          </li>
         </ul>
       </nav>
+      <div className="hidden lg:block col-span-2 h-full content-center text-end w-full">
+        <a
+          href="https://api.whatsapp.com/send?phone=51978883199"
+          className="w-fit bg-white rounded-2xl border-2 border-slate-300 py-2 px-5 text-teal-700 hover:bg-linear-to-t hover:from-teal-600 hover:to-teal-800 hover:text-white transition-all ease-in-out duration-500 font-bold"
+        >
+          Contáctanos
+        </a>
+      </div>
     </header>
   );
 }
