@@ -43,7 +43,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ links }) => {
         </svg>
       </button>
       <div
-        className={`lg:hidden lg:translate-x-0 transition-transform duration-700 ease-in-out fixed top-20 left-0 bg-linear-to-t from-teal-700 to-slate-600 from-55% sm:from-35% border-2 border-l-0 z-20 px-2 py-6 w-full sm:max-w-md rounded-l-none rounded-r-[50px] h-[calc(100vh-7rem)] overflow-y-scroll ${
+        className={`lg:hidden transition-transform duration-700 ease-in-out fixed top-20 left-0 bg-linear-to-t from-teal-700 to-slate-600 from-55% sm:from-35% border-2 border-l-0 z-20 px-2 py-6 w-full sm:max-w-md rounded-l-none rounded-r-[50px] h-[calc(100vh-7rem)] overflow-y-scroll ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
