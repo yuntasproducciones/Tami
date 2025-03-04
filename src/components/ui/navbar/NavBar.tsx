@@ -87,6 +87,7 @@ function NavBar() {
       <div className="hidden lg:block col-span-2 h-full content-center text-end w-full">
         <a
           href="https://api.whatsapp.com/send?phone=51978883199"
+          target="_blank"
           className="w-fit bg-white rounded-2xl border-2 border-slate-300 py-2 px-5 text-teal-700 hover:bg-linear-to-t hover:from-teal-600 hover:to-teal-800 hover:text-white transition-all ease-in-out duration-500 font-bold"
         >
           Contáctanos
