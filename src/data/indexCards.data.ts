@@ -1,6 +1,6 @@
-import bg_card1 from "../assets/images/index/cards/card_trabajo.webp";
-import bg_card2 from "../assets/images/index/cards/card_decoracion_y_hogar.webp";
-import bg_card3 from "../assets/images/index/cards/card_negocio.webp";
+import bg_card1 from "@images/index/cards/card_trabajo.webp";
+import bg_card2 from "@images/index/cards/card_decoracion_y_hogar.webp";
+import bg_card3 from "@images/index/cards/card_negocio.webp";
 const indexCards = [
   {
     title: "TRABAJO",

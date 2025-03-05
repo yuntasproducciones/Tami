@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import logoMovil from "../../../assets/images/logos/logo_movil.webp";
-import logoTami from "../../../assets/images/logos/logo_animado.gif";
+import logoMovil from "@images/logos/logo_movil.webp";
+import logoTami from "@images/logos/logo_animado.gif";
 import NavLink from "./NavLink";
 import SideMenu from "../sideMenu/SideMenu";
-import navLinks from "../../../data/navlinks.data";
+import navLinks from "@data/navlinks.data";
 
 function NavBar() {
   const [isScrolled, setIsScrolled] = useState(false);

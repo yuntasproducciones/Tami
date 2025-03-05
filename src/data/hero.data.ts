@@ -1,7 +1,7 @@
 import type HeroSlide from "../models/HeroSlide";
-import slide1 from "../assets/images/index/hero/hc_1.webp";
-import slide2 from "../assets/images/index/hero/hc_2.webp";
-import slide3 from "../assets/images/index/hero/hc_3.webp";
+import slide1 from "@images/index/hero/hc_1.webp";
+import slide2 from "@images/index/hero/hc_2.webp";
+import slide3 from "@images/index/hero/hc_3.webp";
 
 const heroArray: HeroSlide[] = [
   {

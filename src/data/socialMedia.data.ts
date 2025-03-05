@@ -1,8 +1,8 @@
-import tiktokIcon from "../assets/icons/smi_tiktok.svg";
-import instagramIcon from "../assets/icons/smi_instagram.svg";
-import twitterIcon from "../assets/icons/smi_twitter.svg";
-import facebookIcon from "../assets/icons/smi_facebook.svg";
-import whatsappIcon from "../assets/icons/smi_whatsapp.svg";
+import tiktokIcon from "@icons/smi_tiktok.svg";
+import instagramIcon from "@icons/smi_instagram.svg";
+import twitterIcon from "@icons/smi_twitter.svg";
+import facebookIcon from "@icons/smi_facebook.svg";
+import whatsappIcon from "@icons/smi_whatsapp.svg";
 
 const socialMediaLinks = [
   {

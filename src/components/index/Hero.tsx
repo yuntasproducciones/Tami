@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import heroArray from "../../data/hero.data";
+import heroArray from "@data/hero.data";
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
