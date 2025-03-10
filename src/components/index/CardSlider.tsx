@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "./Card";
 
 interface CardSliderProps {
@@ -7,6 +7,19 @@ interface CardSliderProps {
 
 const CardSlider: React.FC<CardSliderProps> = ({ cardList }) => {
   const [activeId, setActiveId] = useState<number | null>(null);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    // Función para actualizar el estado según el tamaño de pantalla
+    const checkScreenSize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    checkScreenSize(); // Comprobación inicial
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
 
   return (
     <div className="relative flex flex-col items-center gap-4 w-4/5 mx-auto">
@@ -21,17 +34,17 @@ const CardSlider: React.FC<CardSliderProps> = ({ cardList }) => {
         {cardList.map((card, index) => (
           <div
             key={index}
-            className={`relative h-80 transition-all duration-300 rounded-lg overflow-hidden cursor-pointer p-4 ${
-              activeId === index ? "flex-[3]" : "flex-[1]"
+            className={`relative h-96 md:h-80 transition-all duration-300 rounded-lg overflow-hidden cursor-pointer p-4 ${
+              isDesktop && activeId === index ? "flex-[3]" : "flex-1"
             }`}
-            onMouseEnter={() => setActiveId(index)}
-            onMouseLeave={() => setActiveId(null)}
+            onMouseEnter={() => isDesktop && setActiveId(index)}
+            onMouseLeave={() => isDesktop && setActiveId(null)}
           >
             <Card
               title={card.title}
               image={card.image.src}
               paragraph={card.paragraph}
-              isActive={activeId === index}
+              isActive={activeId === index || !isDesktop}
             />
           </div>
         ))}
