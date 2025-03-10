@@ -2,7 +2,6 @@
 import Layout from "../layouts/Layout.astro";
 import Hero from "../components/index/Hero";
 import indexCards from "@data/indexCards.data";
-import Card from "../components/index/Card";
 import CardSlider from "../components/index/CardSlider";
 import circuitos from "@images/index/circuitos.webp";
 import bgCompromiso from "@images/index/bg_compromiso.gif";
@@ -11,23 +10,9 @@ import manoRobotica from "@images/index/mano_robotica.webp";
 
 <Layout title="Tami Perú">
   <Hero client:load />
-  <section class="w-full h-96 lg:px-10 my-8 place-items-center">
-    {/* Carrusel para pantallas más pequeñas */}
+  <section class="w-full lg:px-10 my-8 place-items-center">
+    {/* Contenedor de cartas */}
     <CardSlider cardList={indexCards} client:load />
-    {/* Vista normal para pantallas medianas o más grandes */}
-    <div
-      class="hidden lg:grid lg:grid-cols-3 w-full h-full items-center justify-items-center"
-    >
-      {
-        indexCards.map((card) => (
-          <Card
-            title={card.title}
-            image={card.image.src}
-            paragraph={card.paragraph}
-          />
-        ))
-      }
-    </div>
   </section>
   <section class="w-full pb-12 2xl:pb-24 lg:scroll-mt-16" id="destino">
     {/* Banner superior con texto superpuesto */}

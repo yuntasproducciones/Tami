@@ -1,52 +1,38 @@
-import { useEffect, useState } from "react";
-import Card from "./Card";
+import React, { useState } from 'react';
+import Card from './Card';
 
 interface CardSliderProps {
-  cardList: {
-    image: ImageMetadata;
-    title: string;
-    paragraph: string;
-  }[];
+  cardList: { title: string; image: { src: string }; paragraph: string }[];
 }
+
 const CardSlider: React.FC<CardSliderProps> = ({ cardList }) => {
-  const [currentCard, setCurrentCard] = useState(0);
-  useEffect(() => {
-    const interval = setTimeout(() => {
-      setCurrentCard((prev) => (prev + 1) % cardList.length);
-    }, 3000);
-  });
+  const [activeId, setActiveId] = useState<number | null>(null);
+
   return (
-    <>
-      <div className="w-full h-full flex flex-col items-center justify-center lg:hidden">
-        {/* Contenedor de las tarjetas */}
-        <div className="relative h-full w-full overflow-hidden">
-          {cardList.map((card, index) => (
-            <div
-              key={index}
-              className={`absolute top-0 w-full h-full  flex items-center justify-center transition-transform duration-500 ${
-                index === currentCard ? "translate-y-0" : "translate-y-full"
-              } ${index < currentCard ? "-translate-y-full" : ""}`}
-            >
-              <Card
-                image={card.image.src}
-                title={card.title}
-                paragraph={card.paragraph}
-              />
-            </div>
-          ))}
-        </div>
-        <div className="w-full flex justify-center gap-3">
-          {cardList.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentCard(index)}
-              className="w-4 h-4 rounded-full transition-transform bg-teal-700/45 hover:bg-teal-700 disabled:bg-teal-700 disabled:scale-125 duration-300"
-              disabled={index === currentCard}
-            />
-          ))}
-        </div>
+    <div className="relative flex flex-col items-center gap-4 w-4/5 mx-auto">
+      <div className="text-teal-700 text-center py-2 w-full text-lg tracking-wide">
+        Optimiza tu Trabajo, Negocio y Hogar
       </div>
-    </>
+      <div className="relative flex gap-4 overflow-hidden w-full justify-center">
+        {cardList.map((card, index) => (
+          <div
+            key={index}
+            className={`relative h-80 transition-all duration-300 rounded-lg overflow-hidden cursor-pointer p-4 ${
+              activeId === index ? 'flex-[3]' : 'flex-[1]'
+            }`}
+            onMouseEnter={() => setActiveId(index)}
+            onMouseLeave={() => setActiveId(null)}
+          >
+            <Card
+              title={card.title}
+              image={card.image.src}
+              paragraph={card.paragraph}
+              isActive={activeId === index}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
