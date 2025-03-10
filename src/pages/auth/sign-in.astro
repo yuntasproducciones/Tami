@@ -1,7 +1,41 @@
 ---
 import Layout2 from "../../layouts/Layout2.astro";
+import logo_animado from "@images/logos/logo_animado.gif";
 ---
 
 <Layout2 title="Iniciar Sesión">
-  <main class="h-dvh w-full"></main>
+  <main class="h-dvh w-full flex items-center justify-center bg-gradient-to-b from-teal-500 to-teal-700 relative">
+    <div class="absolute top-10 flex flex-col items-center">
+      <img src={logo_animado.src} alt="TAMI Logo" class="w-24 mb-4">
+      <h1 class="text-white text-6xl font-black">¡BIENVENIDO!</h1>
+    </div>
+      <form class="space-y-4">
+        <div>
+          <input 
+            type="text" 
+            id="usuario" 
+            name="usuario" 
+            class="w-full p-3 bg-white/70 rounded-lg text-gray-700 font-bold placeholder-gray-400 focus:outline-none"
+            placeholder="USUARIO"
+            required
+          />
+        </div>
+        <div>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            class="w-full p-3 bg-white/70 rounded-lg text-gray-700 font-bold placeholder-gray-400 focus:outline-none"
+            placeholder="CONTRASEÑA"
+            required
+          />
+        </div>
+        <button 
+          type="submit" 
+          class="w-full bg-teal-800 text-white p-3 rounded-lg font-bold hover:bg-teal-900 transition"
+        >
+          INGRESAR
+        </button>
+      </form>
+  </main>
 </Layout2>
