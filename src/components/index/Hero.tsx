@@ -21,7 +21,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="relative bg-black h-dvh pt-20 content-center">
+    <section className="relative bg-black h-96 lg:h-dvh 2xl:h-[90dvh] pt-20 content-center">
       <div className="absolute w-full h-full top-0 z-20 bg-gradient-to-b from-teal-700 to-black opacity-75"></div>
       {heroArray.map((slide, index) => (
         <img
@@ -34,7 +34,7 @@ const Hero = () => {
       ))}
       <div className="relative px-8 lg:pl-32 z-30">
         <h1
-          className={`mb-8 xl:mb-12 2xl:mb-16 text-white text-3xl md:text-5xl lg:text-7xl 2xl:text-9xl font-bold whitespace-pre-line transition-all duration-1000 ${
+          className={`mb-8 xl:mb-12 2xl:mb-16 text-white text-3xl md:text-5xl lg:text-7xl 2xl:text-8xl font-extrabold whitespace-pre-line transition-all duration-1000 ${
             isTextVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-10"
