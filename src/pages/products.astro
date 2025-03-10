@@ -1,0 +1,123 @@
+---
+import { promise } from "astro:schema";
+import HeroProducts from "src/components/products/HeroProducts";
+import ProductCard from "src/components/products/ProductCard.astro";
+import Layout from "src/layouts/Layout.astro";
+import type Section from "src/models/Section";
+export const seccionesArray: Section[] = [
+  {
+    nombreSeccion: "Waza 1",
+    productosDeLaSeccion: [
+      {
+        id: "w1_p1",
+        nombreProducto: "Producto 1",
+        stockProducto: 0,
+        precioProducto: 0,
+        image: "",
+      },
+      {
+        id: "w1_p2",
+        nombreProducto: "Producto 2",
+        stockProducto: 0,
+        precioProducto: 0,
+        image: "",
+      },
+      {
+        id: "w1_p3",
+        nombreProducto: "Producto 3",
+        stockProducto: 0,
+        precioProducto: 0,
+        image: "",
+      },
+      {
+        id: "w1_p4",
+        nombreProducto: "Producto 4",
+        stockProducto: 0,
+        precioProducto: 0,
+        image: "",
+      },
+    ],
+  },
+  {
+    nombreSeccion: "Waza 2",
+    productosDeLaSeccion: [
+      {
+        id: "w2_p5",
+        nombreProducto: "Producto 5",
+        stockProducto: 0,
+        precioProducto: 0,
+        image: "",
+      },
+      {
+        id: "w2_p6",
+        nombreProducto: "Producto 6",
+        stockProducto: 0,
+        precioProducto: 0,
+        image: "",
+      },
+      {
+        id: "w2_p7",
+        nombreProducto: "Producto 7",
+        stockProducto: 0,
+        precioProducto: 0,
+        image: "",
+      },
+      {
+        id: "w2_p8",
+        nombreProducto: "Producto 8",
+        stockProducto: 0,
+        precioProducto: 0,
+        image: "",
+      },
+    ],
+  },
+  {
+    nombreSeccion: "Waza 3",
+    productosDeLaSeccion: [
+      {
+        id: "w3_p9",
+        nombreProducto: "Producto 9",
+        stockProducto: 0,
+        precioProducto: 0,
+        image: "",
+      },
+      {
+        id: "w3_p10",
+        nombreProducto: "Producto 10",
+        stockProducto: 0,
+        precioProducto: 0,
+        image: "",
+      },
+      {
+        id: "w3_p11",
+        nombreProducto: "Producto 11",
+        stockProducto: 0,
+        precioProducto: 0,
+        image: "",
+      },
+    ],
+  },
+];
+---
+
+<Layout title="Productos">
+  <HeroProducts client:load />
+  <section class="w-full grid grid-flow-row auto-rows-auto">
+    {
+      seccionesArray.map((seccion) => (
+        <div class="relative py-10">
+          <div class="relative w-4/5 place-self-center">
+            <h2 class="text-white bg-linear-to-r from-teal-900 via-teal-700 py-3 w-fit ps-10 pe-28 text-3xl font-bold">
+              {seccion.nombreSeccion}
+            </h2>
+            <div class={`flex flex-wrap justify-between`}>
+              {seccion.productosDeLaSeccion.map((producto) => (
+                <ProductCard producto={producto} />
+              ))}
+            </div>
+          </div>
+        </div>
+      ))
+    }
+  </section>
+</Layout>
