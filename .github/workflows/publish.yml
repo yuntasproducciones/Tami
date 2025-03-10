@@ -1,0 +1,29 @@
+name: Generar una compilación y enviar a otra rama
+
+on:
+  pull_request:
+    types: [closed] # Ejecutar cuando se cierre un pull request
+    branches:
+      - main # El nombre de la rama donde deseas que se ejecuten las acciones cuando se apruebe un pull request
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Compilar y Enviar
+    steps:
+      - name: git-checkout
+        uses: actions/checkout@v3
+
+      - name: Instalar todas las dependencias
+        run: npm install
+
+      - name: Compilar
+        run: npm run build # El comando de compilación de tu proyecto Astro
+
+      - name: Enviar
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: build # El nombre de la rama donde deseas enviar los assets
+          FOLDER: dist # El directorio donde se generan tus assets de Astro
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub añadirá esto automáticamente - no necesitas obtener un token
+          MESSAGE: "Build: ({sha}) {msg}" # El mensaje del commit
