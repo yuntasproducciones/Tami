@@ -31,15 +31,13 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
-          
-      - name: Configurar Git para Hostinger
+
+      - name: Configurar estrategia de `git pull`
         run: |
-          echo "Creando archivo .git-ftp-include para Hostinger"
-          echo "!dist/" > .git-ftp-include
-          echo "Configurando estrategia git pull para Hostinger"
-          git config --global pull.rebase false
-          echo "Creando archivo hostinger-deploy.php para ayudar con el deployment"
-          echo "<?php echo 'Hostinger deployment successfully initialized'; ?>" > dist/hostinger-deploy.php
+          git config pull.rebase false  # Usar merge en lugar de rebase
+          git fetch origin build || echo "No existe la rama build aún"
+          git checkout build || git checkout -b build
+          git pull origin build || echo "No hay cambios remotos"
 
       - name: Publicar a rama build
         uses: s0/git-publish-subdir-action@develop
@@ -50,3 +48,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MESSAGE: "Build: ({sha}) {msg}"
           SQUASH_HISTORY: true
+
+      - name: Forzar actualización en caso de conflicto
+        run: |
+          git fetch origin build
+          git reset --hard origin/build
+          git push --force origin build || echo "No fue necesario forzar el push"
