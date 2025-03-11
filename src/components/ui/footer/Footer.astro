@@ -1,8 +1,16 @@
 ---
+// Comentar la importación problemática y usar una alternativa que exista en el repositorio
+// import MascotaTami from '@images/Logos/mascota_tami.webp';
+
+// Opción 1: Usar una imagen que sí exista en el repositorio (ajusta la ruta según sea necesario)
+// import MascotaTami from '@images/logo.webp';
+
+// Opción 2: Usar una URL externa temporalmente
+const MascotaTami = "https://via.placeholder.com/150";
+
 import logoTami from "@images/logos/logo_animado.gif";
 import socialMediaLinks from "@data/socialMedia.data";
 import NavSocialMediaLink from "../sideMenu/NavSocialMediaLink";
-import mascotaTami from "@images/Logos/mascota_tami.webp";
 import CopyText from "./CopyText.astro";
 ---
 
@@ -75,7 +83,7 @@ import CopyText from "./CopyText.astro";
     {/* Mascota y botón */}
     <div class="w-full lg:w-1/6 flex flex-col self-center items-center">
       <img
-        src={mascotaTami.src}
+        src={MascotaTami}
         alt="Mascota Tami"
         class="w-2/5 sm:w-1/4 lg:w-3/4 2xl:w-4/6 mb-4"
       />

@@ -17,7 +17,7 @@ jobs:
         run: npm install
 
       - name: Compilar
-        run: npm run build # El comando de compilación de tu proyecto Astro
+        run: npx astro build --mode production # Usar el comando de compilación específico con modo producción
         env:
           NODE_ENV: production
 
