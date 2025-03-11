@@ -31,6 +31,15 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
+          
+      - name: Configurar Git para Hostinger
+        run: |
+          echo "Creando archivo .git-ftp-include para Hostinger"
+          echo "!dist/" > .git-ftp-include
+          echo "Configurando estrategia git pull para Hostinger"
+          git config --global pull.rebase false
+          echo "Creando archivo hostinger-deploy.php para ayudar con el deployment"
+          echo "<?php echo 'Hostinger deployment successfully initialized'; ?>" > dist/hostinger-deploy.php
 
       - name: Configurar estrategia de `git pull`
         run: |
