@@ -5,19 +5,31 @@ on:
     types: [closed] # Ejecutar cuando se cierre un pull request
     branches:
       - main # El nombre de la rama donde deseas que se ejecuten las acciones cuando se apruebe un pull request
+
+# Permisos explícitos necesarios para realizar operaciones en el repositorio
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   build:
+    # Solo ejecutar cuando el PR fue fusionado (merged), no cuando fue cerrado sin fusionar
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     name: Compilar y Enviar
     steps:
       - name: git-checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Asegura que todo el historial está disponible
 
       - name: Instalar todas las dependencias
         run: npm install
 
       - name: Compilar
-        run: npm run build # El comando de compilación de tu proyecto Astro
+        run: npx astro build --mode production # Usar el comando de compilación específico con modo producción
+        env:
+          NODE_ENV: production
 
       - name: Enviar
         uses: s0/git-publish-subdir-action@develop
@@ -25,5 +37,6 @@ jobs:
           REPO: self
           BRANCH: build # El nombre de la rama donde deseas enviar los assets
           FOLDER: dist # El directorio donde se generan tus assets de Astro
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub añadirá esto automáticamente - no necesitas obtener un token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub añadirá esto automáticamente
           MESSAGE: "Build: ({sha}) {msg}" # El mensaje del commit
+          SQUASH_HISTORY: true # Opcional: mantiene solo el último commit en la rama build
