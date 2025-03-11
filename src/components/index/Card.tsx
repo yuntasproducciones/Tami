@@ -7,13 +7,13 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ title, image, paragraph, isActive }) => {
   return (
-    <div className={`relative w-full h-[95%] flex transition-transform duration-300 ${isActive ? 'scale-105' : ''}`}>
+    <div className={`relative w-full h-full flex transition-transform duration-300 ${isActive ? 'scale-105' : ''}`}>
       <img
         src={image}
         alt={`fondo de la tarjeta ${title}`}
         className="absolute rounded-3xl w-full h-full object-cover object-center z-0"
       />
-      <div className="relative self-end z-10 text-white w-full h-full flex flex-col justify-end p-4 pb-0 text-center bg-gradient-to-t from-teal-800 rounded-3xl">
+      <div className="relative self-end z-10 text-white w-full h-full flex flex-col justify-end p-6 text-center bg-gradient-to-t from-teal-800 rounded-3xl">
         <div className={`transition-transform duration-300 ${isActive ? 'translate-y-0' : ''}`}>
           <h3 className="font-semibold text-lg lg:text-base 2xl:text-4xl mb-0 md:mb-1">
             {title}
