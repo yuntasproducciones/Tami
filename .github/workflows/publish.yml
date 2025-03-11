@@ -18,6 +18,8 @@ jobs:
 
       - name: Compilar
         run: npm run build # El comando de compilación de tu proyecto Astro
+        env:
+          NODE_ENV: production
 
       - name: Enviar
         uses: s0/git-publish-subdir-action@develop
