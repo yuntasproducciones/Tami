@@ -1,11 +1,67 @@
 ---
-import ProductPage from "src/components/ProductPage";
 import Layout from "src/layouts/Layout.astro";
+import type Producto from "src/models/Product";
+export const productos: Producto[] = [
+  {
+    id: "1",
+    nombreProducto: "Waffer 1",
+    stockProducto: 0,
+    precioProducto: 0,
+    image: "",
+  },
+  {
+    id: "2",
+    nombreProducto: "Maquinaria 2",
+    stockProducto: 0,
+    precioProducto: 0,
+    image: "",
+  },
+  {
+    id: "3",
+    nombreProducto: "Maquinaria 3",
+    stockProducto: 0,
+    precioProducto: 0,
+    image: "",
+  },
+];
+export async function getStaticPaths() {
+  return productos.map((producto) => {
+    return {
+      params: { idProducto: producto.id },
+    };
+  });
+}
+const { idProducto } = Astro.params;
+const producto = productos.find((p) => p.id === idProducto);
 
-const { id } = Astro.params;
-export const prerender = false;
+if (!producto) {
+  throw new Error(`Producto no encontrado: ${idProducto}`);
+}
+
+/* Liberar a la Bestia cuando sea necesario */
+/* Segun ChatGPT esto no es SSR, así que debería funcionar. Probarlo cuando se una al backend */
+
+/* const { idProducto } = Astro.params;
+
+// Obtén los datos en tiempo de construcción
+const res = await fetch("https://tu-api.com/productos");
+const productos: Producto[] = await res.json();
+
+const producto = productos.find((p) => p.id === idProducto);
+
+if (!producto) {
+  throw new Error(`Producto no encontrado: ${idProducto}`);
+}
+export async function getStaticPaths() {
+  return productos.map((producto) => ({
+    params: { idProducto: producto.id },
+  }));
+} */
 ---
 
-<Layout title="Detalle del Producto">
-  <ProductPage id={id!} />
+<Layout title={producto.nombreProducto}>
+  <h1>{producto.nombreProducto}</h1>
+  <p>Precio: {producto.precioProducto}</p>
+  <p>Stock: {producto.stockProducto}</p>
+  <img src={producto.image} alt={producto.nombreProducto} />
 </Layout>
