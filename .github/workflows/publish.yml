@@ -10,24 +10,38 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Compilar y Enviar
+    if: github.event.pull_request.merged == true # Solo ejecutar si el PR fue fusionado
     steps:
       - name: git-checkout
         uses: actions/checkout@v3
 
+      - name: Configurar Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20' # Ajusta a la versión que uses
+
       - name: Instalar todas las dependencias
         run: npm install
 
+      - name: Verificar estructura del proyecto
+        run: |
+          ls -la
+          echo "Verificando dónde se generan los archivos de compilación"
+          npm run build || echo "La compilación falló pero continuamos para verificar"
+          ls -la
+          # Intenta encontrar dónde se generaron los archivos
+          find . -type d -name "dist" -o -name "build" -o -name "out"
+
       - name: Compilar
         run: npm run build # El comando de compilación de tu proyecto
-
-      - name: Configurar estrategia de fusión de Git
-        run: git config --global pull.rebase false
 
       - name: Enviar
         uses: s0/git-publish-subdir-action@develop
         env:
           REPO: self
           BRANCH: build # El nombre de la rama donde deseas enviar los assets
-          FOLDER: build # El directorio donde se generan tus assets
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub agregará esto automáticamente - no necesitas preocuparte por obtener un token
+          FOLDER: build # Ajusta esto al directorio correcto si es diferente
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub agregará esto automáticamente
           MESSAGE: "Compilación: ({sha}) {msg}" # El mensaje del commit
+          SKIP_EMPTY_COMMITS: true # Evita errores si no hay cambios
+          CREATE_ORPHAN_BRANCH: true # Crea la rama si no existe
