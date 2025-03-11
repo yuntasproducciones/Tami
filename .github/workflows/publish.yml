@@ -1,42 +1,43 @@
-name: Generar una compilación y enviar a otra rama
+name: Compilar y publicar en rama build
 
 on:
   pull_request:
     types: [closed] # Ejecutar cuando se cierre un pull request
     branches:
-      - main # El nombre de la rama donde deseas que se ejecuten las acciones cuando se apruebe un pull request
+      - main # Solo cuando el PR es hacia main
 
-# Permisos explícitos necesarios para realizar operaciones en el repositorio
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  build:
-    # Solo ejecutar cuando el PR fue fusionado (merged), no cuando fue cerrado sin fusionar
+  build-and-deploy:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    name: Compilar y Enviar
+    name: Compilar y Publicar
     steps:
-      - name: git-checkout
+      - name: Checkout del código
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # Asegura que todo el historial está disponible
 
-      - name: Instalar todas las dependencias
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Instalar dependencias
         run: npm install
 
-      - name: Compilar
-        run: npx astro build --mode production # Usar el comando de compilación específico con modo producción
+      - name: Compilar proyecto
+        run: npm run build
         env:
           NODE_ENV: production
 
-      - name: Enviar
+      - name: Publicar a rama build
         uses: s0/git-publish-subdir-action@develop
         env:
           REPO: self
-          BRANCH: build # El nombre de la rama donde deseas enviar los assets
-          FOLDER: dist # El directorio donde se generan tus assets de Astro
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub añadirá esto automáticamente
-          MESSAGE: "Build: ({sha}) {msg}" # El mensaje del commit
-          SQUASH_HISTORY: true # Opcional: mantiene solo el último commit en la rama build
+          BRANCH: build
+          FOLDER: dist # Carpeta que se publicará en la rama build
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MESSAGE: "Build: ({sha}) {msg}"
+          SQUASH_HISTORY: true
