@@ -6,40 +6,25 @@ on:
     branches:
       - main # El nombre de la rama donde deseas que se ejecuten las acciones cuando se apruebe un pull request
 
-# Permisos explícitos necesarios para realizar operaciones en el repositorio
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
   build:
-    # Solo ejecutar cuando el PR fue fusionado (merged), no cuando fue cerrado sin fusionar
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     name: Compilar y Enviar
     steps:
       - name: git-checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # Asegura que todo el historial está disponible
 
       - name: Instalar todas las dependencias
         run: npm install
 
       - name: Compilar
-        run: npx astro build --mode production # Usar el comando de compilación específico con modo producción
-        env:
-          NODE_ENV: production
-
-      - name: Configurar estrategia de fusión de Git
-        run: git config --global pull.rebase false
+        run: npm run build # El comando de compilación de tu proyecto
 
       - name: Enviar
         uses: s0/git-publish-subdir-action@develop
         env:
           REPO: self
           BRANCH: build # El nombre de la rama donde deseas enviar los assets
-          FOLDER: dist # El directorio donde se generan tus assets de Astro
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub añadirá esto automáticamente
-          MESSAGE: "Build: ({sha}) {msg}" # El mensaje del commit
-          SQUASH_HISTORY: true # Opcional: mantiene solo el último commit en la rama build
+          FOLDER: build # El directorio donde se generan tus assets
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub agregará esto automáticamente - no necesitas preocuparte por obtener un token
+          MESSAGE: "Compilación: ({sha}) {msg}" # El mensaje del commit
