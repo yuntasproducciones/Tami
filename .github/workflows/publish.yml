@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout del código
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Obtener todo el historial para manejar ramas correctamente
 
       - name: Configurar Node.js
         uses: actions/setup-node@v3
@@ -32,12 +34,23 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Configurar estrategia de `git pull`
+      - name: Configurar Git
         run: |
-          git config pull.rebase false  # Usar merge en lugar de rebase
-          git fetch origin build || echo "No existe la rama build aún"
-          git checkout build || git checkout -b build
-          git pull origin build || echo "No hay cambios remotos"
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git config --global pull.rebase false
+
+      - name: Gestionar la rama build
+        run: |
+          # Verificar si la rama build existe remotamente
+          if git ls-remote --heads origin build | grep build; then
+            echo "La rama build existe remotamente"
+            git branch -D build || true
+            git checkout -b build --track origin/build
+          else
+            echo "Creando nueva rama build"
+            git checkout -b build
+          fi
 
       - name: Publicar a rama build
         uses: s0/git-publish-subdir-action@develop
@@ -48,9 +61,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MESSAGE: "Build: ({sha}) {msg}"
           SQUASH_HISTORY: true
-
-      - name: Forzar actualización en caso de conflicto
-        run: |
-          git fetch origin build
-          git reset --hard origin/build
-          git push --force origin build || echo "No fue necesario forzar el push"
+          CLEAR_GLOBS_FILE_FILTER: "**/*" # Asegura que se borren archivos antiguos
