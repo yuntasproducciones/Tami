@@ -23,6 +23,22 @@ jobs:
         with:
           fetch-depth: 0 # Asegura que todo el historial está disponible
 
+      - name: Mostrar estado de Git
+        run: |
+          git status
+          git branch -vv
+
+      - name: Configurar estrategia de fusión de Git
+        run: |
+          git config --global pull.rebase false
+          git config --global user.email "bot@github.com"
+          git config --global user.name "GitHub Action Bot"
+
+      - name: Manejo de divergencias en Git
+        run: |
+          git fetch origin
+          git reset --hard origin/main
+
       - name: Instalar todas las dependencias
         run: npm install
 
@@ -30,9 +46,6 @@ jobs:
         run: npx astro build --mode production # Usar el comando de compilación específico con modo producción
         env:
           NODE_ENV: production
-
-      - name: Configurar estrategia de fusión de Git
-        run: git config --global pull.rebase false
 
       - name: Enviar
         uses: s0/git-publish-subdir-action@develop
