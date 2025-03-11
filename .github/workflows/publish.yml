@@ -38,6 +38,7 @@ jobs:
         run: |
           git fetch origin
           git reset --hard origin/main
+          git pull origin main --ff-only || echo "No se pudo hacer fast-forward"
 
       - name: Instalar todas las dependencias
         run: npm install
