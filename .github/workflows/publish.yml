@@ -37,7 +37,7 @@ jobs:
         env:
           REPO: self
           BRANCH: build
-          FOLDER: public # Carpeta que se publicará en la rama build
+          FOLDER: dist # Carpeta que se publicará en la rama build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MESSAGE: "Build: ({sha}) {msg}"
           SQUASH_HISTORY: true
