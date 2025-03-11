@@ -31,6 +31,9 @@ jobs:
         env:
           NODE_ENV: production
 
+      - name: Configurar estrategia de fusión de Git
+        run: git config --global pull.rebase false
+
       - name: Enviar
         uses: s0/git-publish-subdir-action@develop
         env:
