@@ -1,12 +1,11 @@
 ---
-import { promise } from "astro:schema";
 import HeroProducts from "src/components/products/HeroProducts";
 import ProductCard from "src/components/products/ProductCard.astro";
 import Layout from "src/layouts/Layout.astro";
 import type Section from "src/models/Section";
 export const seccionesArray: Section[] = [
   {
-    nombreSeccion: "Waza 1",
+    nombreSeccion: "Trabajo",
     productosDeLaSeccion: [
       {
         id: "w1_p1",
@@ -39,7 +38,7 @@ export const seccionesArray: Section[] = [
     ],
   },
   {
-    nombreSeccion: "Waza 2",
+    nombreSeccion: "Decoración",
     productosDeLaSeccion: [
       {
         id: "w2_p5",
@@ -72,7 +71,7 @@ export const seccionesArray: Section[] = [
     ],
   },
   {
-    nombreSeccion: "Waza 3",
+    nombreSeccion: "Negocio",
     productosDeLaSeccion: [
       {
         id: "w3_p9",
@@ -105,7 +104,7 @@ export const seccionesArray: Section[] = [
   <section class="w-full grid grid-flow-row auto-rows-auto">
     {
       seccionesArray.map((seccion) => (
-        <div class="relative py-10">
+        <div class="relative py-10 scroll-mt-16" id={seccion.nombreSeccion}>
           <div class="relative w-4/5 place-self-center">
             <h2 class="text-white bg-linear-to-r from-teal-900 via-teal-700 py-3 w-fit ps-10 pe-28 text-3xl font-bold">
               {seccion.nombreSeccion}
