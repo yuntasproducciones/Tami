@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import logoMovil from "@images/logos/logo_movil.webp";
-import logoTami from "@images/logos/logo_animado.gif";
+import logoTami from "@images/logos/logo_web.webp";
 import NavLink from "./NavLink";
 import SideMenu from "../sideMenu/SideMenu";
 import navLinks from "@data/navlinks.data";
@@ -48,7 +48,7 @@ function NavBar() {
         <img
           src={logoTami.src}
           alt="logo de Tami sin letras"
-          className="h-full hidden lg:block"
+          className="pt-2 hidden lg:block"
         />
       </a>
       <nav className="hidden lg:block col-span-9 w-full h-full">
