@@ -74,10 +74,10 @@ function NavBar() {
               </li>
               <li>
                 <a
-                  href="/login"
+                  href="/auth/sign-in"
                   className="block px-4 py-2 hover:bg-teal-900 hover:rounded-b-md"
                 >
-                  Login
+                  Iniciar Sesión
                 </a>
               </li>
             </ul>
