@@ -1,19 +1,17 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Hero from "../components/index/Hero";
-import sectionCards from "@data/sectionCards.data";
-import CardSlider from "../components/index/CardSlider";
 import circuitos from "@images/index/circuitos.webp";
 import manoRobotica from "@images/index/mano_robotica.webp";
 import iconGarantia from "@icons/icon_garantia.webp";
 import trabajo from "@images/index/trabajo.webp";
 import ProductContainer from "src/components/index/ProductContainer.astro";
-import Gradient from "src/components/index/Gradient.astro";
+import SectionCardContainer from "src/components/index/SectionCardContainer.astro";
 ---
 
 <Layout title="Tami Perú">
   <Hero client:load />
-  <section class="w-full pb-12 2xl:pb-24 lg:scroll-mt-16" id="destino">
+  <section class="w-full pb-12 2xl:pb-24 lg:scroll-mt-16" id="bienvenida">
     {
       /* Sección principal con imagen de mano robótica y mensaje de bienvenida */
     }
@@ -34,7 +32,7 @@ import Gradient from "src/components/index/Gradient.astro";
         class="bg-teal-700 place-self-center text-white rounded-[50px] py-6 px-10 text-center w-3/5 z-20"
       >
         {/* Título de bienvenida */}
-        <h3 class="text-xs md:text-xl mb-2 font-light 2xl:text-3xl">
+        <h3 class="text-xl font-bold mb-2 2xl:text-3xl">
           ¡Bienvenidos a <span class="font-bold">TAMI!</span>
         </h3>
         {/* Subtítulo principal */}
@@ -58,9 +56,9 @@ import Gradient from "src/components/index/Gradient.astro";
     <!--agregar un borde -->
   </section>
   <!-- Arreglar ancho y alto para que se vea como en vimeo :like: -->
-  <section class="w-full lg:px-10 my-8 place-items-center">
+  <section class="w-full lg:px-2 my-8 place-items-center">
     {/* Contenedor de cartas */}
-    <CardSlider cardList={sectionCards} client:load />
+    <SectionCardContainer />
   </section>
   <section
     class="flex flex-col justify-between pt-6 px-16 bg-linear-to-b from-teal-700 via-teal-500 to-white"
@@ -101,57 +99,7 @@ import Gradient from "src/components/index/Gradient.astro";
         con la satisfacción de nuestros clientes.
       </p>
 
-      {/* Botones */}
-      <div
-        class="flex flex-wrap gap-4 my-6 justify-center text-white lg:justify-start 2xl:text-2xl xl:text-lg"
-      >
-        <div class="bg-teal-700 px-4 2xl:px-7 py-2 2xl:py-3 rounded-full">
-          CALIDAD
-        </div>
-        <div class="bg-teal-600 px-4 2xl:px-7 py-2 2xl:py-3 rounded-full">
-          INNOVACIÓN
-        </div>
-        <div class="bg-teal-500 px-4 2xl:px-7 py-2 2xl:py-3 rounded-full">
-          NEGOCIO PROPIO
-        </div>
-      </div>
-    </div>
-
-    {/* Imagen */}
-    <img src={trabajo.src} alt="Trabajo" class="w-5/6 lg:w-1/2 2xl:w-1/4" />
-  </section>
-  <section
-    class="py-6 px-16 bg-linear-to-b from-teal-700 via-teal-500 to-white h-[85dvh]"
-  >
-    <h3 class="text-white lg:text-4xl font-extrabold mb-10">
-      COMPROMETIDOS CON EL EMPRENDEDOR PERUANO, OFRECIENDO PRODUCTOS ASEQUIBLES
-    </h3>
-    <ProductContainer />
-  </section>
-  <section
-    class="w-full flex flex-col lg:flex-row items-center justify-center py-6 px-2 lg:px-16"
-  >
-    {/* Texto */}
-    <div class="lg:w-1/2 text-center lg:text-left">
-      <h2
-        class="flex-col text-teal-700 font-extrabold text-3xl sm:text-4xl lg:text-6xl 2xl:text-7xl flex lg:justify-start gap-2"
-      >
-        <span class="flex justify-center lg:justify-start items-end">
-          ¿POR QUÉ
-          <img
-            src={iconGarantia.src}
-            alt="Garantía"
-            class="ml-2 w-10 sm:w-12 lg:w-24"
-          />
-        </span>
-        ELEGIR TAMI?
-      </h2>
-      <p class="text-gray-600 text-xl 2xl:text-4xl xl:text-3xl mt-4">
-        Calidad respaldada por nuestra garantía, mostrando nuestro compromiso
-        con la satisfacción de nuestros clientes.
-      </p>
-
-      {/* Botones */}
+      {/* Etiquetas */}
       <div
         class="flex flex-wrap gap-4 my-6 justify-center text-white lg:justify-start 2xl:text-2xl xl:text-lg"
       >

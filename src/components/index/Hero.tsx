@@ -6,7 +6,9 @@ const Hero = () => {
   const [isTextVisible, setIsTextVisible] = useState(true);
 
   function moveIntoIndexTo() {
-    document.getElementById("destino")?.scrollIntoView({ behavior: "smooth" });
+    document
+      .getElementById("bienvenida")
+      ?.scrollIntoView({ behavior: "smooth" });
   }
 
   useEffect(() => {
