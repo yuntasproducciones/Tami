@@ -9,6 +9,7 @@ const arrayDePrueba: Producto[] = [
   {
     id: "1",
     nombreProducto: "WPC Wall Panel",
+    nombreProducto: "WPC Wall Panel",
     stockProducto: 0,
     precioProducto: 0,
     image: "/imagen_3.png",
@@ -30,7 +31,7 @@ const arrayDePrueba: Producto[] = [
 ];
 ---
 
-<ul class="w-full flex gap-8">
+<ul class="w-full flex gap-8 overflow-x-scroll lg:overflow-x-none">
   {
     arrayDePrueba.map((item) => {
       return (

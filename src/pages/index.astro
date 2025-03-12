@@ -121,13 +121,21 @@ import Gradient from "src/components/index/Gradient.astro";
     <img src={trabajo.src} alt="Trabajo" class="w-5/6 lg:w-1/2 2xl:w-1/4" />
   </section>
   <section
-    class="py-6 px-16 bg-linear-to-b from-teal-700 via-teal-500 to-white h-[85dvh]"
+    class="flex flex-col justify-between pt-6 px-16 bg-linear-to-b from-teal-700 via-teal-500 to-white"
   >
     <h3 class="text-white lg:text-4xl font-extrabold mb-10">
       COMPROMETIDOS CON EL EMPRENDEDOR PERUANO, OFRECIENDO PRODUCTOS ASEQUIBLES
     </h3>
     <ProductContainer />
   </section>
+  <h3
+    class="text-lg md:text-2xl 2xl:text-4xl font-bold text-center text-white w-full md:h-22 2xl:h-40 flex items-center justify-center bg-linear-to-r from-teal-700 to-yellow-200"
+  >
+    &#62; &#62; DESCUBRE MÁS EN LA SECCIÓN DE{" "}<a
+      href="/products"
+      class="underline underline-offset-3">PRODUCTOS</a
+    >
+  </h3>
   <section
     class="w-full flex flex-col lg:flex-row items-center justify-center py-6 px-2 lg:px-16"
   >
@@ -166,7 +174,6 @@ import Gradient from "src/components/index/Gradient.astro";
         </div>
       </div>
     </div>
-
     {/* Imagen */}
     <img src={trabajo.src} alt="Trabajo" class="w-5/6 lg:w-1/2 2xl:w-1/4" />
   </section>
