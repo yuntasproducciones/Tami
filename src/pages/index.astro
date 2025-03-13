@@ -1,46 +1,17 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Hero from "../components/index/Hero";
-import sectionCards from "@data/sectionCards.data";
-import Card from "../components/index/Card";
-import CardSlider from "../components/index/CardSlider";
 import circuitos from "@images/index/circuitos.webp";
-import bgCompromiso from "@images/index/bg_compromiso.gif";
 import manoRobotica from "@images/index/mano_robotica.webp";
 import iconGarantia from "@icons/icon_garantia.webp";
 import trabajo from "@images/index/trabajo.webp";
 import ProductContainer from "src/components/index/ProductContainer.astro";
+import SectionCardContainer from "src/components/index/SectionCardContainer.astro";
 ---
 
 <Layout title="Tami Perú">
   <Hero client:load />
-  <section class="w-full lg:px-10 my-8 place-items-center">
-    {/* Contenedor de cartas */}
-    <CardSlider cardList={sectionCards} client:load />
-  </section>
-  <section class="w-full pb-12 2xl:pb-24 lg:scroll-mt-16" id="destino">
-    {/* Banner superior con texto superpuesto */}
-    <div
-      class="relative flex justify-center items-center h-20 md:h-32 2xl:h-40"
-    >
-      {/* Texto superpuesto */}
-      <h3
-        class="bg-teal-700/70 w-full h-full z-10 text-white text-sm md:text-lg 2xl:text-2xl font-bold text-center content-center px-3"
-      >
-        Comprometidos con el
-        <br />
-        emprendedor peruano, ofreciendo
-        <br />
-        productos asequibles
-      </h3>
-      {/* Imagen de fondo del banner */}
-      <img
-        src={bgCompromiso.src}
-        class="absolute w-full h-full object-cover z-0"
-        alt="Gif del banner del mensaje de compromiso"
-      />
-    </div>
-
+  <section class="w-full pb-12 2xl:pb-24 lg:scroll-mt-16" id="bienvenida">
     {
       /* Sección principal con imagen de mano robótica y mensaje de bienvenida */
     }
@@ -61,7 +32,7 @@ import ProductContainer from "src/components/index/ProductContainer.astro";
         class="bg-teal-700 place-self-center text-white rounded-[50px] py-6 px-10 text-center w-3/5 z-20"
       >
         {/* Título de bienvenida */}
-        <h3 class="text-xs md:text-xl mb-2 font-light 2xl:text-3xl">
+        <h3 class="text-xl font-bold mb-2 2xl:text-3xl">
           ¡Bienvenidos a <span class="font-bold">TAMI!</span>
         </h3>
         {/* Subtítulo principal */}
@@ -82,15 +53,29 @@ import ProductContainer from "src/components/index/ProductContainer.astro";
         </p>
       </div>
     </div>
+    <!--agregar un borde -->
+  </section>
+  <!-- Arreglar ancho y alto para que se vea como en vimeo :like: -->
+  <section class="w-full lg:px-2 my-8 place-items-center">
+    {/* Contenedor de cartas */}
+    <SectionCardContainer />
   </section>
   <section
-    class="py-6 px-16 bg-linear-to-b from-teal-700 via-teal-500 to-white h-[85dvh]"
+    class="flex flex-col justify-between pt-6 px-16 bg-linear-to-b from-teal-700 via-teal-500 to-white"
   >
     <h3 class="text-white lg:text-4xl font-extrabold mb-10">
       COMPROMETIDOS CON EL EMPRENDEDOR PERUANO, OFRECIENDO PRODUCTOS ASEQUIBLES
     </h3>
     <ProductContainer />
   </section>
+  <h3
+    class="text-lg md:text-2xl 2xl:text-4xl font-bold text-center text-white w-full md:h-22 2xl:h-40 flex items-center justify-center bg-linear-to-r from-teal-700 to-yellow-200"
+  >
+    &#62; &#62; DESCUBRE MÁS EN LA SECCIÓN DE <a
+      href="/products"
+      class="underline underline-offset-3">PRODUCTOS</a
+    >
+  </h3>
   <section
     class="w-full flex flex-col lg:flex-row items-center justify-center py-6 px-2 lg:px-16"
   >
@@ -114,7 +99,7 @@ import ProductContainer from "src/components/index/ProductContainer.astro";
         con la satisfacción de nuestros clientes.
       </p>
 
-      {/* Botones */}
+      {/* Etiquetas */}
       <div
         class="flex flex-wrap gap-4 my-6 justify-center text-white lg:justify-start 2xl:text-2xl xl:text-lg"
       >

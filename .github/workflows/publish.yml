@@ -1,43 +1,30 @@
-name: Compilar y publicar en rama build
+name: Generate a build and push to another branch
 
 on:
   pull_request:
     types: [closed] # Ejecutar cuando se cierre un pull request
     branches:
-      - main # Solo cuando el PR es hacia main
-
-permissions:
-  contents: write
-  pull-requests: write
+      - main
 
 jobs:
-  build-and-deploy:
-    if: github.event.pull_request.merged == true
+  build:
     runs-on: ubuntu-latest
-    name: Compilar y Publicar
+    name: Build and Push
     steps:
-      - name: Checkout del código
+      - name: git-checkout
         uses: actions/checkout@v3
 
-      - name: Configurar Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      - name: Instalar dependencias
+      - name: Install all dependencies
         run: npm install
 
-      - name: Compilar proyecto
-        run: npm run build
-        env:
-          NODE_ENV: production
+      - name: Build
+        run: npm run build # The build command of your project
 
-      - name: Publicar a rama build
+      - name: Push
         uses: s0/git-publish-subdir-action@develop
         env:
           REPO: self
-          BRANCH: build
-          FOLDER: dist # Carpeta que se publicará en la rama build
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MESSAGE: "Build: ({sha}) {msg}"
-          SQUASH_HISTORY: true
+          BRANCH: build # The branch name where you want to push the assets
+          FOLDER: dist # The directory where your assets are generated
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub will automatically add this - you don't need to bother getting a token
+          MESSAGE: "Build: ({sha}) {msg}" # The commit message

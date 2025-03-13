@@ -1,0 +1,16 @@
+---
+interface Props {
+  from: string;
+  via?: string;
+  to: string;
+}
+const { from, via, to } = Astro.props;
+---
+
+<div
+  class={`text-center text-white w-full md:h-22 2xl:h-40 flex items-center justify-center bg-linear-to-r ${from} ${via} ${to}`}
+>
+  <h3 class="text-lg md:text-2xl 2xl:text-4xl font-bold">
+    <slot />
+  </h3>
+</div>
