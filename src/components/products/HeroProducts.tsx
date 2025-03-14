@@ -41,19 +41,19 @@ const HeroProducts = () => {
             }`}
           >
             <div>
-              <h2 className="sm:text-2xl md:text-3xl xl:text-4xl 2xl:text-6xl font-light">
+              <h2 className="sm:text-2xl md:text-3xl xl:text-4xl 2xl:text-5xl 2xl:pb-3 font-light">
                 {heroProductsArray[currentSlide].subTitulo1}
               </h2>
-              <h1 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-extrabold whitespace-pre-line">
+              <h1 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-7xl 2xl:pb-3 font-extrabold whitespace-pre-line">
                 {heroProductsArray[currentSlide].title}
               </h1>
-              <h3 className="sm:text-2xl md:text-3xl xl:text-4xl 2xl:text-6xl font-semibold">
+              <h3 className="sm:text-2xl md:text-3xl xl:text-4xl 2xl:text-5xl 2xl:pr-10 font-semibold">
                 {heroProductsArray[currentSlide].subTitulo2}
               </h3>
             </div>
             {heroProductsArray[currentSlide].subTitulo2 &&
               currentSlide !== 0 && (
-                <button className="sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-5xl mt-8 xl:mt-16 2xl:mt-20 px-6 xl:px-10 2xl:px-20 py-2 xl:py-4 2xl:py-6 bg-white text-teal-700 font-bold rounded-full shadow-md hover:text-white hover:bg-teal-900 transition-all duration-300">
+                <button className="sm:text-2xl lg:text-3xl xl:text-4xl 2xl:text-4xl mt-8 xl:mt-16 2xl:mt-20 px-6 xl:px-10 2xl:px-20 py-2 xl:py-4 2xl:py-6 bg-white text-teal-700 font-bold rounded-full shadow-md hover:text-white hover:bg-teal-900 transition-all duration-300">
                   Saber más
                 </button>
               )}
@@ -63,7 +63,7 @@ const HeroProducts = () => {
             alt={`Imagen de ${heroProductsArray[currentSlide].title}`}
             className={`${
               currentSlide === 0 ? "hidden" : ""
-            } place-self-center h-1/2 sm:h-full col-span-5`}
+            } place-self-end pl-24 pt-16 h-1/2 sm:h-full col-span-5`}
           />
           <button
             onClick={handleNext}
