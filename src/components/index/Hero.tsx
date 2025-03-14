@@ -34,7 +34,7 @@ const Hero = () => {
       ))}
       <div className="relative px-8 lg:pl-32 z-30">
         <h1
-          className={`mb-8 xl:mb-12 2xl:mb-16 text-white text-3xl md:text-5xl lg:text-7xl 2xl:text-8xl font-extrabold whitespace-pre-line transition-all duration-1000 ${
+          className={`mb-8 xl:mb-12 2xl:mb-16 text-white text-3xl md:text-5xl lg:text-7xl 2xl:text-7xl leading-22 font-extrabold whitespace-pre-line transition-all duration-1000 ${
             isTextVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-10"
