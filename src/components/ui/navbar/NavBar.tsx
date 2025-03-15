@@ -40,7 +40,10 @@ function NavBar() {
       }`}
     >
       <SideMenu links={navLinks} />
-      <a href="/" className="place-self-end lg:place-self-auto h-14">
+      <a
+        href="/"
+        className="place-self-end lg:place-self-auto content-center h-14"
+      >
         <img
           src={logoMovil.src}
           alt="Logo de Tami con letras"
@@ -49,7 +52,7 @@ function NavBar() {
         <img
           src={logoTami.src}
           alt="logo de Tami sin letras"
-          className="pt-2 hidden lg:block"
+          className="hidden lg:block"
         />
       </a>
       <nav className="hidden lg:block col-span-9 w-full h-full">
