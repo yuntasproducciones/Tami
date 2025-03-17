@@ -6,7 +6,6 @@ const Hero = () => {
   const [isTextVisible, setIsTextVisible] = useState(true);
 
   function moveToBienvenida() {
-  function moveToBienvenida() {
     document
       .getElementById("bienvenida")
       ?.scrollIntoView({ behavior: "smooth" });
