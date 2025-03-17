@@ -5,7 +5,7 @@ const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isTextVisible, setIsTextVisible] = useState(true);
 
-  function moveIntoIndexTo() {
+  function moveToBienvenida() {
     document
       .getElementById("bienvenida")
       ?.scrollIntoView({ behavior: "smooth" });
@@ -23,7 +23,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="relative bg-black h-96 lg:h-dvh 2xl:h-[90dvh] pt-20 content-center">
+    <section className="relative bg-black h-[calc(100dvh-10rem)] lg:h-dvh 2xl:h-[90dvh] pt-20 content-center">
       <div className="absolute w-full h-full top-0 z-20 bg-gradient-to-b from-teal-700 to-black opacity-75"></div>
       {heroArray.map((slide, index) => (
         <img
@@ -60,7 +60,7 @@ const Hero = () => {
           </ul>
         )}
         <button
-          onClick={moveIntoIndexTo}
+          onClick={moveToBienvenida}
           className="cursor-pointer mt-6 bg-white rounded-3xl border-2 border-slate-300 font-bold text-teal-700 hover:text-white hover:bg-gradient-to-t hover:from-teal-600 hover:to-teal-800 transition-all ease-in-out duration-500 px-5 py-2 text-lg lg:text-2xl lg:px-8 lg:py-3 xl:text-3xl 2xl:text-5xl 2xl:px-14 2xl:py-6"
         >
           Descubre más
