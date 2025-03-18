@@ -1,0 +1,21 @@
+---
+// Importación de los componentes React en Astro
+import Header from "../components/AdminDashboard/Header";
+import Sidebar from "../components/AdminDashboard/Sidebar";
+import MainTable from "./admin-pages/MainTable";
+import LayoutAdmin from "../layouts/LayoutAdmin.astro";
+---
+<LayoutAdmin title="dashboard">
+    <div class="flex flex-col h-screen">
+        <!-- Header ocupando todo el ancho -->
+        <Header client:only />
+
+        <!-- Contenedor principal con Sidebar y DataTable -->
+        <div class="flex flex-1">
+            <Sidebar client:only />
+            <div class="flex-1 p-4">
+                <MainTable client:only />
+            </div>
+        </div>
+    </div>
+</LayoutAdmin>
