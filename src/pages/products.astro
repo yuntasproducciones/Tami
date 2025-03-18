@@ -5,7 +5,10 @@ import Layout from "src/layouts/Layout.astro";
 import { getApiUrl, config } from "config";
 import type Producto from "src/models/Product"; // Importamos el modelo Producto
 
-let seccionesArray: { nombreSeccion: string; productosDeLaSeccion: Producto[] }[] = []; // Usamos el tipo Producto
+let seccionesArray: {
+  nombreSeccion: string;
+  productosDeLaSeccion: Producto[];
+}[] = []; // Usamos el tipo Producto
 
 try {
   const response = await fetch(getApiUrl(config.endpoints.productos.list));
@@ -16,11 +19,13 @@ try {
 
   // Mapeamos los datos del backend al modelo `Producto`
   const productosMapeados: Producto[] = productos.map((producto: any) => ({
-    id: producto.id.toString(),
+    id: producto.id.toString().trim(),
     nombreProducto: producto.nombreProducto,
     stockProducto: producto.stockProducto,
     precioProducto: parseFloat(producto.precioProducto),
-    image: producto.image.startsWith("http") ? producto.image : `https://apitami.tami-peru.com${producto.image}`,
+    image: producto.image.startsWith("http")
+      ? producto.image
+      : `https://apitami.tami-peru.com${producto.image}`,
     seccion: producto.seccion,
   }));
 
@@ -28,15 +33,21 @@ try {
   seccionesArray = [
     {
       nombreSeccion: "Trabajo",
-      productosDeLaSeccion: productosMapeados.filter((p: Producto) => p.seccion === "Trabajo").slice(0, 4),
+      productosDeLaSeccion: productosMapeados
+        .filter((p: Producto) => p.seccion === "Trabajo")
+        .slice(0, 4),
     },
     {
       nombreSeccion: "Decoración",
-      productosDeLaSeccion: productosMapeados.filter((p: Producto) => p.seccion === "Decoracion").slice(0, 4),
+      productosDeLaSeccion: productosMapeados
+        .filter((p: Producto) => p.seccion === "Decoracion")
+        .slice(0, 4),
     },
     {
       nombreSeccion: "Negocio",
-      productosDeLaSeccion: productosMapeados.filter((p: Producto) => p.seccion === "Negocio").slice(0, 4),
+      productosDeLaSeccion: productosMapeados
+        .filter((p: Producto) => p.seccion === "Negocio")
+        .slice(0, 4),
     },
   ];
 } catch (error) {
@@ -46,25 +57,28 @@ try {
 
 <Layout title="Productos">
   <HeroProducts client:load />
-  
-  <section class="w-full grid grid-rows-3">
-    {seccionesArray.map((seccion) => (
-      <div class="relative py-10 scroll-mt-16" id={seccion.nombreSeccion}>
-        <div class="relative w-4/5 place-self-center">
-          <h2 class="text-white bg-gradient-to-r from-teal-900 via-teal-700 py-3 w-fit lg:ps-10 ps-5 pe-16 lg:pe-28 text-3xl font-bold">
-            {seccion.nombreSeccion}
-          </h2>
-          <div class="flex flex-wrap justify-between">
-            {seccion.productosDeLaSeccion.length > 0 ? (
-              seccion.productosDeLaSeccion.map((producto) => (
-                <ProductCard producto={producto} />
-              ))
-            ) : (
-              <p class="text-gray-400 text-lg">No hay productos en esta sección.</p>
-            )}
+  <section class="w-full grid grid-rows-auto">
+    {
+      seccionesArray.map((seccion) => (
+        <div class="relative py-10" id={seccion.nombreSeccion}>
+          <div class="relative w-4/5 place-self-center">
+            <h2 class="text-white bg-gradient-to-r from-teal-900 via-teal-700 py-3 w-fit lg:ps-10 ps-5 pe-16 lg:pe-28 text-3xl font-bold">
+              {seccion.nombreSeccion}
+            </h2>
+            <div class="flex flex-wrap justify-between">
+              {seccion.productosDeLaSeccion.length > 0 ? (
+                seccion.productosDeLaSeccion.map((producto) => (
+                  <ProductCard producto={producto} />
+                ))
+              ) : (
+                <p class="text-gray-400 text-lg">
+                  No hay productos en esta sección.
+                </p>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    ))}
+      ))
+    }
   </section>
 </Layout>
