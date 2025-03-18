@@ -101,12 +101,12 @@ export const seccionesArray: Section[] = [
 
 <Layout title="Productos">
   <HeroProducts client:load />
-  <section class="w-full grid grid-flow-row auto-rows-auto">
+  <section class="w-full grid grid-rows-3">
     {
       seccionesArray.map((seccion) => (
         <div class="relative py-10 scroll-mt-16" id={seccion.nombreSeccion}>
           <div class="relative w-4/5 place-self-center">
-            <h2 class="text-white bg-linear-to-r from-teal-900 via-teal-700 py-3 w-fit ps-10 pe-28 text-3xl font-bold">
+            <h2 class="text-white bg-linear-to-r from-teal-900 via-teal-700 py-3 w-fit lg:ps-10 ps-5 pe-16 lg:pe-28 text-3xl font-bold">
               {seccion.nombreSeccion}
             </h2>
             <div class={`flex flex-wrap justify-between`}>
