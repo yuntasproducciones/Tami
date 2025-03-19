@@ -4,4 +4,5 @@ export default interface Producto {
   stockProducto: number;
   precioProducto: number;
   image: string;
+  seccion: string;
 }

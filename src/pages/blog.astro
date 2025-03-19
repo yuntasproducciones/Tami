@@ -4,31 +4,44 @@ import CardBlog from "../components/blog/CardBlog";
 import bgBlog from "@images/blog/bg_blog.webp";
 import { IoIosArrowDown } from "react-icons/io";
 import { FaSearch } from "react-icons/fa";
+import { getApiUrl, config } from "config";
+
+interface Blog {
+  id: string;
+  titulo: string;
+  descripcion: string;
+  imageUrl: string;
+  categoria: string;
+}
+
+let blogs: Blog[] = [];
+let error = null;
+
+try {
+  const response = await fetch(getApiUrl(config.endpoints.blogs.list));
+  if (!response.ok) throw new Error("Error al obtener los blogs");
+
+  const data = await response.json();
+  if (data.success) {
+    blogs = data.data;
+  } else {
+    error = "No se pudieron obtener los blogs";
+  }
+} catch (err) {
+  error = "Error al obtener los blogs: " + (err instanceof Error ? err.message : "Error desconocido");
+}
 ---
 
 <Layout title="Blog">
   <section
     class="relative bg-cover bg-center h-96 lg:h-dvh 2xl:h-[100dvh] pt-16 lg:pt-20 lg:ps-20 flex flex-col justify-center items-center lg:items-start text-white"
-    style={{
-      backgroundImage: `linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${bgBlog.src})`,
-    }}
+    style={`background-image: linear-gradient(to bottom, rgba(0, 120, 111, .75), rgba(0,0,0,.75)), url(${bgBlog.src})`}
   >
-    <h1
-      style={{ textShadow: "rgba(0,0,0,.2) 1px 1px 20px" }}
-      class="text-3xl lg:text-6xl 2xl:text-9xl font-extrabold mb-2 lg:mb-10 2xl:mb-16"
-    >
+    <h1 class="text-3xl lg:text-6xl 2xl:text-9xl font-extrabold mb-2 lg:mb-10 2xl:mb-16">
       BLOG TAMI
     </h1>
-    <p
-      class="text-sm px-4 sm:px-0 lg:text-2xl 2xl:text-5xl/tight font-bold 2xl:font-semibold"
-      style={{
-        backgroundColor: "rgba(0, 128, 128, 0.5)",
-        padding: "50px",
-        borderTopRightRadius: "70px",
-        borderBottomRightRadius: "70px",
-        marginLeft: "-80px",
-        paddingLeft: "80px",
-      }}
+    <p class="text-sm px-4 sm:px-0 lg:text-2xl 2xl:text-5xl/tight font-bold 2xl:font-semibold"
+      style="background-color: rgba(0, 128, 128, 0.5); padding: 50px; border-top-right-radius: 70px; border-bottom-right-radius: 70px; margin-left: -80px; padding-left: 80px;"
     >
       En esta sección encontrarás temas sobre diseño de<br />
       interiores para entornos profesionales, como<br />
@@ -36,6 +49,7 @@ import { FaSearch } from "react-icons/fa";
       incluyendo tips, artículos, tendencias y consejos.
     </p>
   </section>
+
   <section class="container mx-auto p-10 px-32">
     <h2 class="text-teal-800 text-3xl font-bold mb-4 mx-4">
       Todos los artículos
@@ -51,20 +65,27 @@ import { FaSearch } from "react-icons/fa";
       </div>
       <label class="mr-2 ml-4 text-teal-800">Filtrar por:</label>
       <div class="relative flex items-center">
-        <select
-          class="border border-teal-800 rounded-3xl pl-4 pr-10 py-2 text-teal-800 appearance-none focus:outline-none focus:border-2 focus:border-teal-800"
-        >
+        <select class="border border-teal-800 rounded-3xl pl-4 pr-10 py-2 text-teal-800 appearance-none focus:outline-none focus:border-2 focus:border-teal-800">
           <option value="">Todas las categorías</option>
           <option value="Construcción">Construcción</option>
           <option value="Diseño">Diseño</option>
           <option value="Tecnología">Tecnología</option>
           <option value="Restauración">Restauración</option>
         </select>
-        <IoIosArrowDown
-          className="absolute right-3 text-teal-800 pointer-events-none"
-        />
+        <IoIosArrowDown className="absolute right-3 text-teal-800 pointer-events-none" />
       </div>
     </div>
-    <CardBlog />
+
+    {error ? (
+      <p class="text-center text-red-600">{error}</p>
+    ) : (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {blogs.length > 0 ? (
+          blogs.map((blog) => <CardBlog blog={blog} />)
+        ) : (
+          <p class="text-center text-teal-800">No hay blogs disponibles.</p>
+        )}
+      </div>
+    )}
   </section>
 </Layout>
