@@ -1,45 +1,10 @@
 ---
-import Layout2 from "../../layouts/Layout2.astro";
-import logo_animado from "@images/logos/logo_animado.gif";
-import login_bg from "@images/login_bg.jpg";
+
+import Layout2 from "src/layouts/Layout2.astro";
+import SignIns from "./sign-in";
 ---
 
 <Layout2 title="Iniciar Sesión">
-  <main class="min-h-screen w-full flex flex-col justify-center items-center relative bg-cover bg-center" style={`background-image: url(${login_bg.src})`}>
-    <div class="text-center mb-8 relative z-10">
-      <img src={logo_animado.src} alt="TAMI Logo" class="w-26 mx-auto mb-6">
-      <h1 class="text-white text-4xl md:text-5xl font-black">¡BIENVENIDO!</h1>
-    </div>
-
-    <form class="space-y-4 w-full max-w-2xs md:max-w-md relative z-10">
-      <div>
-        <input
-            type="text"
-            id="usuario"
-            name="usuario"
-            class="w-full p-3 bg-white/70 text-sm rounded-2xl text-gray-700 font-semibold placeholder-gray-400 focus:outline-none px-6"
-            placeholder="USUARIO"
-            required
-        />
-      </div>
-      <div>
-        <input
-            type="password"
-            id="password"
-            name="password"
-            class="w-full p-3 bg-white/70 text-sm rounded-2xl text-gray-700 font-semibold placeholder-gray-400 focus:outline-none px-6 mb-2"
-            placeholder="CONTRASEÑA"
-            required
-        />
-      </div>
-      <div class="flex justify-center">
-        <button
-            type="submit"
-            class="w-3/5 md:w-2/5 bg-teal-600 text-white p-2 rounded-3xl text-base font-bold hover:bg-teal-700 transition"
-        >
-          INGRESAR
-        </button>
-      </div>
-    </form>
-  </main>
+    <SignIns />
 </Layout2>
+

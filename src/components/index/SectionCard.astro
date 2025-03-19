@@ -1,0 +1,27 @@
+---
+interface Props {
+  id: string;
+  title: string;
+  image: string;
+  paragraph: string;
+}
+
+const props = Astro.props;
+---
+
+<a
+  href={`/products#${props.id}`}
+  class="relative rounded-3xl overflow-hidden transition-all duration-300 ease-in-out w-1/3 group-hover:w-[15%] hover:w-[70%]"
+>
+  <img
+    src={props.image}
+    alt={props.title}
+    class="absolute z-0 w-full h-full object-cover object-center"
+  />
+  <div
+    class="text-center content-end bg-linear-to-t from-teal-700 from-10% relative z-10 text-white h-full w-full pb-4 px-2"
+  >
+    <h4 class="text-xl font-bold">{props.title}</h4>
+    <p class="text-lg font-light">{props.paragraph}</p>
+  </div>
+</a>

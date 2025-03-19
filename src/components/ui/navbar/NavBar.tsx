@@ -28,6 +28,7 @@ function NavBar() {
   );
 
   useEffect(() => {
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
@@ -39,7 +40,10 @@ function NavBar() {
       }`}
     >
       <SideMenu links={navLinks} />
-      <a href="/" className="place-self-end lg:place-self-auto h-14">
+      <a
+        href="/"
+        className="place-self-end lg:place-self-auto content-center h-14"
+      >
         <img
           src={logoMovil.src}
           alt="Logo de Tami con letras"
@@ -48,7 +52,7 @@ function NavBar() {
         <img
           src={logoTami.src}
           alt="logo de Tami sin letras"
-          className="pt-2 hidden lg:block"
+          className="hidden lg:block"
         />
       </a>
       <nav className="hidden lg:block col-span-9 w-full h-full">
@@ -74,10 +78,10 @@ function NavBar() {
               </li>
               <li>
                 <a
-                  href="/login"
+                  href="/auth/sign-in"
                   className="block px-4 py-2 hover:bg-teal-900 hover:rounded-b-md"
                 >
-                  Login
+                  Iniciar Sesión
                 </a>
               </li>
             </ul>

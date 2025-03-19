@@ -1,96 +1,111 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Hero from "../components/index/Hero";
-import sectionCards from "@data/sectionCards.data";
-import Card from "../components/index/Card";
-import CardSlider from "../components/index/CardSlider";
-import circuitos from "@images/index/circuitos.webp";
-import bgCompromiso from "@images/index/bg_compromiso.gif";
 import manoRobotica from "@images/index/mano_robotica.webp";
+import circuitos from "@images/index/circuitos.webp";
 import iconGarantia from "@icons/icon_garantia.webp";
 import trabajo from "@images/index/trabajo.webp";
 import ProductContainer from "src/components/index/ProductContainer.astro";
+import SectionCardsContainer from "src/components/index/SectionCardsContainer.astro";
+import BtnGoToSectionCards from "src/components/index/BtnGoToSectionCards";
 ---
 
 <Layout title="Tami Perú">
   <Hero client:load />
-  <section class="w-full lg:px-10 my-8 place-items-center">
-    {/* Contenedor de cartas */}
-    <CardSlider cardList={sectionCards} client:load />
-  </section>
-  <section class="w-full pb-12 2xl:pb-24 lg:scroll-mt-16" id="destino">
-    {/* Banner superior con texto superpuesto */}
-    <div
-      class="relative flex justify-center items-center h-20 md:h-32 2xl:h-40"
-    >
-      {/* Texto superpuesto */}
-      <h3
-        class="bg-teal-700/70 w-full h-full z-10 text-white text-sm md:text-lg 2xl:text-2xl font-bold text-center content-center px-3"
-      >
-        Comprometidos con el
-        <br />
-        emprendedor peruano, ofreciendo
-        <br />
-        productos asequibles
-      </h3>
-      {/* Imagen de fondo del banner */}
-      <img
-        src={bgCompromiso.src}
-        class="absolute w-full h-full object-cover z-0"
-        alt="Gif del banner del mensaje de compromiso"
-      />
-    </div>
-
-    {
-      /* Sección principal con imagen de mano robótica y mensaje de bienvenida */
-    }
-    <div class="relative grid justify-center items-center w-full py-16">
-      <img
-        src={circuitos.src}
-        alt="circuitos"
-        class="absolute top-0 left-1/2 transform -translate-x-1/2 w-full lg:w-3/4 h-full object-cover object-[center_-40px] 2xl:object-[center_-325px] 2xl:h-full"
-      />
-      {/* Imagen de mano robótica */}
-      <img
-        src={manoRobotica.src}
-        class="hidden absolute bottom-0 left-0 top-40 sm:inline sm:w-4/12 lg:w-[37%] xl:w-[40%] 2xl:w-[36%] z-30"
-        alt="Mano robótica"
-      />
-      {/* Contenedor del mensaje de bienvenida */}
-      <div
-        class="bg-teal-700 place-self-center text-white rounded-[50px] py-6 px-10 text-center w-3/5 z-20"
-      >
-        {/* Título de bienvenida */}
-        <h3 class="text-xs md:text-xl mb-2 font-light 2xl:text-3xl">
-          ¡Bienvenidos a <span class="font-bold">TAMI!</span>
-        </h3>
-        {/* Subtítulo principal */}
-        <div class="italic font-bold mb-3 text-2xl md:text-5xl 2xl:text-7xl">
-          Tecnología <span class="font-light text-2xl">e</span>
-          <br />
-          innovación <br />
-          <span class="font-light">para ti</span>
+  <section
+    id="bienvenida"
+    class="scroll-mt-16 h-96 md:h-[calc(100dvh-9rem)] lg:h-[calc(100dvh-4rem)] flex flex-col justify-between"
+  >
+    <div class="grid grid-cols-1 md:grid-cols-2 w-full h-11/12 overflow-hidden">
+      <div class="hidden md:block h-full w-full content-center">
+        <div class="relative">
+          <img src={manoRobotica.src} class="relative lg:max-w-10/12 z-10" />
+          <img
+            src={circuitos.src}
+            class="absolute inset-0 m-auto max-w-3/4 w-full 2xl:w-full z-0"
+          />
         </div>
-        {/* Línea separadora */}
-        <hr class="place-self-center w-24 border-white border-[1px] mb-5" />
-        {/* Descripción */}
-        <p
-          class="font-light place-self-center w-full md:w-2/4 text-xs md:text-base 2xl:text-3xl"
+      </div>
+      <div
+        class="w-full h-full content-center p-3 md:py-0 md:px-6 lg:p-0 xl:px-16 2xl:px-20"
+      >
+        <h2
+          class="flex items-center gap-2 text-sunset text-xl lg:text-2xl xl:text-3xl 2xl:text-5xl font-extrabold py-2 tracking-widest"
         >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            class="-rotate-90 scale-75 lg:scale-100 xl:scale-125 2xl:scale-175"
+            stroke-width="2"
+          >
+            <path
+              d="M12 17.414 3.293 8.707l1.414-1.414L12 14.586l7.293-7.293 1.414 1.414L12 17.414z"
+            ></path>
+          </svg> BIENVENIDO A TAMI
+        </h2>
+        <h3
+          class="text-teal-700 text-3xl lg:text-5xl xl:text-6xl 2xl:text-8xl font-extrabold py-2 tracking-wider lg:leading-16 2xl:leading-24"
+        >
+          TECNOLOGÍA E INNOVACIÓN PARA TI
+        </h3>
+        <p class="text-stone-500 lg:text-xl xl:text-2xl 2xl:text-4xl py-2">
           Ofrecemos calidad y soluciones avanzadas para mejorar y equipar tu
-          negocio y hogar de manera eficiente
+          negocio y hogar de manera eficiente.
         </p>
       </div>
     </div>
+    <BtnGoToSectionCards client:load />
+  </section>
+  <!-- Arreglar ancho y alto para que se vea como en vimeo :like: -->
+  <section
+    class="w-full my-8 place-items-center scroll-mt-20"
+    id="sectionCards"
+  >
+    {/* Contenedor de cartas */}
+    <SectionCardsContainer />
   </section>
   <section
-    class="py-6 px-16 bg-linear-to-b from-teal-700 via-teal-500 to-white h-[85dvh]"
+    class="flex flex-col justify-between pt-6 px-16 bg-linear-to-b from-teal-700 via-teal-500 to-white"
   >
     <h3 class="text-white lg:text-4xl font-extrabold mb-10">
       COMPROMETIDOS CON EL EMPRENDEDOR PERUANO, OFRECIENDO PRODUCTOS ASEQUIBLES
     </h3>
     <ProductContainer />
   </section>
+  <h3
+    class="text-xs py-2 md:text-2xl 2xl:text-4xl font-bold text-center text-white w-full md:h-22 2xl:h-40 flex items-center justify-center bg-linear-to-r from-teal-700 to-sunset gap-2"
+  >
+    <svg
+      width="100"
+      height="50"
+      viewBox="0 0 25 25"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      class="hidden sm:block scale-50 lg:scale-75 2xl:scale-100"
+    >
+      <path
+        d="M12 17.414 3.293 8.707l1.414-1.414L12 14.586l7.293-7.293 1.414 1.414L12 17.414z"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        transform="translate(2, 0) rotate(-90,12,12)"></path>
+      <path
+        d="M12 17.414 3.293 8.707l1.414-1.414L12 14.586l7.293-7.293 1.414 1.414L12 17.414z"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        transform="translate(-15, 0) rotate(-90,12,12)"></path>
+    </svg>
+    DESCUBRE MÁS EN LA SECCIÓN DE <a
+      href="/products"
+      class="underline underline-offset-3">PRODUCTOS</a
+    >
+  </h3>
   <section
     class="w-full flex flex-col lg:flex-row items-center justify-center py-6 px-2 lg:px-16"
   >
@@ -114,7 +129,7 @@ import ProductContainer from "src/components/index/ProductContainer.astro";
         con la satisfacción de nuestros clientes.
       </p>
 
-      {/* Botones */}
+      {/* Etiquetas */}
       <div
         class="flex flex-wrap gap-4 my-6 justify-center text-white lg:justify-start 2xl:text-2xl xl:text-lg"
       >
@@ -146,8 +161,8 @@ import ProductContainer from "src/components/index/ProductContainer.astro";
         { avatar: "", name: "NOMBRE", rating: 5, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." },
         { avatar: "", name: "NOMBRE", rating: 5, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." },
         { avatar: "", name: "NOMBRE", rating: 5, text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." }
-      ].map((testimonial, index) => (
-          <div key={index} class="w-full sm:w-80 p-4 px-6 rounded-4xl border border-teal-400 flex flex-col">
+      ].map((testimonial) => (
+          <div class="w-full sm:w-80 p-4 px-6 rounded-4xl border border-teal-400 flex flex-col">
             <div class="flex items-center gap-x-4">
               <img src={testimonial.avatar} alt="Avatar" class="w-16 h-16 rounded-full" />
               <div>
