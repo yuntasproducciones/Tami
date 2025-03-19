@@ -1,0 +1,46 @@
+---
+import { config, getApiUrl } from "config";
+import Layout from "src/layouts/Layout.astro";
+import type Blog from "src/models/Blog";
+
+export async function getStaticPaths() {
+  const res = await fetch(getApiUrl(config.endpoints.blogs.list));
+  if (!res.ok) throw new Error("Error al obtener posts");
+
+  const data = await res.json();
+  const blogs: Blog[] = data.data;
+
+  return blogs.map((blog) => ({
+    params: { idPost: blog.id },
+    props: { blog }, // Pasamos el blog como prop
+  }));
+}
+
+const { blog } = Astro.props; // Ahora el producto viene desde las props
+if (!blog) {
+  throw new Error("Producto no encontrado");
+}
+---
+
+{
+  /* Maquetar según el diseño
+https://www.canva.com/design/DAGalr-sdDM/iDJYb-0ZeVhzkYLiRiKr7w/edit?ui=eyJIIjp7IkEiOnRydWV9fQ
+ */
+}
+<Layout title={blog.titulo}>
+  <div
+    class="h-screen flex flex-col justify-center items-center bg-linear-to-b from-black"
+  >
+    <h1>{blog.titulo}</h1>
+    <h1>{blog.imagenPrincipal}</h1>
+    <h1>{blog.descripcion}</h1>
+    <h1>{blog.id}</h1>
+    <h1>{blog.imagenesBlog}</h1>
+    <h1>{blog.parrafo}</h1>
+    <h1>{blog.parrafoImagenesBlog}</h1>
+    <h1>{blog.subTituloBlog}</h1>
+    <h1>{blog.tituloBlog}</h1>
+    <h1>{blog.tituloVideoBlog}</h1>
+    <h1>{blog.videoBlog}</h1>
+  </div>
+</Layout>
