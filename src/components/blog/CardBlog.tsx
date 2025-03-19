@@ -1,51 +1,22 @@
-// import { useEffect, useState } from "react";
-import { blogData } from "../../data/BlogFakeData";
 import { MdOutlineArrowForwardIos } from "react-icons/md";
+import type Blog from "src/models/Blog";
 
-interface Blog {
-  id: string;
-  titulo: string;
-  descripcion: string;
-  imageUrl: string;
-}
 interface CardBlogProps {
-  /* Cambiamos la propiedad apiUrl por data, para testear con datos ficticios
-   * apiUrl: string;
-   */
-
-  blog: Blog; 
+  blog: Blog;
 }
 
-/*
- * Comentamos el useEffect para testear con datos ficticios
- */
-
-/* const CardBlog: React.FC<CardBlogProps> = ({ apiUrl }) => {
-    const [data, setData] = useState<{ titulo: string; descripcion: string; imageUrl: string }>({
-        titulo: "",
-        descripcion: "",
-        imageUrl: "",
-    });
-
-    useEffect(() => {
-        fetch(apiUrl)
-            .then((response) => response.json())
-            .then((data) => {
-                setData({
-                    titulo: data.titulo,
-                    descripcion: data.descripcion,
-                    imageUrl: data.imageUrl,
-                });
-            })
-            .catch((error) => console.error("Error fetching data:", error));
-    }, [apiUrl]); */
-
+{
+  /* añadirle un hover al componente */
+}
 const CardBlog: React.FC<CardBlogProps> = ({ blog }) => {
   return (
-    <div className="flex flex-col lg:flex-row items-center bg-teal-800 text-white shadow-md overflow-hidden">
+    <a
+      href={`blog/${blog.id}`}
+      className="my-5 flex flex-col lg:flex-row items-center bg-teal-800 text-white shadow-md overflow-hidden"
+    >
       <div className="lg:w-1/3 w-full">
         <img
-          src={blog.imageUrl}
+          src={blog.imagenPrincipal}
           alt={blog.titulo}
           className="w-full h-full object-cover"
         />
@@ -62,7 +33,7 @@ const CardBlog: React.FC<CardBlogProps> = ({ blog }) => {
           <p className="text-gray-300">{blog.descripcion}</p>
         </div>
       </div>
-    </div>
+    </a>
   );
 };
 

@@ -27,6 +27,8 @@ try {
 }
 ---
 
+{/* Arreglar el responsive de la barra de busqueda */}
+
 <Layout title="Blog">
   <section
     class="relative bg-cover bg-center h-96 lg:h-dvh 2xl:h-[100dvh] pt-16 lg:pt-20 lg:ps-20 flex flex-col justify-center items-center lg:items-start text-white"
@@ -77,18 +79,13 @@ try {
         />
       </div>
     </div>
-
     {
       error ? (
         <p class="text-center text-red-600">{error}</p>
+      ) : blogs.length > 0 ? (
+        blogs.map((blog) => <CardBlog blog={blog} />)
       ) : (
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {blogs.length > 0 ? (
-            blogs.map((blog) => <CardBlog blog={blog} />)
-          ) : (
-            <p class="text-center text-teal-800">No hay blogs disponibles.</p>
-          )}
-        </div>
+        <p class="text-center text-teal-800">No hay blogs disponibles.</p>
       )
     }
   </section>
