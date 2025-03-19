@@ -52,7 +52,6 @@ const { data: blog }: { data: Blog } = await res.json();
         Fecha de publicación no disponible
       </div>
 
-      {/* CONTENIDO DEL BLOG */}
       <div class="flex flex-col md:flex-row justify-between items-center mb-6">
         <h2 class="text-3xl md:text-4xl font-bold text-teal-600 mb-2 md:mb-0">
           {blog.tituloBlog}
@@ -62,7 +61,7 @@ const { data: blog }: { data: Blog } = await res.json();
         </p>
       </div>
       
-      {/* PÁRRAFOS */}
+      {/* CONTENIDO DEL BLOG */}
       {blog.imagenesBlog.map((imagen, index) => (
         <section class="mb-10">
           <div class={`flex flex-col md:flex-row items-start ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}>
