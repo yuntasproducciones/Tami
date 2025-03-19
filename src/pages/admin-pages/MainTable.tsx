@@ -13,16 +13,16 @@ const DataTable = () => {
     <div className="p-4 w-full">
       {/* Botones de acciones generales */}
       <div className="flex flex-wrap gap-2 mb-4">
-        <button className="bg-teal-600 text-white px-4 py-2 rounded-xl">PUBLICAR</button>
-        <button className="bg-teal-600 text-white px-4 py-2 rounded-xl">EXPORTAR A CVS</button>
-        <button className="bg-teal-600 text-white px-4 py-2 rounded-xl">EXPORTAR A EXCEL</button>
-        <button className="bg-teal-600 text-white px-4 py-2 rounded-xl">EXPORTAR A PDF</button>
-        <button className="bg-teal-600 text-white px-4 py-2 rounded-xl">IMPRIMIR</button>
+        <button className="bg-teal-500 text-white font-bold px-6 py-2 rounded-full">PUBLICAR</button>
+        <button className="bg-teal-500 text-white font-bold px-6 py-2 rounded-full">EXPORTAR A CVS</button>
+        <button className="bg-teal-500 text-white font-bold px-6 py-2 rounded-full">EXPORTAR A EXCEL</button>
+        <button className="bg-teal-500 text-white font-bold px-6 py-2 rounded-full">EXPORTAR A PDF</button>
+        <button className="bg-teal-500 text-white font-bold px-6 py-2 rounded-full">IMPRIMIR</button>
       </div>
       {/* Tabla */}
       <table className="w-full border-separate border-spacing-2">
         <thead>
-          <tr className="bg-teal-500 text-white">
+          <tr className="bg-teal-600 text-white">
             <th className="px-4 py-2 rounded-xl">ID</th>
             <th className="px-4 py-2 rounded-xl">NOMBRE</th>
             <th className="px-4 py-2 rounded-xl">GMAIL</th>

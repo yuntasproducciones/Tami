@@ -9,9 +9,9 @@ const AddDataModal = () => {
             {/* Botón para abrir el modal */}
             <button
                 onClick={() => setIsOpen(true)}
-                className="mt-4 bg-teal-600 text-white px-4 py-2 rounded-xl flex items-center gap-2"
+                className="mt-4 bg-teal-500 hover:bg-teal-600 text-white text-lg px-10 py-1.5 rounded-full flex items-center gap-2"
             >
-                <FaPlus /> Añadir dato
+                Añadir dato
             </button>
 
             {/* Modal */}
@@ -29,32 +29,32 @@ const AddDataModal = () => {
                         <form className="grid grid-cols-2 gap-4 gap-x-12">
                             <div>
                                 <label className="block">Nombres</label>
-                                <input type="text" className="w-full bg-white p-2 rounded-md text-black" />
+                                <input type="text" className="w-full bg-white outline-none p-2 rounded-md text-black" />
                             </div>
 
                             <div>
                                 <label className="block">Teléfono</label>
-                                <input type="text" className="w-full bg-white p-2 rounded-md text-black" />
+                                <input type="text" className="w-full bg-white outline-none p-2 rounded-md text-black" />
                             </div>
 
                             <div className="col-span-2">
                                 <label className="block">Gmail</label>
-                                <input type="email" className="w-full bg-white p-2 rounded-md text-black" />
+                                <input type="email" className="w-full bg-white outline-none p-2 rounded-md text-black" />
                             </div>
 
                             <div>
                                 <label className="block">Sección</label>
-                                <input type="text" className="w-full bg-white p-2 rounded-md text-black" />
+                                <input type="text" className="w-full bg-white p-2 outline-none rounded-md text-black" />
                             </div>
 
                             <div>
                                 <label className="block">Fecha</label>
-                                <input type="date" className="w-full bg-white p-2 rounded-md text-black" />
+                                <input type="date" className="w-full bg-white p-2 outline-none rounded-md text-black" />
                             </div>
                         </form>
 
                         {/* Botón de enviar */}
-                        <button className="mt-8 w-1/4 bg-teal-400 py-1.5 rounded-full text-xl hover:bg-teal-500">
+                        <button className="mt-8 px-10 bg-teal-400 py-1 rounded-full text-lg hover:bg-teal-500">
                             Añadir dato
                         </button>
                     </div>

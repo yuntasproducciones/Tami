@@ -29,7 +29,7 @@ const Sidebar = () => {
           <input type="checkbox" className="sr-only peer" checked={darkMode} onChange={toggleDarkMode} />
           <div className={`w-10 h-5 rounded-full transition-colors duration-300 ${darkMode ? "bg-gray-700" : "bg-gray-400"}`}>
             <div
-              className={`absolute w-4 h-4 bg-white rounded-full shadow-md transition-transform duration-300 ${darkMode ? "translate-x-5" : "translate-x-1"}`}
+              className={`absolute w-4 h-4 bg-white rounded-full shadow-md transition-transform translate-y-0.5 duration-300 ${darkMode ? "translate-x-5" : "translate-x-1"}`}
             ></div>
           </div>
         </label>
@@ -40,7 +40,7 @@ const Sidebar = () => {
           <div className="w-10 h-10 bg-gray-500 rounded-full flex items-center justify-center text-white text-lg">👤</div>
           <p className="font-semibold">Bienvenido</p>
           <p className="text-sm text-gray-600">Administrador</p>
-          <button className="mt-2 w-full bg-cyan-500 text-white py-2 rounded-lg hover:bg-teal-600 transition">Cerrar sesión</button>
+          <button className="mt-2 w-full bg-teal-500 text-white py-2 rounded-full hover:bg-teal-600 transition">Cerrar sesión</button>
         </div>
       </div>
     </aside>
