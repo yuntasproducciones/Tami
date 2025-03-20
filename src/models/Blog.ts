@@ -6,8 +6,10 @@ export default interface Blog {
   imagenPrincipal: string;
   tituloBlog: string;
   subTituloBlog: string;
-  imagenesBlog: {};
-  parrafoImagenesBlog: {};
+  imagenesBlog: string[]; // Un array de strings (URLs de imágenes)
+  parrafoImagenesBlog: string[]; // Un array de párrafos
   videoBlog: string;
   tituloVideoBlog: string;
 }
+
+
