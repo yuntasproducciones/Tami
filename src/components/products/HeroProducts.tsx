@@ -41,13 +41,13 @@ const HeroProducts = () => {
             }`}
           >
             <div>
-              <h2 className="sm:text-2xl md:text-3xl xl:text-4xl 2xl:text-5xl 2xl:pb-3 font-light">
+              <h2 className="sm:text-2xl md:text-3xl xl:text-4xl 2xl:text-5xl pb-4 font-light">
                 {heroProductsArray[currentSlide].subTitulo1}
               </h2>
-              <h1 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-7xl 2xl:pb-3 font-extrabold whitespace-pre-line">
+              <h1 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl pb-4 2xl:text-7xl font-extrabold whitespace-pre-line">
                 {heroProductsArray[currentSlide].title}
               </h1>
-              <h3 className="sm:text-2xl md:text-3xl xl:text-4xl 2xl:text-5xl 2xl:pr-10 font-semibold">
+              <h3 className="sm:text-2xl md:text-3xl xl:text-4xl 2xl:text-5xl pr-12 font-semibold">
                 {heroProductsArray[currentSlide].subTitulo2}
               </h3>
             </div>
@@ -63,7 +63,7 @@ const HeroProducts = () => {
             alt={`Imagen de ${heroProductsArray[currentSlide].title}`}
             className={`${
               currentSlide === 0 ? "hidden" : ""
-            } place-self-end pl-24 pt-16 h-1/2 sm:h-full col-span-5`}
+            } place-self-center pl-24 pt-12 h-1/2 sm:h-full col-span-5`}
           />
           <button
             onClick={handleNext}

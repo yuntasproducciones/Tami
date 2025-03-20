@@ -1,0 +1,25 @@
+---
+import Sidebar from "../components/AdminDashboard/Sidebar";
+import Header from "../components/AdminDashboard/Header";
+import "../styles/global.css";
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body class="font-montserrat grid grid-cols-[auto_1fr] grid-rows-[auto_auto]">
+    <Header client:load />
+    <Sidebar client:load />
+    <slot />
+  </body>
+</html>
