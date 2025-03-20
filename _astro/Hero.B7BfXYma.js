@@ -1,4 +1,4 @@
-import{j as t}from"./jsx-runtime.D_zvdyIk.js";import{r as s}from"./index.Dy6lLLXr.js";const x={src:"/_astro/hc_1.BuGzYPWL.webp"},m={src:"/_astro/hc_2.PLXvSAd5.webp"},d={src:"/_astro/hc_3.BJCaWm-S.webp"},l=[{image:x.src,title:`Innovación y
+import{j as t}from"./jsx-runtime.D_zvdyIk.js";import{r as s}from"./index.ai7qpRr1.js";const x={src:"/_astro/hc_1.BuGzYPWL.webp"},m={src:"/_astro/hc_2.PLXvSAd5.webp"},d={src:"/_astro/hc_3.BJCaWm-S.webp"},l=[{image:x.src,title:`Innovación y
 soluciones para
 cada proyecto`},{image:m.src,title:`Equipos de alta
 tecnología para
