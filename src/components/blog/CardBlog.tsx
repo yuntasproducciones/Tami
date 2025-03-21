@@ -3,6 +3,7 @@ import type Blog from "src/models/Blog";
 
 interface CardBlogProps {
   blog: Blog;
+
 }
 
 {
@@ -10,6 +11,7 @@ interface CardBlogProps {
 }
 const CardBlog: React.FC<CardBlogProps> = ({ blog }) => {
   return (
+
     <a
       href={`/${blog.id}`}
       className="my-5 flex flex-col lg:flex-row items-center transition-transform transform hover:scale-110 bg-teal-800 text-white shadow-md overflow-hidden"
@@ -31,6 +33,7 @@ const CardBlog: React.FC<CardBlogProps> = ({ blog }) => {
         <div className="flex flex-row items-center gap-2">
           <MdOutlineArrowForwardIos className="text-5xl" />
           <p className="text-gray-300">{blog.descripcion}</p>
+
         </div>
       </div>
     </a>
