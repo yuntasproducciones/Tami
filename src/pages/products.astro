@@ -5,6 +5,7 @@ import Layout from "src/layouts/Layout.astro";
 import { getApiUrl, config } from "config";
 import type Producto from "src/models/Product"; // Importamos el modelo Producto
 import ComponenteDePrueba from "src/components/products/FetchData.jsx";
+import Productos from "src/components/products/Productos.jsx";
 
 let seccionesArray: {
   nombreSeccion: string;
@@ -82,5 +83,5 @@ try {
       ))
     }
   </section>
-  <ComponenteDePrueba client:load />
+  <Productos client:load />
 </Layout>
