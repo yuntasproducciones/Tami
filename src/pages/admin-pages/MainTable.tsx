@@ -1,4 +1,4 @@
-import { FaTrash, FaCheck, FaPlus } from "react-icons/fa";
+import { FaTrash, FaCheck } from "react-icons/fa";
 import AddDataModal from "../../components/AdminDashboard/AddDataModel.tsx";
 
 const DataTable = () => {

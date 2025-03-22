@@ -1,27 +1,10 @@
 ---
-import { config, getApiUrl } from "config";
-import type Blog from "src/models/Blog";
 import Layout from "src/layouts/Layout.astro";
+import { config } from "config";
+import { showLoaderString, removeLoaderString } from "src/utils/loader";
 
-// Obtener todos los blogs para generar las rutas estáticas
-// Obtener todos los blogs para generar las rutas estáticas
-export async function getStaticPaths() {
-  const res = await fetch(getApiUrl(config.endpoints.blogs.list));
-  if (!res.ok) throw new Error("Error al obtener la lista de blogs");
-
-  const { data: blogs }: { data: Blog[] } = await res.json();
-
-  return blogs.map((blog) => ({
-    params: { idPost: blog.id.toString().trim() }, // Asegurar que sea string
-  }));
-}
-
-// Obtener el blog específico basado en el ID
-const { idPost } = Astro.params;
-const res = await fetch(getApiUrl(config.endpoints.blogs.detail(idPost)));
-if (!res.ok) throw new Error("Error al obtener el contenido del blog");
-
-const { data: blog }: { data: Blog } = await res.json();
+const getApiUrl = config.apiUrl; // Obtener la URL de la API aquí
+const blogsUrl = config.endpoints.blogs;
 ---
 
 <Layout title={blog.titulo}>
@@ -108,3 +91,8 @@ const { data: blog }: { data: Blog } = await res.json();
     </main>
   </div>
 </Layout>
+
+<script define:vars={{ getApiUrl, blogsUrl, showLoaderString, removeLoaderString }}>
+    eval(showLoaderString)
+    eval(removeLoaderString)
+</script>

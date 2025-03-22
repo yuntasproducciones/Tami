@@ -17,9 +17,9 @@ const { title } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
-  <body class="font-montserrat">
-    <!--<Header client:load />-->
-    <!--<Sidebar client:load />-->
+  <body class="font-montserrat grid grid-cols-[auto_1fr] grid-rows-[auto_auto]">
+    <Header client:load />
+    <Sidebar client:load />
     <slot />
   </body>
 </html>
