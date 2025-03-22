@@ -129,7 +129,7 @@ const productosUrl = config.endpoints.productos;
   </div>
 </Layout>
 
-<script is:inline lang="ts" define:vars={{ getApiUrl, productosUrl, showLoaderString, removeLoaderString }}>
+<script define:vars={{ getApiUrl, productosUrl, showLoaderString, removeLoaderString }}>
   eval(showLoaderString)
   eval(removeLoaderString)
   document.addEventListener("DOMContentLoaded", async () => {

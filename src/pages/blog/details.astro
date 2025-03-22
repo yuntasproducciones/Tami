@@ -1,6 +1,7 @@
 ---
 import Layout from "src/layouts/Layout.astro";
 import { config } from "config";
+import { showLoaderString, removeLoaderString } from "src/utils/loader";
 
 const getApiUrl = config.apiUrl; // Obtener la URL de la API aquí
 const blogsUrl = config.endpoints.blogs;
@@ -91,4 +92,7 @@ const blogsUrl = config.endpoints.blogs;
   </div>
 </Layout>
 
-<script define:vars={{ getApiUrl, blogsUrl }}></script>
+<script define:vars={{ getApiUrl, blogsUrl, showLoaderString, removeLoaderString }}>
+    eval(showLoaderString)
+    eval(removeLoaderString)
+</script>
