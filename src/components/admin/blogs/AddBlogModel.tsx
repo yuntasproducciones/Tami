@@ -517,10 +517,6 @@ const handleAddProduct = () => {
   setIsProductLinkModalOpen(false);
   setSelectedText("");
   setActiveIndex(null);
-  setFormData((prev) => ({
-    ...prev,
-    producto_id: "",
-  }));
 };
 const handleAddLink = () => {
   if (activeIndex === null) return;
@@ -1041,7 +1037,7 @@ const handleAddLink = () => {
                     </div>
                     <div className="form-input">
                       <label className="font-medium text-gray-700 dark:text-gray-300">
-                        Relacionar con producto*
+                        Relacionar con producto
                       </label>
                       <select
                         name="producto_id"
