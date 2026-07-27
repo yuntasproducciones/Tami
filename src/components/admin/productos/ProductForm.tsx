@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 import { slugify } from "../../../utils/slugify.ts";
 import RichTextEditor, { type RichTextEditorHandle } from "./RichTextEditor.tsx";
 import type { ImagenForm, ImagenEditada } from "../../../models/Product.ts";
+import { useLinkInsertion } from "../useLinkInsertion.ts";
 
 
 // Función de validación de URL
@@ -72,6 +73,10 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
   const formContainerRef = useRef<HTMLDivElement>(null);
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
 
+
+  const descCampoLink = useLinkInsertion();
+  const pqelCampoLink = useLinkInsertion();
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProductLinkModalOpen, setIsProductLinkModalOpen] = useState(false);
   const [selectedText, setSelectedText] = useState("");
