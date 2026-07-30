@@ -5,6 +5,8 @@ import { validateImage } from "../../../utils/imageValidation.ts";
 import Swal from "sweetalert2";
 import { IoMdCloseCircle } from "react-icons/io";
 import RichTextEditor, { type RichTextEditorHandle } from "../productos/RichTextEditor.tsx";
+import InsertLinkModal from "../ui/insertLinkModal.tsx";
+import ProductLinkModal from "../ui/productLinkModal.tsx";
 
 
 interface ImagenAdicional {
@@ -1230,12 +1232,8 @@ const handleAddLink = () => {
                       {formData.miniatura_tittle.length}/{LENGTHS.titulo}
                     </span>
                   </div>
-                    
                   </div>
-                  
                 </div>
-
-                
 
                 {/* --- SEO --- */}
                 <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
@@ -1965,68 +1963,22 @@ const handleAddLink = () => {
       )}
 
       {/* Modal para insertar enlace manual */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
-          <div className="bg-white p-6 rounded-xl w-96">
-            <h3 className="text-xl font-bold mb-4">Insertar Enlace</h3>
-            <p className="text-sm text-gray-600 mb-2">
-              Enlace para: <strong>{selectedText}</strong>
-            </p>
-            <input
-              type="text"
-              placeholder="https://..."
-              value={link}
-              onChange={(e) => setLink(e.target.value)}
-              className="w-full border p-2 rounded mb-4 focus:ring-2 focus:ring-teal-500"
-            />
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 text-gray-500"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleAddLink}
-                className="px-4 py-2 bg-teal-600 text-white rounded"
-              >
-                Insertar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+        <InsertLinkModal
+          isOpen={isModalOpen}
+          selectedText={selectedText}
+          link={link}
+          setLink={setLink}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleAddLink}
+        />
 
       {/*  MODAL  Para insertar enlace de producto */}
-      {isProductLinkModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
-          <div className="bg-white p-6 rounded-xl w-96 text-gray-900">
-            <h3 className="text-xl font-bold mb-3 text-purple-600">
-              Vincular Producto
-            </h3>
-            <p className="text-sm text-gray-600 mb-4">
-              ¿Deseas convertir el texto "<strong>{selectedText}</strong>" en un
-              enlace directo al producto seleccionado en la Información General?
-            </p>
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setIsProductLinkModalOpen(false)}
-                className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={handleAddProduct}
-                className="px-4 py-2 bg-purple-600 text-white rounded font-semibold hover:bg-purple-700 transition-colors"
-              >
-                Confirmar Enlace
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ProductLinkModal
+        isOpen={isProductLinkModalOpen}
+        selectedText={selectedText}
+        onClose={() => setIsProductLinkModalOpen(false)}
+        onConfirm={handleAddProduct}
+      />
     </>
   );
 };
