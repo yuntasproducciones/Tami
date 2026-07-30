@@ -422,7 +422,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     index: number,
   ) => {
     const nuevoArray = [...formData.imagenes];
-    nuevoArray[index] = { ...nuevoArray[index], img_alt: e.target.value };
+    nuevoArray[index] = { ...nuevoArray[index], img_alt: e.target.value.slice(0, LENGTHS.titulo) };
     setFormData({ ...formData, imagenes: nuevoArray });
   };
 
@@ -431,7 +431,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     index: number,
   ) => {
     const nuevoArray = [...formData.imagenes];
-    nuevoArray[index] = { ...nuevoArray[index], img_nombre: e.target.value };
+    nuevoArray[index] = { ...nuevoArray[index], img_nombre: e.target.value.slice(0, LENGTHS.titulo) };
     setFormData({ ...formData, imagenes: nuevoArray });
   };
 
@@ -440,7 +440,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     index: number,
   ) => {
     const nuevoArray = [...formData.imagenes];
-    nuevoArray[index] = { ...nuevoArray[index], img_tittle: e.target.value };
+    nuevoArray[index] = { ...nuevoArray[index], img_tittle: e.target.value.slice(0, LENGTHS.titulo) };
     setFormData({ ...formData, imagenes: nuevoArray });
   };
 
@@ -517,10 +517,6 @@ const handleAddProduct = () => {
   setIsProductLinkModalOpen(false);
   setSelectedText("");
   setActiveIndex(null);
-  setFormData((prev) => ({
-    ...prev,
-    producto_id: "",
-  }));
 };
 const handleAddLink = () => {
   if (activeIndex === null) return;
@@ -868,10 +864,13 @@ const handleAddLink = () => {
     }
   };
 
+  /* 
+  // ---- SE COMENTA ESTA FUNCION PORQUE CUENTA PALABRAS, MAS NO CARACTERES
   // Cuenta Caracteres en un string
   function contarCaracteres(texto: string): number {
     return texto.trim().length === 0 ? 0 : texto.trim().split(/\s+/).length;
   }
+  */
   // Utilidad para convertir números a Caracteres en español
   function numeroACaracteres(n: number): string {
     const unidades = [
@@ -1041,7 +1040,7 @@ const handleAddLink = () => {
                     </div>
                     <div className="form-input">
                       <label className="font-medium text-gray-700 dark:text-gray-300">
-                        Relacionar con producto*
+                        Relacionar con producto
                       </label>
                       <select
                         name="producto_id"
@@ -1182,9 +1181,11 @@ const handleAddLink = () => {
                     </div>
                   </div>
                   <div className="form-input">
+                    
                     <label className="font-medium text-gray-700 dark:text-gray-300">
                       Nombre de la Imagen (miniatura)
                     </label>
+                    
                     <input
                       type="text"
                       name="miniatura_nombre"
@@ -1192,9 +1193,13 @@ const handleAddLink = () => {
                       onChange={handleChange}
                       maxLength={LENGTHS.titulo}
                     />
+                    <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                      {formData.miniatura_nombre.length}/{LENGTHS.titulo}
+                    </span>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="form-input">
+                    
                     <label className="font-medium text-gray-700 dark:text-gray-300">
                       Alt de la Imagen (miniatura)
                     </label>
@@ -1205,8 +1210,12 @@ const handleAddLink = () => {
                       onChange={handleChange}
                       maxLength={LENGTHS.titulo}
                     />
+                    <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                      {formData.miniatura_alt.length}/{LENGTHS.titulo}
+                    </span>
                   </div>
                   <div className="form-input">
+                    
                     <label className="font-medium text-gray-700 dark:text-gray-300">
                       Tittle de la Imagen (miniatura)
                     </label>
@@ -1217,6 +1226,9 @@ const handleAddLink = () => {
                       onChange={handleChange}
                       maxLength={LENGTHS.titulo}
                     />
+                    <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                      {formData.miniatura_tittle.length}/{LENGTHS.titulo}
+                    </span>
                   </div>
                     
                   </div>
@@ -1267,11 +1279,18 @@ const handleAddLink = () => {
                         }
                         maxLength={LENGTHS.metaTitulo}
                       />
-                      <small className="text-gray-500 mt-1 block">
+                      <div className="flex justify-between ">
+                        <small className="text-gray-500 mt-1 block">
                         Sugerido {LENGTHS.metaTitulo} caracteres
-                      </small>
+                        </small>
+                        <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                        {formData.etiqueta.meta_titulo.length}/{LENGTHS.metaTitulo}
+                        </span>
+                      </div>
+                      
                     </div>
                     <div className="form-input">
+                      
                       <label className="font-medium text-gray-700 dark:text-gray-300">
                         Meta descripción
                       </label>
@@ -1293,9 +1312,14 @@ const handleAddLink = () => {
                         }
                         maxLength={LENGTHS.metaDescripcion}
                       />
+                      <div className="flex justify-between">
                       <small className="text-gray-500 mt-1 block">
                         Sugerido {LENGTHS.metaDescripcion} caracteres
                       </small>
+                      <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                        {formData.etiqueta.meta_descripcion.length}/{LENGTHS.metaDescripcion}
+                      </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1429,6 +1453,7 @@ const handleAddLink = () => {
                       </label>
                     </div>
                     <div className="form-input">
+                        
                         <label className="font-medium text-gray-700 dark:text-gray-300">
                           Nombre de la Imagen
                         </label>
@@ -1439,10 +1464,14 @@ const handleAddLink = () => {
                           onChange={handleChange}
                           maxLength={LENGTHS.titulo}
                         />
+                        <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                          {formData.hero_image_nombre.length}/{LENGTHS.titulo}
+                        </span>
                       </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       
                       <div className="form-input">
+                        
                         <label className="font-medium text-gray-700 dark:text-gray-300">
                           Alt de la Imagen
                         </label>
@@ -1454,6 +1483,9 @@ const handleAddLink = () => {
                           maxLength={LENGTHS.titulo}
                           placeholder="Ingrese Alt de la Imagen"
                         />
+                        <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                          {formData.hero_image_alt.length}/{LENGTHS.titulo}
+                        </span>
                       </div>
                       <div className="form-input">
                         <label className="font-medium text-gray-700 dark:text-gray-300">
@@ -1467,6 +1499,9 @@ const handleAddLink = () => {
                           maxLength={LENGTHS.titulo}
                           placeholder="Ingrese Título de la Imagen"
                         />
+                        <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                          {formData.hero_image_tittle.length}/{LENGTHS.titulo}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -1503,7 +1538,7 @@ const handleAddLink = () => {
                           rows={3}
                         />
                         <small className="text-gray-500 text-end block mt-1">
-                          {contarCaracteres(formData.subtitulo1)} Caracteres (Máx{" "}
+                          {formData.subtitulo1.length} Caracteres (Máx{" "}
                           {LENGTHS.parrafo})
                         </small>
                       </div>
@@ -1520,7 +1555,7 @@ const handleAddLink = () => {
                           rows={4}
                         />
                         <small className="text-gray-500 text-end block mt-1">
-                          {contarCaracteres(formData.subtitulo2)} Caracteres (Máx{" "}
+                          {formData.subtitulo2.length} Caracteres (Máx{" "}
                           {LENGTHS.descripcion})
                         </small>
                       </div>
@@ -1631,12 +1666,17 @@ const handleAddLink = () => {
                             value={imagen.img_nombre}
                             onChange={(e) => handleImgNombreChange(e, index)}
                             placeholder="Nombre de la imagen"
+                            maxLength={LENGTHS.titulo}
                             className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
                           />
+                          <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                            {imagen.img_nombre.length}/{LENGTHS.titulo}
+                          </span>
                         </div>
                         {/* Tittle */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
+                          
                           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                             Tittle de la imagen*
                           </label>
@@ -1645,8 +1685,12 @@ const handleAddLink = () => {
                             value={imagen.img_tittle}
                             onChange={(e) => handleImgTittleChange(e, index)}
                             placeholder="Título de la imagen"
+                            maxLength={LENGTHS.titulo}
                             className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
                           />
+                          <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                            {imagen.img_tittle.length}/{LENGTHS.titulo}
+                          </span>
                         </div>
                         {/* Alt */}
                         <div>
@@ -1658,8 +1702,12 @@ const handleAddLink = () => {
                             value={imagen.img_alt}
                             onChange={(e) => handleImgAltChange(e, index)}
                             placeholder="Describe brevemente el contenido de la imagen"
+                            maxLength={LENGTHS.titulo}
                             className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
                           />
+                          <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                            {imagen.img_alt.length}/{LENGTHS.titulo}
+                          </span>
                         </div>
 
                         </div>
