@@ -26,6 +26,16 @@ export default defineConfig({
             // Al no dividir el CSS, obligamos a que se unifique y Astro pueda inyectarlo
             cssCodeSplit: false, 
         },
+        server: {
+      proxy: {
+        // Interceptamos cualquier petición que empiece con '/api'
+        '/api': {
+    target: 'http://127.0.0.1:8000', 
+    changeOrigin: true,
+    secure: false,
+  }
+      }
+    }
     },
     integrations: [sitemap({
         filter: (page) =>
