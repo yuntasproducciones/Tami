@@ -772,17 +772,9 @@ const handleAddLink = () => {
           item.imagen instanceof File ? "file" : "existing",
         );
       
-        if (item.img_alt) {
-          formDataToSend.append("img_alt[]", item.img_alt);
-        }
-      
-        if (item.img_nombre) {
-          formDataToSend.append("img_nombre[]", item.img_nombre);
-        }
-      
-        if (item.img_tittle) {
-          formDataToSend.append("img_tittle[]", item.img_tittle);
-        }
+        formDataToSend.append("img_alt[]", item.img_alt || "");
+        formDataToSend.append("img_nombre[]", item.img_nombre || "");
+        formDataToSend.append("img_tittle[]", item.img_tittle || "");
       
         if (item.imagen instanceof File) {
           formDataToSend.append("imagenes[]", item.imagen);
@@ -1219,7 +1211,7 @@ const handleAddLink = () => {
                   <div className="form-input">
                     
                     <label className="font-medium text-gray-700 dark:text-gray-300">
-                      Tittle de la Imagen (miniatura)
+                      Titulo de la Imagen (miniatura)
                     </label>
                     <input
                       type="text"
@@ -1671,12 +1663,12 @@ const handleAddLink = () => {
                             {imagen.img_nombre.length}/{LENGTHS.titulo}
                           </span>
                         </div>
-                        {/* Tittle */}
+                        {/* Titulo*/}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                           
                           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                            Tittle de la imagen*
+                            Titulo de la imagen*
                           </label>
                           <input
                             type="text"
