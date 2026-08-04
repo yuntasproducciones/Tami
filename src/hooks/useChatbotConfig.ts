@@ -18,13 +18,13 @@ export const useChatbotConfig = () => {
   const [colorFinal, setColorFinal] = useState<string>(cachedPreviewSettings.colorFinal ?? "#0d9488");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const fetchIcon = async () => {
+  const fetchIcon = async (controller?: AbortController) => {
     try {
       const baseUrl = config.apiUrl || "";
 
       const [iconRes, colorRes] = await Promise.allSettled([
-        fetch(getApiUrl(config.endpoints.chatbot.getIcon)).then(r => r.ok ? r.json() : Promise.reject()),
-        fetch(getApiUrl(config.endpoints.chatbot.getHeadColor)).then(r => r.ok ? r.json() : Promise.reject()),
+        fetch(getApiUrl(config.endpoints.chatbot.getIcon), { signal: controller?.signal }).then(r => r.ok ? r.json() : Promise.reject()),
+        fetch(getApiUrl(config.endpoints.chatbot.getHeadColor), { signal: controller?.signal }).then(r => r.ok ? r.json() : Promise.reject()),
       ]);
 
       if (iconRes.status === "fulfilled" && iconRes.value?.url_icono) {
@@ -52,7 +52,26 @@ export const useChatbotConfig = () => {
   };
 
   useEffect(() => {
-    fetchIcon();
+    const controller = new AbortController();
+
+    // Diferimos la petición igual que la ventana emergente (usePopupLogic):
+    // el ícono no se muestra de inmediato, así que no compite por ancho de
+    // banda con los recursos críticos del primer render.
+    let idleId: number | ReturnType<typeof setTimeout>;
+    if ("requestIdleCallback" in window) {
+      idleId = window.requestIdleCallback(() => fetchIcon(controller));
+    } else {
+      idleId = setTimeout(() => fetchIcon(controller), 2000);
+    }
+
+    return () => {
+      controller.abort();
+      if ("cancelIdleCallback" in window && typeof idleId === "number") {
+        window.cancelIdleCallback(idleId);
+      } else {
+        clearTimeout(idleId as ReturnType<typeof setTimeout>);
+      }
+    };
   }, []);
 
   return { iconUrl, colorInicial, colorFinal, isLoading, fetchIcon };
