@@ -10,7 +10,8 @@ import Swal from "sweetalert2";
 import { slugify } from "../../../utils/slugify.ts";
 import RichTextEditor, { type RichTextEditorHandle } from "./RichTextEditor.tsx";
 import type { ImagenForm, ImagenEditada } from "../../../models/Product.ts";
-import { useLinkInsertion } from "../useLinkInsertion.ts";
+import InsertLinkModal from "../ui/insertLinkModal.tsx";
+import ProductLinkModal from "../ui/productLinkModal.tsx";
 
 
 // Función de validación de URL
@@ -46,6 +47,18 @@ const TABS = [
   { id: "relacionados", label: "Relacionados", icon: "🔗" }
 ];
 
+/* ====== Límites centralizados ====== */
+const LENGTHS = {
+  nombre: 80,
+  link: 120,
+  subtitulo: 255,
+  titulo: 120, // Título visual del hero
+  imagenTitulo: 120, // imageTitle galería
+  imagenAlt: 120, // texto_alt_SEO galería
+  metaTitulo: 70,
+  metaDescripcion: 200,
+};
+
 const ProductForm: React.FC<ProductFormProps> = (props) => {
   const { mode, onSuccess } = props;
   const isEdit = mode === "edit";
@@ -74,15 +87,11 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
   const fieldRefs = useRef<Record<string, HTMLElement | null>>({});
 
 
-  const descCampoLink = useLinkInsertion();
-  const pqelCampoLink = useLinkInsertion();
-  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isProductLinkModalOpen, setIsProductLinkModalOpen] = useState(false);
   const [selectedText, setSelectedText] = useState("");
   const [link, setLink] = useState("");
   const [activeEditorKey, setActiveEditorKey] = useState<"descripcion" | "porque_elegirnos" | null>(null);
-  const [selectedProductToLink, setSelectedProductToLink] = useState<string>("");
 
   const handleInsertLinkClick = (editorKey: "descripcion" | "porque_elegirnos") => {
     const selected = editorRefs.current[editorKey]?.getSelectedText() ?? "";
@@ -102,6 +111,15 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
   };
 
   const handleProductLinkClick = (editorKey: "descripcion" | "porque_elegirnos") => {
+    if (!isEdit || !product) {
+      Swal.fire(
+        "Disponible al editar el producto",
+        "El enlace al producto actual solo puede generarse al editar un producto existente.",
+        "info"
+      );
+      return;
+    }
+
     const selected = editorRefs.current[editorKey]?.getSelectedText() ?? "";
   
     if (!selected) {
@@ -120,45 +138,31 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
 
   const handleConfirmProductLink = () => {
     if (!activeEditorKey) return;
-  
-    if (!selectedProductToLink) {
+
+    if (!isEdit || !product) {
       Swal.fire(
-        "Selecciona un producto",
-        "Por favor, selecciona un producto de la lista.",
-        "warning"
+        "Disponible al editar el producto",
+        "El enlace al producto actual solo puede generarse al editar un producto existente.",
+        "info"
       );
       return;
     }
   
-    const productoSeleccionado = productos.find(
-      (p) => String(p.id) === String(selectedProductToLink)
-    );
-  
-    if (!productoSeleccionado) {
-      Swal.fire(
-        "Producto no encontrado",
-        "No se encontró el producto.",
-        "error"
-      );
-      return;
-    }
-  
-    if (!productoSeleccionado.link) {
+    if (!product.link) {
       Swal.fire(
         "Producto sin enlace",
-        "El producto seleccionado no tiene un enlace permanente válido.",
+        "El producto no tiene un enlace permanente válido.",
         "error"
       );
       return;
     }
   
-    const productUrl = `/catalogo-maquinarias/detalle?link=${productoSeleccionado.link}`;
+    const productUrl = `/catalogo-maquinarias/detalle?link=${product.link}`;
   
     editorRefs.current[activeEditorKey]?.insertLink(productUrl);
   
     setIsProductLinkModalOpen(false);
     setSelectedText("");
-    setSelectedProductToLink("");
     setActiveEditorKey(null);
   };
 
@@ -290,13 +294,14 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
     setFormData(prev => {
       const nuevoEstado = { ...prev };
       if (name === "nombre") {
-        nuevoEstado.nombre = value;
+        nuevoEstado.nombre = value.slice(0, LENGTHS.nombre);
         if (!isLinkEdited) {
           nuevoEstado.link = value
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
             .toLowerCase()
-            .replaceAll(" ", "-");
+            .replaceAll(" ", "-")
+            .slice(0, LENGTHS.link);
         }
       } else if (name === "link") {
         const sanitized = value
@@ -304,7 +309,11 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
           .replace(/[\u0300-\u036f]/g, "")
           .toLowerCase()
           .replaceAll(" ", "-");
-        nuevoEstado.link = sanitized;
+        nuevoEstado.link = sanitized.slice(0, LENGTHS.link);
+      } else if (name === "subtitulo") {
+        nuevoEstado.subtitulo = value.slice(0, LENGTHS.subtitulo);
+      } else if (name === "titulo") {
+        nuevoEstado.titulo = value.slice(0, LENGTHS.titulo);
       } else {
         (nuevoEstado as any)[name] = value;
       }
@@ -404,7 +413,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       const nuevoArray = [...prev.imagenes];
       nuevoArray[index] = {
         ...nuevoArray[index],
-        imageTitle: e.target.value,
+        imageTitle: e.target.value.slice(0, LENGTHS.imagenTitulo),
       };
       return { ...prev, imagenes: nuevoArray };
     });
@@ -420,7 +429,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       const nuevoArray = [...prev.imagenes];
       nuevoArray[index] = {
         ...nuevoArray[index],
-        texto_alt_SEO: e.target.value,
+        texto_alt_SEO: e.target.value.slice(0, LENGTHS.imagenAlt),
       };
       return { ...prev, imagenes: nuevoArray };
     });
@@ -908,14 +917,20 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                         onChange={handleChange}
                         type="text"
                         name="nombre"
+                        maxLength={LENGTHS.nombre}
                         placeholder={isEdit ? "Nombre del producto..." : "Ej: Selladora de Chifles Continua con Inyección de Nitrógeno"}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
                           errors.nombre ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
                         }`}
                       />
-                      <p className="text-[10px] text-yellow-600 dark:text-yellow-400">
-                        ⚠️ Mínimo 40 caracteres • Recomendado máx. 80 para evitar cortes.
-                      </p>
+                      <div className="flex justify-between items-center">
+                        <p className="text-[10px] text-yellow-600 dark:text-yellow-400">
+                          ⚠️ Mínimo 40 caracteres • Recomendado máx. 80 para evitar cortes.
+                        </p>
+                        <span className="text-xs text-gray-400 dark:text-gray-500 text-right">
+                          {formData.nombre.length}/{LENGTHS.nombre}
+                        </span>
+                      </div>
                       {errors.nombre && <p className="text-red-500 text-xs mt-1">⚠️ {errors.nombre}</p>}
                     </div>
 
@@ -927,11 +942,15 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                         onChange={handleChange}
                         type="text"
                         name="link"
+                        maxLength={LENGTHS.link}
                         placeholder="ej-nombre-producto"
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
                           errors.link ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
                         }`}
                       />
+                      <span className="text-xs text-gray-400 dark:text-gray-500 block text-right">
+                        {formData.link.length}/{LENGTHS.link}
+                      </span>
                       {errors.link && <p className="text-red-500 text-xs mt-1">⚠️ {errors.link}</p>}
                     </div>
 
@@ -943,11 +962,15 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                         onChange={handleChange}
                         type="text"
                         name="subtitulo"
+                        maxLength={LENGTHS.subtitulo}
                         placeholder={isEdit ? "Subtitulo del producto..." : "Ej: Aumente la vida útil de sus chifles"}
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
                           errors.subtitulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
                         }`}
                       />
+                      <span className="text-xs text-gray-400 dark:text-gray-500 block text-right">
+                        {formData.subtitulo.length}/{LENGTHS.subtitulo}
+                      </span>
                       {errors.subtitulo && <p className="text-red-500 text-xs mt-1">⚠️ {errors.subtitulo}</p>}
                     </div>
 
@@ -1015,7 +1038,13 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                           <button
                             type="button"
                             onClick={() => handleProductLinkClick("descripcion")}
-                            className="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50 px-2 py-1 rounded transition-colors font-medium cursor-pointer"
+                            disabled={!isEdit}
+                            title={!isEdit ? "Disponible al editar el producto" : undefined}
+                            className={`text-xs px-2 py-1 rounded transition-colors font-medium cursor-pointer ${
+                              isEdit
+                                ? "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50"
+                                : "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                            }`}
                           >
                             Link Producto
                           </button>
@@ -1047,7 +1076,13 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                           <button
                             type="button"
                             onClick={() => handleProductLinkClick("porque_elegirnos")}
-                            className="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50 px-2 py-1 rounded transition-colors font-medium cursor-pointer"
+                            disabled={!isEdit}
+                            title={!isEdit ? "Disponible al editar el producto" : undefined}
+                            className={`text-xs px-2 py-1 rounded transition-colors font-medium cursor-pointer ${
+                              isEdit
+                                ? "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50"
+                                : "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                            }`}
                           >
                             Link Producto
                           </button>
@@ -1211,14 +1246,20 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                         onChange={handleChange}
                         type="text"
                         name="titulo"
+                        maxLength={LENGTHS.titulo}
                         placeholder="Ej: SELLADORA CONTINUA DE BOLSAS"
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
                           errors.titulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
                         }`}
                       />
-                      <p className="text-[10px] text-yellow-600 dark:text-yellow-400">
-                        ⚠️ Nota: La segunda palabra en adelante se pintará con el color personalizado seleccionado.
-                      </p>
+                      <div className="flex justify-between items-center">
+                        <p className="text-[10px] text-yellow-600 dark:text-yellow-400">
+                          ⚠️ Nota: La segunda palabra en adelante se pintará con el color personalizado seleccionado.
+                        </p>
+                        <span className="text-xs text-gray-400 dark:text-gray-500 text-right">
+                          {formData.titulo.length}/{LENGTHS.titulo}
+                        </span>
+                      </div>
                       {errors.titulo && <p className="text-red-500 text-xs mt-1">⚠️ {errors.titulo}</p>}
                     </div>
 
@@ -1351,11 +1392,15 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                               type="text"
                               value={img.imageTitle}
                               onChange={(e) => handleImagesTituloChange(e, index)}
+                              maxLength={LENGTHS.imagenTitulo}
                               placeholder="Ej: Selladora industrial de bolsas de café"
                               className={`w-full px-3 py-1.5 border rounded-lg text-sm outline-none dark:bg-slate-950 dark:text-white dark:border-gray-700 ${
                                 errors[`titulo_${index}`] ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
                               }`}
                             />
+                            <span className="text-xs text-gray-400 dark:text-gray-500 block text-right">
+                              {img.imageTitle?.length || 0}/{LENGTHS.imagenTitulo}
+                            </span>
                             {errors[`titulo_${index}`] && <p className="text-red-500 text-[10px]">⚠️ {errors[`titulo_${index}`]}</p>}
                           </div>
 
@@ -1400,11 +1445,15 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                               type="text"
                               value={img.texto_alt_SEO}
                               onChange={(e) => handleImagesTextoSEOChange(e, index)}
+                              maxLength={LENGTHS.imagenAlt}
                               placeholder="Ej: Selladora industrial de bolsas de café"
                               className={`w-full px-3 py-1.5 border rounded-lg text-sm outline-none dark:bg-slate-950 dark:text-white dark:border-gray-700 ${
                                 errors[`seo_${index}`] ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
                               }`}
                             />
+                            <span className="text-xs text-gray-400 dark:text-gray-500 block text-right">
+                              {img.texto_alt_SEO?.length || 0}/{LENGTHS.imagenAlt}
+                            </span>
                             {errors[`seo_${index}`] && <p className="text-red-500 text-[10px]">⚠️ {errors[`seo_${index}`]}</p>}
                           </div>
                         </div>
@@ -1625,92 +1674,25 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       )}
 
       {/* Modal para insertar enlace manual */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
-          <div className="bg-white p-6 rounded-xl w-96 text-gray-900 shadow-2xl border border-gray-150">
-            <h3 className="text-xl font-bold mb-4 text-teal-600">Insertar Enlace</h3>
-            <p className="text-sm text-gray-600 mb-2">
-              Enlace para: <strong>{selectedText}</strong>
-            </p>
-            <input
-              type="text"
-              placeholder="https://..."
-              value={link}
-              onChange={(e) => setLink(e.target.value)}
-              className="w-full border p-2 rounded mb-4 focus:ring-2 focus:ring-teal-500 outline-none"
-            />
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsModalOpen(false);
-                  setLink("");
-                }}
-                className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={handleAddLink}
-                className="px-4 py-2 bg-teal-600 text-white rounded font-semibold hover:bg-teal-700 transition-colors"
-              >
-                Insertar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <InsertLinkModal
+        isOpen={isModalOpen}
+        selectedText={selectedText}
+        link={link}
+        setLink={setLink}
+        onClose={() => {
+          setIsModalOpen(false);
+          setLink("");
+        }}
+        onConfirm={handleAddLink}
+      />
 
       {/*  MODAL  Para insertar enlace de producto */}
-      {isProductLinkModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
-          <div className="bg-white p-6 rounded-xl w-96 text-gray-900 shadow-2xl border border-gray-150">
-            <h3 className="text-xl font-bold mb-3 text-purple-600">
-              Vincular Producto
-            </h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Selecciona el producto al que deseas enlazar el texto "<strong>{selectedText}</strong>":
-            </p>
-            <div className="mb-4">
-              <label className="block text-xs font-semibold text-gray-500 mb-1">
-                Producto:
-              </label>
-              <select
-                value={selectedProductToLink}
-                onChange={(e) => setSelectedProductToLink(e.target.value)}
-                className="w-full border p-2 rounded text-sm focus:ring-2 focus:ring-purple-500 outline-none"
-              >
-                <option value="">-- Seleccionar Producto --</option>
-                {productos.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.nombre}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsProductLinkModalOpen(false);
-                  setSelectedProductToLink("");
-                }}
-                className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmProductLink}
-                className="px-4 py-2 bg-purple-600 text-white rounded font-semibold hover:bg-purple-700 transition-colors"
-              >
-                Confirmar Enlace
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ProductLinkModal
+        isOpen={isProductLinkModalOpen}
+        selectedText={selectedText}
+        onClose={() => setIsProductLinkModalOpen(false)}
+        onConfirm={handleConfirmProductLink}
+      />
     </>
   );
 };

@@ -160,10 +160,10 @@ export default function IconModal() {
       <div className="w-full space-y-2">
         {/* BOTÓN SELECCIONAR */}
         <label className={`cursor-pointer bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all text-center block w-full border border-gray-200 dark:border-gray-600 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
-          {selectedFile ? "Cambiar Imagen" : "Seleccionar Imagen"}
+          {selectedFile ? "Cambiar Imagen" : "Seleccionar Imagen (WEBP)"}
           <input 
             type="file" 
-            accept="image/*" 
+            accept=".webp" 
             onChange={handleFileChange} 
             className="hidden" 
             disabled={isUploading}
