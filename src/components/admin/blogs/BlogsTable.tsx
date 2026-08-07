@@ -156,10 +156,13 @@ const BlogsTable = () => {
     }
   }, [searchTerm, data]);
 
-  const handleBlogAdded = () => {
-    fetchData();
-    setIsAddModalOpen(false);
-  };
+  const handleBlogAdded = async () => {
+  const savedPage = currentPage; // 1. Guardamos la página actual en una memoria temporal
+  await fetchData();             // 2. Recargamos los datos del backend
+  setCurrentPage(savedPage);     // 3. Devolvemos la página a donde estabas
+  setIsAddModalOpen(false);
+  setEditBlog(null);             // Asegurarnos de limpiar el blog en edición también
+};
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
