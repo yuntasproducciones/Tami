@@ -19,13 +19,13 @@ const valoresArray = [
   {
     image: imgTranspariencia,
     title: "TRANSPARIENCIA",
-    paragraph: "En nuestras acciones.",
+    paragraph: "En nuestras acciones y procesos.",
     imageTitle: "Transparencia",
   },
   {
     image: imgCompromiso,
     title: "COMPROMISO",
-    paragraph: "Nos comprometemos a ofrecer la máxima calidad en nuestros productos.",
+    paragraph: "Con calidad, excelencia y compromiso de siempre.",
     imageTitle: "Compromiso",
   },
 ];
