@@ -1,0 +1,362 @@
+import React, { useState, useEffect } from "react";
+import { FaTrash, FaEdit, FaPlus, FaSearch, FaSyncAlt, FaUsers, FaChartBar, FaWhatsapp } from "react-icons/fa";
+import AddDataModal from "./modals/AddUpdateModal.tsx";
+import DeleteClienteModal from "./modals/DeleteModal.tsx";
+import useClientes from "../../../hooks/admin/seguimiento/useClientes.ts";
+import Swal from "sweetalert2";
+import type Cliente from "../../../models/Clients.ts";
+import { SearchInput } from "src/components/admin/ui/SearchInput.tsx";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "src/components/admin/ui/Table.tsx";
+import LoadingComponent from "src/components/admin/ui/LoadingComponent.tsx";
+import ErrorComponent from "src/components/admin/ui/ErrorComponent.tsx";
+import { TablePagination } from "src/components/admin/ui/TablePagination.tsx";
+
+const getLatestDate = (date1?: string | null, date2?: string | null) => {
+  const latest = [date1, date2]
+    .filter(Boolean)
+    .sort((a, b) => new Date(b as string).getTime() - new Date(a as string).getTime())[0];
+  return latest ? new Date(latest).toLocaleString() : "-";
+};
+
+const WhatsappStatCell = ({
+  count = 0,
+  iconColor,
+  activeColor,
+}: {
+  count?: number;
+  iconColor: string;
+  activeColor: string;
+}) => (
+  <TableCell className="bg-purple-50/50 dark:bg-purple-900/20">
+    <div className="flex items-center gap-1">
+      <FaWhatsapp className={`${iconColor} text-xs`} />
+      <span className={`font-semibold ${count > 0 ? activeColor : "text-gray-400 dark:text-gray-500"}`}>
+        {count}
+      </span>
+    </div>
+  </TableCell>
+);
+
+const EmptyState = ({ term, mode }: { term: string; mode: boolean }) => (
+  <TableRow>
+    <TableCell colSpan={mode ? 11 : 8}>
+      <div className="flex flex-col items-center justify-center gap-2">
+        <div className="bg-teal-50 dark:bg-teal-900/30 p-6 rounded-full">
+          <FaUsers className="h-10 w-10 text-teal-300 dark:text-teal-500" />
+        </div>
+        <p className="text-xl font-medium text-gray-600 dark:text-gray-300 mt-4">
+          {term ? "No se encontraron clientes que coincidan con tu búsqueda" : "No hay clientes registrados"}
+        </p>
+        <p className="text-gray-400 dark:text-gray-500 max-w-md mx-auto">
+          {term ? "Intenta con otros términos de búsqueda" : "Comienza agregando clientes a tu sistema con el botón 'Agregar Cliente'"}
+        </p>
+      </div>
+    </TableCell>
+  </TableRow>
+);
+
+const MONITORING_MODE_KEY = "seguimiento_monitoring_mode";
+
+const ClientesTable = () => {
+  const [refetchTrigger, setRefetchTrigger] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { clientes, globalTotals, loading, error } = useClientes(refetchTrigger);
+
+  // Estado para modo monitoreo - inicializa desde localStorage
+  const [monitoringMode, setMonitoringMode] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem(MONITORING_MODE_KEY) === "true";
+    }
+    return false;
+  });
+
+  // Persistir estado de monitoreo en localStorage
+  const toggleMonitoringMode = () => {
+    const newValue = !monitoringMode;
+    setMonitoringMode(newValue);
+    localStorage.setItem(MONITORING_MODE_KEY, String(newValue));
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [clienteIdToDelete, setClienteIdToDelete] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  const ITEMS_PER_PAGE = 5;
+
+  // Primero filtramos los clientes según búsqueda
+  const filteredClientes = clientes.filter(cliente =>
+    cliente.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    cliente.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    cliente.celular?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    cliente.id.toString().includes(searchTerm)
+  );
+
+  const totalFiltered = filteredClientes.length;
+  const totalPages = Math.ceil(totalFiltered / ITEMS_PER_PAGE);
+
+  // Ahora, aplicamos paginación con slice sobre los clientes filtrados
+  const displayedClientes = filteredClientes.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+
+  const handleRefetch = () => setRefetchTrigger(prev => !prev);
+
+  const openModalForEdit = (cliente: Cliente) => {
+    setSelectedCliente(cliente);
+    setIsModalOpen(true);
+  };
+
+  const openModalForCreate = () => {
+    setSelectedCliente(null);
+    setIsModalOpen(true);
+  };
+
+  const openDeleteModal = (id: number) => {
+    setClienteIdToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleClienteFormSuccess = (msg?: string) => {
+    setRefetchTrigger(prev => !prev);
+    setIsModalOpen(false);
+    Swal.fire({
+      icon: "success",
+      title: "Operación exitosa",
+      text: msg || "El cliente se ha guardado correctamente",
+      confirmButtonColor: "#14b8a6",
+    });
+  };
+
+  if (loading) return <LoadingComponent message="Cargando clientes..." />
+  if (error) return <ErrorComponent handleRefetch={handleRefetch} error={error} />
+
+  return (
+    <div className="container mx-auto p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-gradient-to-r from-teal-500 to-teal-600 px-8 py-6 rounded-t-2xl">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <div>
+              <h2 className="text-2xl font-extrabold flex items-center gap-3 text-white">
+                <FaUsers />
+                <span>Gestión de Clientes</span>
+              </h2>
+              <p className="text-teal-50 mt-2 text-lg">
+                Seguimiento y administración de clientes
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={toggleMonitoringMode}
+                className={`flex items-center gap-2 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold shadow-md hover:shadow-lg ${monitoringMode
+                  ? "bg-purple-600 text-white hover:bg-purple-700"
+                  : "bg-white text-purple-600 hover:bg-purple-50"
+                  }`}
+              >
+                <FaChartBar /> {monitoringMode ? "Monitoreo ON" : "Monitoreo"}
+              </button>
+              <button
+                onClick={openModalForCreate}
+                className="flex items-center gap-2 bg-white text-teal-600 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold shadow-md hover:shadow-lg"
+              >
+                <FaPlus /> Agregar Cliente
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Controles de búsqueda */}
+        <div className="p-8 space-y-6">
+          <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
+            <SearchInput placeholder="Buscar clientes..." value={searchTerm} onChange={setSearchTerm} />
+
+            <button
+              onClick={handleRefetch}
+              disabled={loading}
+              className="flex items-center gap-2 bg-white dark:bg-gray-700 text-teal-600 dark:text-teal-400 border-2 border-teal-500 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-gray-600 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
+            >
+              <FaSyncAlt className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+              {loading ? "Cargando..." : "Actualizar"}
+            </button>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-teal-50 dark:bg-gray-700 p-4 rounded-xl border border-teal-100 dark:border-gray-600 shadow-sm">
+            <div className="text-sm font-medium text-teal-700 dark:text-teal-300 flex items-center gap-2">
+              <span className="bg-teal-500 text-white text-sm font-bold py-1 px-3 rounded-full">
+                {totalFiltered}
+              </span>
+              {totalFiltered === 1 ? "cliente" : "clientes"} encontrados
+            </div>
+
+            {/* Stats globales de WhatsApp - solo en modo monitoreo */}
+            {monitoringMode && globalTotals && (
+              <div className="flex flex-wrap items-center gap-3 text-sm">
+                {/* Stats Popup */}
+                <div className="flex items-center gap-2 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 px-3 py-1.5 rounded-full">
+                  <FaWhatsapp className="text-green-600 dark:text-green-400" />
+                  <span className="font-semibold">{globalTotals.whatsapp.popup.total_messages}</span>
+                  <span className="text-green-600 dark:text-green-400 text-xs">msgs</span>
+                </div>
+                {/* Stats Campaign */}
+                {globalTotals.whatsapp.campaign && (
+                  <div className="flex items-center gap-2 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full">
+                    <FaWhatsapp className="text-blue-600 dark:text-blue-400" />
+                    <span className="font-semibold">{globalTotals.whatsapp.campaign.total_messages}</span>
+                    <span className="text-blue-600 dark:text-blue-400 text-xs">campañas</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Tabla de clientes */}
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {[
+                  "ID",
+                  "NOMBRE",
+                  "EMAIL",
+                  "TELÉFONO",
+                  "PRODUCTO",
+                  "ORIGEN",
+                  ...(monitoringMode ? ["POPUP MSGS", "CAMPAÑA MSGS", "ÚLT. ENVÍO"] : []),
+                  "FECHA DE INICIO",
+                  "ACCIÓN"
+                ].map((header, index) => {
+                  const isMonitoringCol = ["POPUP MSGS", "CAMPAÑA MSGS", "ÚLT. ENVÍO"].includes(header);
+                  return (
+                    <TableHead
+                      key={index}
+                      className={`text-xs whitespace-nowrap ${monitoringMode && isMonitoringCol ? "bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300" : ""}`}
+                    >
+                      {header}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {displayedClientes.length === 0 ? (
+                <EmptyState term={searchTerm} mode={monitoringMode} />
+              ) : (
+                <>
+                  {/* Filas reales */}
+                  {displayedClientes.map((item) => (
+                    <TableRow key={item.id} >
+                      <TableCell className="px-6 py-4 font-medium whitespace-nowrap text-teal-700">
+                        #{item.id}
+                      </TableCell>
+                      <TableCell>{item.name}</TableCell>
+                      <TableCell className="text-blue-500">{item.email}</TableCell>
+                      <TableCell >
+                        {item.celular || (
+                          <span className="text-gray-400 italic text-xs">No disponible</span>
+                        )}
+                      </TableCell>
+
+                      <TableCell>
+                        < span className="text-gray-500 dark:text-gray-300 text-sm">{item.producto ?? "-"}</span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-gray-500 dark:text-gray-300 text-sm">{item.source ?? "-"}</span>
+                      </TableCell>
+
+                      {/* Columnas de monitoreo WhatsApp */}
+                      {monitoringMode && (
+                        <>
+                          <WhatsappStatCell
+                            count={item.stats?.whatsapp?.popup?.total_messages}
+                            iconColor="text-green-500 dark:text-green-400"
+                            activeColor="text-green-600 dark:text-green-400"
+                          />
+                          <WhatsappStatCell
+                            count={item.stats?.whatsapp?.campaign?.total_messages}
+                            iconColor="text-blue-500 dark:text-blue-400"
+                            activeColor="text-blue-600 dark:text-blue-400"
+                          />
+                          <TableCell className="bg-purple-50/50 dark:bg-purple-900/20 whitespace-nowrap">
+                            <span className="text-gray-500 dark:text-gray-400 text-xs">
+                              {getLatestDate(item.stats?.whatsapp?.popup?.ult_envio, item.stats?.whatsapp?.campaign?.ult_envio)}
+                            </span>
+                          </TableCell>
+                        </>
+                      )}
+
+                      <TableCell className="whitespace-nowrap">
+                        <span className="text-gray-500 dark:text-gray-300 text-sm">{item.created_at ? new Date(item.created_at).toLocaleDateString() : "-"}</span>
+                      </TableCell>
+
+                      <TableCell>
+                        <div className="flex gap-3 items-center">
+                          <button
+                            className="p-2 rounded-full hover:bg-green-100 dark:hover:bg-green-900/50 text-green-600 dark:text-green-400 transition-colors duration-200 border border-transparent hover:border-green-200 dark:hover:border-green-700"
+                            title="Editar"
+                            onClick={() => openModalForEdit(item)}
+                          >
+                            <FaEdit size={18} />
+                          </button>
+                          <button
+                            className="p-2 rounded-full text-red-500 dark:text-red-400 border border-transparent transition-colors duration-200 hover:bg-red-100 dark:hover:bg-red-900/50 hover:border-red-200 dark:hover:border-red-700"
+                            title="Eliminar"
+                            onClick={() => openDeleteModal(item.id)}
+                          >
+                            <FaTrash size={18} />
+                          </button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {/* Filas vacías para mantener altura */}
+                  {Array.from({ length: ITEMS_PER_PAGE - displayedClientes.length }).map((_, idx) => (
+                    <TableRow key={`empty-${idx}`} className="h-17">
+                      <TableCell colSpan={monitoringMode ? 11 : 8} className="px-6 py-4">&nbsp;</TableCell>
+                    </TableRow>
+                  ))}
+                </>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Paginación */}
+        {filteredClientes.length > 0 && (
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
+          />
+        )}
+      </div>
+
+      {/* Modales */}
+      <AddDataModal
+        isOpen={isModalOpen}
+        setIsOpen={setIsModalOpen}
+        cliente={selectedCliente}
+        onRefetch={handleClienteFormSuccess}
+      />
+
+      {clienteIdToDelete !== null && (
+        <DeleteClienteModal
+          isOpen={isDeleteModalOpen}
+          setIsOpen={setIsDeleteModalOpen}
+          clienteId={clienteIdToDelete}
+          onRefetch={handleRefetch}
+        />
+      )}
+    </div>
+  );
+
+};
+
+export default ClientesTable;

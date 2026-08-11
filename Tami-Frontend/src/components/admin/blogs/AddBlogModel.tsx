@@ -1,0 +1,2079 @@
+import { config } from "../../../../config.ts";
+import apiClient from "../../../services/apiClient.ts";
+import { useEffect, useState } from "react";
+import { validateImage } from "../../../utils/imageValidation.ts";
+import Swal from "sweetalert2";
+import { IoMdCloseCircle } from "react-icons/io";
+interface ImagenAdicional {
+  imagen: File | null;
+  parrafo: string;
+  img_alt: string;
+  img_nombre: string;
+  img_tittle: string;
+  url?: string;
+  previewUrl?: string;
+  id?: number | string;
+}
+
+interface BlogPOST {
+  titulo: string;
+  link: string;
+  subtitulo1: string; // Párrafo corto (100)
+  subtitulo2: string; // Descripción (255)
+  video_titulo: string; // 40
+  video_url: string; // 255
+  producto_id: number | string;
+  created_at: string;
+  miniatura: File | string | null;
+  miniatura_nombre: string;
+  miniatura_alt: string;
+  miniatura_tittle: string;
+  hero_image: File | string | null;
+  hero_image_nombre: string;
+  hero_image_alt: string;
+  hero_image_tittle: string;
+  imagenes: ImagenAdicional[]; // parrafo_imagen sin límite estricto (usa textarea)
+  etiqueta: {
+    meta_titulo: string; // sugerido <= 60
+    meta_descripcion: string; // sugerido <= 160
+    popup_button_text: string;
+    popup_button_color: string;
+    popup_text_color: string;
+  };
+}
+
+interface AddBlogModalProps {
+  onBlogAdded: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
+  blogToEdit?: any;
+}
+
+/* ====== Límites centralizados ====== */
+const LENGTHS = {
+  titulo: 120,
+  parrafo: 100, // subtitulo1
+  descripcion: 255, // subtitulo2
+  videoTitulo: 125,
+  videoUrl: 255,
+  metaTitulo: 60, // recomendado (no bloqueante)
+  metaDescripcion: 160, // recomendado (no bloqueante)
+};
+
+/* ===== utilidades ===== */
+const isValidUrl = (value: string) => {
+  try {
+    const u = new URL(value);
+    return !!u.protocol && !!u.host;
+  } catch {
+    return false;
+  }
+};
+
+//asegurando 2 secciones para blog
+const normalizeImagenes = (imagenes: any[] = [], blogToEdit: any) => {
+  const base = imagenes.map((img: any, index: number) => {
+    const raw = img.ruta_imagen || "";
+
+    return {
+      imagen: null,
+      parrafo: blogToEdit?.parrafos?.[index]?.parrafo || "",
+      img_alt: img.img_alt || "",
+      img_nombre: img.img_nombre || "",
+      img_tittle: img.img_tittle || "",
+      url: raw
+        ? raw.startsWith("http")
+          ? raw
+          : `${import.meta.env.PUBLIC_API_URL}${raw}`
+        : "",
+      previewUrl: undefined,
+      id: img.id || img.imagen_id,
+    };
+  });
+
+  while (base.length < 2) {
+    base.push({
+      imagen: null,
+      parrafo: "",
+      img_alt: "",
+      img_nombre: "",
+      img_tittle: "",
+      url: "",
+      previewUrl: undefined,
+      id: undefined,
+    });
+  }
+
+  return base;
+};
+
+const AddBlogModal: React.FC<AddBlogModalProps> = ({
+  onBlogAdded,
+  isOpen: propIsOpen,
+  onClose,
+  blogToEdit,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [productos, setProductos] = useState<any[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedText, setSelectedText] = useState("");
+  const [link, setLink] = useState("");
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [isProductLinkModalOpen, setIsProductLinkModalOpen] = useState(false);
+  const [previewMiniatura, setPreviewMiniatura] = useState<string>("");
+  const [previewHero, setPreviewHero] = useState<string | null>(null);
+
+
+  const [formData, setFormData] = useState<BlogPOST>({
+    titulo: "",
+    link: "",
+    subtitulo1: "",
+    subtitulo2: "",
+    video_url: "",
+    video_titulo: "",
+    producto_id: "",
+    created_at: new Date().toISOString().split("T")[0],
+    miniatura: null,
+    miniatura_nombre: "",
+    miniatura_alt: "",
+    miniatura_tittle: "",
+    hero_image: null,
+    hero_image_nombre: "",
+    hero_image_alt: "",
+    hero_image_tittle: "",
+    imagenes: [
+      {
+        imagen: null,
+        parrafo: "",
+        img_alt: "",
+        img_nombre: "",
+        img_tittle: "",
+        previewUrl: undefined,
+      },
+      {
+        imagen: null,
+        parrafo: "",
+        img_alt: "",
+        img_nombre: "",
+        img_tittle: "",
+        previewUrl: undefined,
+      },
+    ],
+    etiqueta: {
+      meta_titulo: "",
+      meta_descripcion: "",
+      popup_button_text: "",
+      popup_button_color: "#47ce36",
+      popup_text_color: "#ffffff",
+    },
+  });
+
+  useEffect(() => {
+    if (propIsOpen !== undefined) setIsOpen(propIsOpen);
+  }, [propIsOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const fetchProductos = async () => {
+      try {
+        const response = await apiClient.get(config.endpoints.productos.list);
+        const data = response.data;
+
+        let lista: any[] = [];
+        if (Array.isArray(data)) lista = data;
+        else if (Array.isArray(data?.data)) lista = data.data;
+        else if (Array.isArray(data?.data?.productos))
+          lista = data.data.productos;
+
+        setProductos(lista);
+      } catch (err) {
+        console.error("🚫 Error en FETCH productos:", err);
+        setProductos([]);
+      }
+    };
+
+    fetchProductos();
+
+    if (blogToEdit) {
+      const productoEncontrado = productos.find(
+        (p) => p.nombre === blogToEdit.nombre_producto,
+      );
+      const productoIdEdit =
+        blogToEdit.producto_id ?? productoEncontrado?.id ?? "";
+      setFormData({
+        titulo: blogToEdit.titulo || "",
+        link: blogToEdit.link || "",
+        subtitulo1: blogToEdit.subtitulo1 || "",
+        subtitulo2: blogToEdit.subtitulo2 || "",
+        video_url: blogToEdit.video_url || "",
+        video_titulo: blogToEdit.video_titulo || "",
+        producto_id: productoIdEdit ? String(productoIdEdit) : "",
+        created_at: blogToEdit.created_at
+          ? blogToEdit.created_at.split(/[ T]/)[0]
+          : new Date().toISOString().split("T")[0],
+        miniatura: blogToEdit.miniatura || null,
+        miniatura_nombre: blogToEdit.miniatura_nombre || "",
+        miniatura_alt: blogToEdit.miniatura_alt || "",
+        miniatura_tittle: blogToEdit.miniatura_tittle || "",
+        hero_image: blogToEdit.hero_image || null,
+        hero_image_nombre: blogToEdit.hero_image_nombre || "",
+        hero_image_alt: blogToEdit.hero_image_alt || "",
+        hero_image_tittle: blogToEdit.hero_image_tittle || "",
+        imagenes: normalizeImagenes(blogToEdit.imagenes || [], blogToEdit),
+        etiqueta: {
+          meta_titulo: blogToEdit.etiqueta?.meta_titulo || "",
+          meta_descripcion: blogToEdit.etiqueta?.meta_descripcion || "",
+          popup_button_text: blogToEdit.etiqueta?.popup_button_text || "",
+          popup_button_color:
+            blogToEdit.etiqueta?.popup_button_color || "#47ce36",
+          popup_text_color: blogToEdit.etiqueta?.popup_text_color || "#ffffff",
+        },
+      });
+      setPreviewHero(
+        blogToEdit.hero_image
+          ? blogToEdit.hero_image.startsWith("http")
+            ? blogToEdit.hero_image
+            : `${config.apiUrl}${blogToEdit.hero_image}`
+          : null,
+      );
+    } else {
+      setFormData({
+        titulo: "",
+        link: "",
+        subtitulo1: "",
+        subtitulo2: "",
+        video_url: "",
+        video_titulo: "",
+        producto_id: "",
+        created_at: new Date().toISOString().split("T")[0],
+        miniatura: null,
+        miniatura_nombre: "",
+        miniatura_alt: "",
+        miniatura_tittle: "",
+        hero_image: null,
+        hero_image_nombre: "",
+        hero_image_alt: "",
+        hero_image_tittle: "",
+        imagenes: [
+          {
+            imagen: null,
+            parrafo: "",
+            img_alt: "",
+            img_nombre: "",
+            img_tittle: "",
+            previewUrl: undefined,
+          },
+          {
+            imagen: null,
+            parrafo: "",
+            img_alt: "",
+            img_nombre: "",
+            img_tittle: "",
+            previewUrl: undefined,
+          },
+        ],
+        etiqueta: {
+          meta_titulo: "",
+          meta_descripcion: "",
+          popup_button_text: "",
+          popup_button_color: "#47ce36",
+          popup_text_color: "#ffffff",
+        },
+      });
+      setPreviewHero(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, blogToEdit]);
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => {
+    const { name, value } = e.target;
+
+    if (name === "link") {
+      const sanitized = value
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replaceAll(" ", "-");
+      setFormData((prev) => ({ ...prev, link: sanitized }));
+      return;
+    }
+
+    if (name === "producto_id") {
+      setFormData((prev) => ({ ...prev, producto_id: value }));
+      return;
+    }
+
+    if (name === "created_at") {
+      setFormData((prev) => ({ ...prev, created_at: value }));
+      return;
+    }
+
+    // Enforce max lengths on write for text fields
+    const next: Partial<BlogPOST> = {};
+    switch (name) {
+      case "titulo":
+        next.titulo = value.slice(0, LENGTHS.titulo);
+        break;
+      case "subtitulo1":
+        next.subtitulo1 = value.slice(0, LENGTHS.parrafo);
+        break;
+      case "subtitulo2":
+        next.subtitulo2 = value.slice(0, LENGTHS.descripcion);
+        break;
+      case "video_titulo":
+        next.video_titulo = value.slice(0, LENGTHS.videoTitulo);
+        break;
+      case "video_url":
+        next.video_url = value.slice(0, LENGTHS.videoUrl);
+        break;
+      case "miniatura_nombre":
+        next.miniatura_nombre = value.slice(0, LENGTHS.titulo);
+        break;
+      case "miniatura_alt":
+        next.miniatura_alt = value.slice(0, LENGTHS.titulo);
+        break;
+      case "miniatura_tittle":
+        next.miniatura_tittle = value.slice(0, LENGTHS.titulo);
+        break;
+      case "hero_image_nombre":
+        next.hero_image_nombre = value.slice(0, LENGTHS.titulo);
+        break;
+      case "hero_image_alt":
+        next.hero_image_alt = value.slice(0, LENGTHS.titulo);
+        break;
+      case "hero_image_tittle":
+        next.hero_image_tittle = value.slice(0, LENGTHS.titulo);
+        break;
+      default:
+        break;
+    }
+    setFormData((prev) => ({ ...prev, ...(next as any) }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+
+    if (!f) return;
+
+    if (!validateImage(f, "miniatura")) {
+      e.target.value = "";
+      return;
+    }
+
+    // limpiar preview anterior
+    if (previewMiniatura) {
+      URL.revokeObjectURL(previewMiniatura);
+    }
+
+    const preview = URL.createObjectURL(f);
+
+    setPreviewMiniatura(preview);
+
+    setFormData({
+      ...formData,
+      miniatura: f,
+    });
+  };
+
+  const handleFileChangeAdicional = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!validateImage(f, "webpOnly")) {
+      return;
+    }
+    const nuevoArray = [...formData.imagenes];
+    const previewActual = nuevoArray[index]?.previewUrl;
+    if (previewActual) {
+      URL.revokeObjectURL(previewActual);
+    }
+    nuevoArray[index] = {
+      ...nuevoArray[index],
+      imagen: f,
+      previewUrl: URL.createObjectURL(f),
+    };
+    setFormData({ ...formData, imagenes: nuevoArray });
+  };
+
+  const handleParrafoChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>,
+    index: number,
+  ) => {
+    const nuevoArray = [...formData.imagenes];
+    nuevoArray[index] = { ...nuevoArray[index], parrafo: e.target.value };
+    setFormData({ ...formData, imagenes: nuevoArray });
+  };
+
+  const handleImgAltChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) => {
+    const nuevoArray = [...formData.imagenes];
+    nuevoArray[index] = { ...nuevoArray[index], img_alt: e.target.value };
+    setFormData({ ...formData, imagenes: nuevoArray });
+  };
+
+  const handleImgNombreChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) => {
+    const nuevoArray = [...formData.imagenes];
+    nuevoArray[index] = { ...nuevoArray[index], img_nombre: e.target.value };
+    setFormData({ ...formData, imagenes: nuevoArray });
+  };
+
+  const handleImgTittleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) => {
+    const nuevoArray = [...formData.imagenes];
+    nuevoArray[index] = { ...nuevoArray[index], img_tittle: e.target.value };
+    setFormData({ ...formData, imagenes: nuevoArray });
+  };
+
+  const handleInsertLinkClick = (index: number) => {
+    const textarea = document.getElementById(
+      `crear_descripcion_antes_${index}`,
+    ) as HTMLTextAreaElement;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = textarea.value.substring(start, end);
+
+    if (!selected) {
+      Swal.fire(
+        "Selecciona texto",
+        "Selecciona texto para enlazar.",
+        "warning",
+      );
+      return;
+    }
+
+    setActiveIndex(index);
+    setSelectedText(selected);
+    setIsModalOpen(true);
+  };
+
+  const handleProductLinkClick = (index: number) => {
+    const textarea = document.getElementById(
+      `crear_descripcion_antes_${index}`,
+    ) as HTMLTextAreaElement;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = textarea.value.substring(start, end);
+
+    if (!selected) {
+      Swal.fire(
+        "Selecciona texto",
+        "Selecciona texto para enlazar.",
+        "warning",
+      );
+      return;
+    }
+
+    setActiveIndex(index);
+    setSelectedText(selected);
+    setIsProductLinkModalOpen(true);
+  };
+
+  const handleAddProduct = () => {
+    if (activeIndex === null) return;
+    if (!formData.producto_id) {
+      Swal.fire("ID de producto vacío", "Selecciona un producto.", "error");
+      return;
+    }
+    const productoSeleccionado = productos.find(
+      (p) => String(p.id) === String(formData.producto_id),
+    );
+    if (!productoSeleccionado?.link) {
+      Swal.fire(
+        "Producto no encontrado",
+        "No se encontró el producto.",
+        "error",
+      );
+      return;
+    }
+    const textarea = document.getElementById(
+      `crear_descripcion_antes_${activeIndex}`,
+    ) as HTMLTextAreaElement;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const parrafoActual = formData.imagenes[activeIndex]?.parrafo || "";
+    const before = parrafoActual.substring(0, start);
+    const after = parrafoActual.substring(end);
+
+    const productUrl = `/catalogo-maquinarias/detalle?link=${productoSeleccionado.link}`;
+    const linkedProductText = `<a href="${productUrl}" style="font-weight: bold;" title="${productoSeleccionado.link}">${selectedText}</a>`;
+    const newValue = before + linkedProductText + after;
+
+    const nuevosParrafos = [...formData.imagenes];
+    nuevosParrafos[activeIndex] = {
+      ...nuevosParrafos[activeIndex],
+      parrafo: newValue,
+    };
+
+    setFormData((prev) => ({ ...prev, imagenes: nuevosParrafos }));
+    setIsProductLinkModalOpen(false);
+    setSelectedText("");
+    setActiveIndex(null);
+  };
+
+  const handleAddLink = () => {
+    if (activeIndex === null) return;
+    if (!link.trim() || !isValidUrl(link.trim())) {
+      Swal.fire(
+        "Enlace inválido",
+        "Ingresa una URL válida (https://...).",
+        "error",
+      );
+      return;
+    }
+    const textarea = document.getElementById(
+      `crear_descripcion_antes_${activeIndex}`,
+    ) as HTMLTextAreaElement;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+
+    const parrafoActual = formData.imagenes[activeIndex]?.parrafo || "";
+    const before = parrafoActual.substring(0, start);
+    const after = parrafoActual.substring(end);
+
+    const linkedText = `<a href="${link.trim()}" style="font-weight: bold;" title="${selectedText}">${selectedText}</a>`;
+    const newValue = before + linkedText + after;
+
+    const nuevosParrafos = [...formData.imagenes];
+    nuevosParrafos[activeIndex] = {
+      ...nuevosParrafos[activeIndex],
+      parrafo: newValue,
+    };
+
+    setFormData((prev) => ({ ...prev, imagenes: nuevosParrafos }));
+    setIsModalOpen(false);
+    setLink("");
+    setSelectedText("");
+    setActiveIndex(null);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+    setFormData({
+      titulo: "",
+      link: "",
+      subtitulo1: "",
+      subtitulo2: "",
+      video_url: "",
+      video_titulo: "",
+      producto_id: "",
+      created_at: new Date().toISOString().split("T")[0],
+      miniatura: null,
+      miniatura_nombre: "",
+      miniatura_alt: "",
+      miniatura_tittle: "",
+      hero_image: null,
+      hero_image_nombre: "",
+      hero_image_alt: "",
+      hero_image_tittle: "",
+      imagenes: [
+        {
+          imagen: null,
+          parrafo: "",
+          img_alt: "",
+          img_nombre: "",
+          img_tittle: "",
+          previewUrl: undefined,
+        },
+        {
+          imagen: null,
+          parrafo: "",
+          img_alt: "",
+          img_nombre: "",
+          img_tittle: "",
+          previewUrl: undefined,
+        },
+      ],
+      etiqueta: {
+        meta_titulo: "",
+        meta_descripcion: "",
+        popup_button_text: "",
+        popup_button_color: "#47ce36",
+        popup_text_color: "#ffffff",
+      },
+    });
+    setPreviewMiniatura("");
+    setPreviewHero(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+
+    // 🔹 Validaciones frontend (las que ya tenías)
+    if (
+      formData.titulo.length === 0 ||
+      formData.titulo.length > LENGTHS.titulo
+    ) {
+      Swal.fire(
+        "Error",
+        `El título es obligatorio y máx. ${LENGTHS.titulo} caracteres.`,
+        "error",
+      );
+      setIsSaving(false);
+      return;
+    }
+    if (
+      formData.subtitulo1.length === 0 ||
+      formData.subtitulo1.length > LENGTHS.parrafo
+    ) {
+      Swal.fire(
+        "Error",
+        `El párrafo es obligatorio y máx. ${LENGTHS.parrafo} caracteres.`,
+        "error",
+      );
+      setIsSaving(false);
+      return;
+    }
+    if (
+      formData.subtitulo2.length === 0 ||
+      formData.subtitulo2.length > LENGTHS.descripcion
+    ) {
+      Swal.fire(
+        "Error",
+        `La descripción es obligatoria y máx. ${LENGTHS.descripcion} caracteres.`,
+        "error",
+      );
+      setIsSaving(false);
+      return;
+    }
+    if (
+      formData.video_titulo.length === 0 ||
+      formData.video_titulo.length > LENGTHS.videoTitulo
+    ) {
+      Swal.fire(
+        "Error",
+        `El título del video es obligatorio y máx. ${LENGTHS.videoTitulo} caracteres.`,
+        "error",
+      );
+      setIsSaving(false);
+      return;
+    }
+    if (
+      formData.video_url.length === 0 ||
+      formData.video_url.length > LENGTHS.videoUrl ||
+      !isValidUrl(formData.video_url)
+    ) {
+      Swal.fire(
+        "Error",
+        `La URL del video es obligatoria, máx. ${LENGTHS.videoUrl} y debe ser válida.`,
+        "error",
+      );
+      setIsSaving(false);
+      return;
+    }
+    if (!formData.producto_id) {
+      Swal.fire("Error", "Selecciona un producto.", "error");
+      setIsSaving(false);
+      return;
+    }
+
+    // miniatura obligatoria solo en creación
+    if (!blogToEdit && !formData.miniatura) {
+      Swal.fire("Error", "La miniatura es obligatoria.", "error");
+      setIsSaving(false);
+      return;
+    }
+
+    // Nombre, Alt y Tittle de la miniatura son obligatorios
+    if (
+      !formData.miniatura_nombre ||
+      formData.miniatura_nombre.trim() === ""
+    ) {
+      Swal.fire(
+        "Error",
+        "El nombre de la miniatura es obligatorio.",
+        "error",
+      );
+      setIsSaving(false);
+      return;
+    }
+    if (!formData.miniatura_alt || formData.miniatura_alt.trim() === "") {
+      Swal.fire(
+        "Error",
+        "El texto ALT de la miniatura es obligatorio.",
+        "error",
+      );
+      setIsSaving(false);
+      return;
+    }
+    if (
+      !formData.miniatura_tittle ||
+      formData.miniatura_tittle.trim() === ""
+    ) {
+      Swal.fire(
+        "Error",
+        "El tittle de la miniatura es obligatorio.",
+        "error",
+      );
+      setIsSaving(false);
+      return;
+    }
+
+    // hero_image obligatoria solo en creación
+    if (!blogToEdit && !formData.hero_image) {
+      Swal.fire("Error", "La imagen principal es obligatoria.", "error");
+      setIsSaving(false);
+      return;
+    }
+
+    // Nombre, Alt y Tittle de la imagen principal son obligatorios
+    if (
+      !formData.hero_image_nombre ||
+      formData.hero_image_nombre.trim() === ""
+    ) {
+      Swal.fire(
+        "Error",
+        "El nombre de la imagen principal es obligatorio.",
+        "error",
+      );
+      setIsSaving(false);
+      return;
+    }
+    if (!formData.hero_image_alt || formData.hero_image_alt.trim() === "") {
+      Swal.fire(
+        "Error",
+        "El texto ALT de la imagen principal es obligatorio.",
+        "error",
+      );
+      setIsSaving(false);
+      return;
+    }
+    if (
+      !formData.hero_image_tittle ||
+      formData.hero_image_tittle.trim() === ""
+    ) {
+      Swal.fire(
+        "Error",
+        "El tittle de la imagen principal es obligatorio.",
+        "error",
+      );
+      setIsSaving(false);
+      return;
+    }
+
+    // Validación imágenes adicionales y párrafos
+    if (
+      formData.imagenes.some(
+        (img) => (!blogToEdit && !img.imagen) || !img.parrafo,
+      )
+    ) {
+      Swal.fire(
+        "Error",
+        "Cada imagen adicional y su descripción son obligatorias.",
+        "error",
+      );
+      setIsSaving(false);
+      return;
+    }
+
+    // Validación img_alt
+    if (
+      formData.imagenes.some(
+        (img) => !img.img_alt || img.img_alt.trim() === "",
+      )
+    ) {
+      Swal.fire("Error", "Cada imagen debe tener texto ALT.", "error");
+      setIsSaving(false);
+      return;
+    }
+
+    if (
+      formData.imagenes.some((img) => !img.img_nombre || img.img_nombre.trim() === "")
+    ) {
+      Swal.fire("Error", "Cada imagen debe tener un nombre.", "error");
+      setIsSaving(false);
+      return;
+    }
+
+    if (
+      formData.imagenes.some((img) => !img.img_tittle || img.img_tittle.trim() === "")
+    ) {
+      Swal.fire("Error", "Cada imagen debe tener un título.", "error");
+      setIsSaving(false);
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      const url = blogToEdit
+        ? `${config.endpoints.blogs.list}/${blogToEdit.id}`
+        : config.endpoints.blogs.create;
+
+      const formDataToSend = new FormData();
+
+      formDataToSend.append("titulo", formData.titulo);
+      formDataToSend.append("link", formData.link);
+      formDataToSend.append("subtitulo1", formData.subtitulo1);
+      formDataToSend.append("subtitulo2", formData.subtitulo2);
+
+      formDataToSend.append("video_url", formData.video_url || "");
+      formDataToSend.append("video_titulo", formData.video_titulo || "");
+
+      formDataToSend.append("meta_titulo", formData.etiqueta.meta_titulo);
+      formDataToSend.append(
+        "meta_descripcion",
+        formData.etiqueta.meta_descripcion,
+      );
+
+      formDataToSend.append("producto_id", formData.producto_id.toString());
+
+      formDataToSend.append(
+        "popup_button_text",
+        formData.etiqueta.popup_button_text || "",
+      );
+      formDataToSend.append(
+        "popup_button_color",
+        formData.etiqueta.popup_button_color || "#47ce36",
+      );
+      formDataToSend.append(
+        "popup_text_color",
+        formData.etiqueta.popup_text_color || "#ffffff",
+      );
+
+      if (formData.created_at) {
+        formDataToSend.append("created_at", formData.created_at);
+      }
+
+      if (formData.miniatura instanceof File) {
+        formDataToSend.append("miniatura", formData.miniatura);
+      }
+
+      // NOTA: nombres de campo asumidos para el backend.
+      // Si el backend espera otras claves, ajustar aquí.
+      formDataToSend.append("miniatura_nombre", formData.miniatura_nombre || "");
+      formDataToSend.append("miniatura_alt", formData.miniatura_alt || "");
+      formDataToSend.append(
+        "miniatura_tittle",
+        formData.miniatura_tittle || "",
+      );
+
+      if (formData.hero_image instanceof File) {
+        formDataToSend.append("hero_image", formData.hero_image);
+      }
+
+      // NOTA: nombres de campo asumidos para el backend.
+      // Si el backend espera otras claves, ajustar aquí.
+      formDataToSend.append(
+        "hero_image_nombre",
+        formData.hero_image_nombre || "",
+      );
+      formDataToSend.append("hero_image_alt", formData.hero_image_alt || "");
+      formDataToSend.append(
+        "hero_image_tittle",
+        formData.hero_image_tittle || "",
+      );
+
+      formData.imagenes.forEach((item, index) => {
+        formDataToSend.append(
+          "imagen_tipo[]",
+          item.imagen instanceof File ? "file" : "existing",
+        );
+
+        // SIEMPRE enviar img_alt
+        formDataToSend.append("img_alt[]", item.img_alt || "");
+
+        formDataToSend.append("img_nombre[]", item.img_nombre || "");
+
+        formDataToSend.append("img_tittle[]", item.img_tittle || "");
+
+        if (item.imagen instanceof File) {
+          formDataToSend.append("imagenes[]", item.imagen);
+        } else if (item.id) {
+          formDataToSend.append("imagen_ids[]", item.id.toString());
+        }
+
+        // SIEMPRE enviar párrafo
+        formDataToSend.append("parrafos[]", item.parrafo || "");
+      });
+      if (blogToEdit) {
+        formDataToSend.append("_method", "PUT");
+      }
+
+      const response = await apiClient.post(url, formDataToSend, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        const data = response.data;
+        await Swal.fire({
+          icon: "success",
+          title: blogToEdit
+            ? "Blog actualizado con éxito"
+            : "Blog creado con éxito",
+          text: `El blog "${data.data.titulo}" ha sido ${
+            blogToEdit ? "actualizado" : "creado"
+          } correctamente.`,
+          confirmButtonColor: "#3085d6",
+        });
+        closeModal();
+        onBlogAdded();
+      } else {
+        const data = response.data;
+        if (data.errors) {
+          const errores = Object.entries(data.errors)
+            .map(([key, value]) => `${key}: ${(value as string[]).join(", ")}`)
+            .join("\n");
+          throw new Error(`Errores de validación:\n${errores}`);
+        }
+        throw new Error(data.message || "Error al procesar el blog");
+      }
+    } catch (error: any) {
+      console.error("Error al enviar el blog:", error);
+
+      let errorMessage = "Ocurrió un error al procesar la solicitud.";
+
+      if (error.response?.data?.errors) {
+        // Formatear los errores de Laravel
+        const errors = error.response.data.errors;
+        errorMessage = Object.keys(errors)
+          .map((key) => `${key}: ${errors[key].join(", ")}`)
+          .join("\n");
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else {
+        errorMessage = error.message;
+      }
+
+      Swal.fire({
+        icon: "error",
+        title: "Error de Validación",
+        text: `❌ ${errorMessage}`,
+        confirmButtonColor: "#d33",
+      });
+    } finally {
+      setIsSubmitting(false);
+      setIsSaving(false);
+    }
+  };
+
+  // Cuenta Caracteres en un string
+  function contarCaracteres(texto: string): number {
+    return texto.trim().length === 0 ? 0 : texto.trim().split(/\s+/).length;
+  }
+  // Utilidad para convertir números a Caracteres en español
+  function numeroACaracteres(n: number): string {
+    const unidades = [
+      "cero",
+      "uno",
+      "dos",
+      "tres",
+      "cuatro",
+      "cinco",
+      "seis",
+      "siete",
+      "ocho",
+      "nueve",
+      "diez",
+      "once",
+      "doce",
+      "trece",
+      "catorce",
+      "quince",
+      "dieciséis",
+      "diecisiete",
+      "dieciocho",
+      "diecinueve",
+      "veinte",
+    ];
+    const decenas = [
+      "",
+      "diez",
+      "veinte",
+      "treinta",
+      "cuarenta",
+      "cincuenta",
+      "sesenta",
+      "setenta",
+      "ochenta",
+      "noventa",
+    ];
+    if (n <= 20) return unidades[n];
+    if (n < 100) {
+      const d = Math.floor(n / 10);
+      const u = n % 10;
+      if (u === 0) return decenas[d];
+      if (d === 2) return "veinti" + unidades[u];
+      return decenas[d] + " y " + unidades[u];
+    }
+    if (n === 100) return "cien";
+    if (n < 200) return "ciento " + numeroACaracteres(n - 100);
+    if (n < 1000) {
+      const c = Math.floor(n / 100);
+      const r = n % 100;
+      let centena = c === 1 ? "ciento" : unidades[c] + "cientos";
+      if (r === 0) return centena;
+      return centena + " " + numeroACaracteres(r);
+    }
+    return n.toString();
+  }
+
+  //toggle de imagen/recomendaciones dadmin/blo
+  const handleRemoveImage = (index: number) => {
+    const nuevasImagenes = [...formData.imagenes];
+
+    nuevasImagenes[index] = {
+      ...nuevasImagenes[index],
+      imagen: null,
+      previewUrl: undefined,
+      url: "",
+      img_nombre: "",
+      img_tittle: "",
+    };
+
+    setFormData({
+      ...formData,
+      imagenes: nuevasImagenes,
+    });
+  };
+
+  //toggle de imagen/Multimedia dadmin/blo
+  const handleRemoveMiniatura = () => {
+    setFormData({
+      ...formData,
+      miniatura: null,
+    });
+  };
+
+  return (
+    <>
+      {(isOpen || propIsOpen) && (
+        <div className="dialog-overlay">
+          <div className="dialog-blog max-h-[90vh] md:max-h-[92vh]">
+            <div className="dialog-header-blog flex items-center justify-between">
+              <h2 className="dialog-title flex-1 text-center">
+                {blogToEdit ? "Editar Blog" : "Añadir Nuevo Blog"}
+              </h2>
+              <button
+                type="button"
+                onClick={onClose ? onClose : closeModal}
+                className="text-white hover:text-red-400 transition-all duration-300 hover:cursor-pointer text-3xl md:text-4xl ml-2"
+                aria-label="Cerrar"
+              >
+                <IoMdCloseCircle />
+              </button>
+            </div>
+
+            <div className="dialog-body-blog">
+              <form
+                encType="multipart/form-data"
+                onSubmit={handleSubmit}
+                className="flex flex-col gap-6"
+              >
+                {/* --- INFORMACIÓN GENERAL --- */}
+                <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
+                  <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    Información General
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="form-input">
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        Título del blog*
+                      </label>
+                      <input
+                        type="text"
+                        name="titulo"
+                        value={formData.titulo}
+                        onChange={handleChange}
+                        maxLength={LENGTHS.titulo}
+                        required
+                      />
+                    </div>
+                    <div className="form-input">
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        Link Permanente*
+                      </label>
+                      <input
+                        type="text"
+                        name="link"
+                        value={formData.link}
+                        onChange={handleChange}
+                        maxLength={LENGTHS.titulo}
+                        required
+                      />
+                    </div>
+                    <div className="form-input">
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        Fecha de Creación*
+                      </label>
+                      <input
+                        type="date"
+                        name="created_at"
+                        value={formData.created_at}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                    <div className="form-input">
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        Relacionar con producto*
+                      </label>
+                      <select
+                        name="producto_id"
+                        value={formData.producto_id}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">Selecciona un producto</option>
+                        {productos.map((producto: any) => (
+                          <option key={producto.id} value={producto.id}>
+                            {producto.nombre}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                {/* --- Miniatura --- */}
+                <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
+                  <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    Miniatura
+                  </h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="form-input md:col-span-2">
+                      <label className="font-medium text-gray-700 dark:text-gray-300 block mb-2">
+                        Miniatura del Blog*
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        id="miniatura-upload"
+                      />
+                      <label
+                        htmlFor="miniatura-upload"
+                        className="cursor-pointer border-2 border-dashed border-teal-300 dark:border-teal-700 bg-white dark:bg-gray-900 p-6 rounded-xl block text-center hover:bg-teal-50 dark:hover:bg-gray-800 transition-colors"
+                      >
+                        {formData.miniatura ? (
+                          <div className="relative flex flex-col items-center justify-center gap-3 group">
+                            {/* IMAGEN */}
+                            <img
+                              src={
+                                previewMiniatura
+                                  ? previewMiniatura
+                                  : typeof formData.miniatura === "string"
+                                    ? formData.miniatura.startsWith("http")
+                                      ? formData.miniatura
+                                      : `${config.apiUrl}${formData.miniatura}`
+                                    : ""
+                              }
+                              alt="Vista previa miniatura"
+                              className="h-40 object-cover rounded shadow-md"
+                            />
+                            {/* OVERLAY */}
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
+                              <span className="bg-teal-500 text-white px-3 py-1 rounded text-sm font-semibold">
+                                Cambiar imagen
+                              </span>
+                            </div>
+
+                            {/* BOTÓN X */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleRemoveMiniatura();
+                              }}
+                              className="absolute top-2 right-2 w-9 h-9 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg border-2 border-white"
+                            >
+                              x
+                            </button>
+
+                            <span className="text-teal-600 font-medium text-sm">
+                              {(formData.miniatura as any).name ||
+                                "Haz clic para cambiar la imagen"}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center gap-4">
+                            <span className="text-gray-500 dark:text-gray-400 flex flex-col items-center justify-center gap-2">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-8 w-8 text-teal-500 opacity-70"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L28 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                />
+                              </svg>
+
+                              <span className="font-medium">
+                                Click aquí para subir miniatura principal
+                              </span>
+                            </span>
+
+                            {/* RECOMENDACIONES */}
+                            <div className="w-full bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
+                              <p className="text-xs font-semibold text-yellow-800 dark:text-yellow-300 mb-1">
+                                💡 Recomendación:
+                              </p>
+
+                              <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-0.5">
+                                <li>• Formatos: WEBP o GIF</li>
+                                <li>• Tamaño ideal: 960x540 px</li>
+                                <li>• Máximo: 2 MB</li>
+                              </ul>
+                            </div>
+                          </div>
+                        )}
+                      </label>
+                    </div>
+                  </div>
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">
+                      Nombre
+                    </label>
+                    <input
+                      type="text"
+                      name="miniatura_nombre"
+                      value={formData.miniatura_nombre}
+                      onChange={handleChange}
+                      maxLength={LENGTHS.titulo}
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">
+                      Alt
+                    </label>
+                    <input
+                      type="text"
+                      name="miniatura_alt"
+                      value={formData.miniatura_alt}
+                      onChange={handleChange}
+                      maxLength={LENGTHS.titulo}
+                      required
+                    />
+                  </div>
+                  <div className="form-input">
+                    <label className="font-medium text-gray-700 dark:text-gray-300">
+                      Tittle
+                    </label>
+                    <input
+                      type="text"
+                      name="miniatura_tittle"
+                      value={formData.miniatura_tittle}
+                      onChange={handleChange}
+                      maxLength={LENGTHS.titulo}
+                      required
+                    />
+                  </div>
+                    
+                  </div>
+                  
+                </div>
+
+                
+
+                {/* --- SEO --- */}
+                <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
+                  <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                    Optimización SEO
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="form-input">
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        Meta título
+                      </label>
+                      <input
+                        type="text"
+                        name="meta_titulo"
+                        value={formData.etiqueta.meta_titulo}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            etiqueta: {
+                              ...formData.etiqueta,
+                              meta_titulo: e.target.value.slice(
+                                0,
+                                LENGTHS.metaTitulo,
+                              ),
+                            },
+                          })
+                        }
+                        maxLength={LENGTHS.metaTitulo}
+                      />
+                      <small className="text-gray-500 mt-1 block">
+                        Sugerido {LENGTHS.metaTitulo} caracteres
+                      </small>
+                    </div>
+                    <div className="form-input">
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        Meta descripción
+                      </label>
+                      <input
+                        type="text"
+                        name="meta_descripcion"
+                        value={formData.etiqueta.meta_descripcion}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            etiqueta: {
+                              ...formData.etiqueta,
+                              meta_descripcion: e.target.value.slice(
+                                0,
+                                LENGTHS.metaDescripcion,
+                              ),
+                            },
+                          })
+                        }
+                        maxLength={LENGTHS.metaDescripcion}
+                      />
+                      <small className="text-gray-500 mt-1 block">
+                        Sugerido {LENGTHS.metaDescripcion} caracteres
+                      </small>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-span-1 md:col-span-2 mt-2 card !bg-white dark:!bg-gray-900/40 !border-gray-200 dark:!border-gray-700">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-xl font-bold text-teal-600 dark:text-teal-400">
+                      Contenido del Blog
+                    </h3>
+                  </div>
+                  {/* --- Imagen Principal Blog Contenedor--- */}
+                  <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm mb-3">
+                    <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      Imagen Principal
+                    </h3>
+                    {/* Imagen Principal Blog */}
+                    <div className="form-input md:col-span-2 mt-4">
+                      <label className="font-medium text-gray-700 dark:text-gray-300 block mb-2">
+                        Imagen Principal del Blog*
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+
+                          if (!file) return;
+
+                          if (!validateImage(file, "miniatura")) {
+                            e.target.value = "";
+                            return;
+                          }
+
+                          setFormData((prev) => ({
+                            ...prev,
+                            hero_image: file,
+                          }));
+
+                          setPreviewHero(URL.createObjectURL(file));
+                        }}
+                        className="hidden"
+                        id="hero-image-upload"
+                      />
+                      <label
+                        htmlFor="hero-image-upload"
+                        className="cursor-pointer border-2 border-dashed border-purple-300 dark:border-purple-700 bg-white dark:bg-gray-900 p-6 rounded-xl block text-center hover:bg-purple-50 dark:hover:bg-gray-800 transition-colors"
+                      >
+                        {formData.hero_image ? (
+                          <div className="relative flex flex-col items-center justify-center gap-3 group">
+                            <img
+                              src={
+                                previewHero
+                                  ? previewHero
+                                  : typeof formData.hero_image === "string"
+                                    ? formData.hero_image.startsWith("http")
+                                      ? formData.hero_image
+                                      : `${config.apiUrl}${formData.hero_image}`
+                                    : ""
+                              }
+                              alt="Hero preview"
+                              className="h-40 object-cover rounded shadow-md"
+                            />
+
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
+                              <span className="bg-purple-500 text-white px-3 py-1 rounded text-sm font-semibold">
+                                Cambiar imagen
+                              </span>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  hero_image: null,
+                                }));
+
+                                setPreviewHero(null);
+                              }}
+                              className="absolute top-2 right-2 w-9 h-9 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg border-2 border-white"
+                            >
+                              ×
+                            </button>
+
+                            <span className="text-purple-600 font-medium text-sm">
+                              Cambiar Hero Image
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center gap-3">
+                            <span className="font-medium">
+                              Click aquí para subir la imagen principal del Blog
+                            </span>
+
+                            {/* RECOMENDACIONES */}
+                            <div className="w-full bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
+                              <p className="text-xs font-semibold text-yellow-800 dark:text-yellow-300 mb-1">
+                                💡 Recomendación:
+                              </p>
+
+                              <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-0.5">
+                                <li>• Formatos: WEBP o GIF</li>
+                                <li>• Tamaño ideal: 960x540 px</li>
+                                <li>• Máximo: 2 MB</li>
+                              </ul>
+                            </div>
+                          </div>
+                        )}
+                      </label>
+                    </div>
+                    <div className="form-input">
+                        <label className="font-medium text-gray-700 dark:text-gray-300">
+                          Nombre
+                        </label>
+                        <input
+                          type="text"
+                          name="hero_image_nombre"
+                          value={formData.hero_image_nombre}
+                          onChange={handleChange}
+                          maxLength={LENGTHS.titulo}
+                          required
+                        />
+                      </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                      
+                      <div className="form-input">
+                        <label className="font-medium text-gray-700 dark:text-gray-300">
+                          Alt
+                        </label>
+                        <input
+                          type="text"
+                          name="hero_image_alt"
+                          value={formData.hero_image_alt}
+                          onChange={handleChange}
+                          maxLength={LENGTHS.titulo}
+                          required
+                        />
+                      </div>
+                      <div className="form-input">
+                        <label className="font-medium text-gray-700 dark:text-gray-300">
+                          Tittle
+                        </label>
+                        <input
+                          type="text"
+                          name="hero_image_tittle"
+                          value={formData.hero_image_tittle}
+                          onChange={handleChange}
+                          maxLength={LENGTHS.titulo}
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  {/* --- TEXTOS PRINCIPALES --- */}
+                  <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm mb-3">
+                    <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 6h16M4 12h16M4 18h7"
+                        />
+                      </svg>
+                      Textos Introductorios
+                    </h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="form-input">
+                        <label className="font-medium text-gray-700 dark:text-gray-300">
+                          Párrafo corto (100 Caracteres)*
+                        </label>
+                        <textarea
+                          name="subtitulo1"
+                          value={formData.subtitulo1}
+                          onChange={handleChange}
+                          maxLength={LENGTHS.parrafo}
+                          required
+                          rows={3}
+                        />
+                        <small className="text-gray-500 text-end block mt-1">
+                          {contarCaracteres(formData.subtitulo1)} Caracteres (Máx{" "}
+                          {LENGTHS.parrafo})
+                        </small>
+                      </div>
+                      <div className="form-input">
+                        <label className="font-medium text-gray-700 dark:text-gray-300">
+                          Descripción (255 Caracteres)*
+                        </label>
+                        <textarea
+                          name="subtitulo2"
+                          value={formData.subtitulo2}
+                          onChange={handleChange}
+                          maxLength={LENGTHS.descripcion}
+                          required
+                          rows={4}
+                        />
+                        <small className="text-gray-500 text-end block mt-1">
+                          {contarCaracteres(formData.subtitulo2)} Caracteres (Máx{" "}
+                          {LENGTHS.descripcion})
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+
+                  {formData.imagenes.map((imagen, index) => (
+                    <div
+                      key={index}
+                      className="mb-6 p-5 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-gradient-to-br from-gray-50 to-white dark:from-gray-800/50 dark:to-gray-900/50"
+                    >
+                      <div className="mb-4 pb-4 border-b-2 border-gray-200 dark:border-gray-700">
+                        <span className="inline-block font-bold text-base text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20 px-3 py-1 rounded-full">
+                          Sección {numeroACaracteres(index + 1)}
+                        </span>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 ml-3">
+                          Edita una sección a la vez y usa el botón X para
+                          limpiar su imagen
+                        </p>
+                      </div>
+                      {/* IMAGEN */}
+                      <div className="flex flex-col space-y-4">
+                        {/* INPUT SUBIR */}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleFileChangeAdicional(e, index)}
+                          className="hidden"
+                          id={`file-input-${index}`}
+                        />
+
+                        {/* INPUT CAMBIAR */}
+                        <input
+                          type="file"
+                          id={`file-input-change-${index}`}
+                          accept="image/*"
+                          onChange={(e) => handleFileChangeAdicional(e, index)}
+                          className="hidden"
+                        />
+
+                        {/* SI HAY IMAGEN */}
+                        {imagen.previewUrl || imagen.url ? (
+                          <div className="relative group">
+                            {/* IMAGEN */}
+                            <img
+                              src={imagen.previewUrl || imagen.url}
+                              alt={`Sección ${index + 1}`}
+                              className="w-full h-48 object-cover rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-md"
+                            />
+
+                            {/* OVERLAY */}
+                            <label
+                              htmlFor={`file-input-change-${index}`}
+                              className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                            >
+                              <span className="bg-teal-500 text-white px-3 py-1 rounded text-sm font-semibold">
+                                Cambiar imagen
+                              </span>
+                            </label>
+
+                            {/* BOTÓN X */}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleRemoveImage(index);
+                              }}
+                              className="absolute top-2 right-2 w-9 h-9 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg border-2 border-white"
+                            >
+                              x
+                            </button>
+                          </div>
+                        ) : (
+                          /* SI NO HAY IMAGEN */
+                          <div className="border-2 border-dashed border-teal-400 dark:border-teal-600 rounded-xl p-4 bg-teal-50 dark:bg-teal-900/10 hover:bg-teal-100 dark:hover:bg-teal-900/20 transition-colors">
+                            <label
+                              htmlFor={`file-input-${index}`}
+                              className="cursor-pointer block text-center"
+                            >
+                              <div className="w-full inline-block bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors mb-3">
+                                Seleccionar archivo
+                              </div>
+                            </label>
+
+                            {/* RECOMENDACIONES */}
+                            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-3">
+                              <p className="text-xs font-semibold text-yellow-800 dark:text-yellow-300 mb-1">
+                                💡 Recomendación:
+                              </p>
+
+                              <ul className="text-xs text-yellow-700 dark:text-yellow-300 space-y-0.5">
+                                <li>• Formatos: WEBP</li>
+                                <li>• Tamaño ideal: 1200x800 px</li>
+                                <li>• Máximo: 2 MB</li>
+                              </ul>
+                            </div>
+                          </div>
+                        )}
+                        {/* Campos SEO */}
+                        
+                        {/* Nombre */}
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            Nombre*
+                          </label>
+                          <input
+                            type="text"
+                            value={imagen.img_nombre}
+                            onChange={(e) => handleImgNombreChange(e, index)}
+                            placeholder="Nombre de la imagen"
+                            className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
+                            required
+                          />
+                        </div>
+                        {/* Tittle */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            Tittle de la imagen*
+                          </label>
+                          <input
+                            type="text"
+                            value={imagen.img_tittle}
+                            onChange={(e) => handleImgTittleChange(e, index)}
+                            placeholder="Título de la imagen"
+                            className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
+                            required
+                          />
+                        </div>
+                        {/* Alt */}
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            Alt de la imagen*
+                          </label>
+                          <input
+                            type="text"
+                            value={imagen.img_alt}
+                            onChange={(e) => handleImgAltChange(e, index)}
+                            placeholder="Describe brevemente el contenido de la imagen"
+                            className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
+                            required
+                          />
+                        </div>
+
+                        </div>
+                        
+
+                        {/* COLUMNA DERECHA - PÁRRAFO */}
+                        <div className="flex flex-col space-y-3">
+                          <div className="flex justify-between items-start gap-2">
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                              Párrafo de la sección*
+                            </label>
+                            <div className="flex gap-2 flex-wrap justify-end">
+                              <button
+                                type="button"
+                                onClick={() => handleInsertLinkClick(index)}
+                                className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 px-2 py-1 rounded transition-colors font-medium"
+                              >
+                                Insertar Link
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleProductLinkClick(index)}
+                                className="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50 px-2 py-1 rounded transition-colors font-medium"
+                              >
+                                Link Producto
+                              </button>
+                            </div>
+                          </div>
+                          <textarea
+                            id={`crear_descripcion_antes_${index}`}
+                            value={imagen.parrafo}
+                            onChange={(e) => handleParrafoChange(e, index)}
+                            placeholder="Escribe el contenido de esta sección..."
+                            className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors resize-none"
+                            rows={8}
+                            required
+                          />
+                        </div>
+                        
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* --- MULTIMEDIA --- */}
+                <div className="bg-gray-50 dark:bg-gray-800/40 p-5 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm">
+                  <h3 className="text-lg font-bold text-teal-700 dark:text-teal-400 mb-4 border-b border-gray-200 dark:border-gray-700 pb-3 flex items-center gap-2">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    Multimedia
+                  </h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="form-input">
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        Título del video para YouTube*
+                      </label>
+                      <input
+                        type="text"
+                        name="video_titulo"
+                        value={formData.video_titulo}
+                        onChange={handleChange}
+                        maxLength={LENGTHS.videoTitulo}
+                        required
+                      />
+                    </div>
+                    <div className="form-input">
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        URL del video*
+                      </label>
+                      <input
+                        type="text"
+                        name="video_url"
+                        value={formData.video_url}
+                        onChange={handleChange}
+                        maxLength={LENGTHS.videoUrl}
+                        required
+                        placeholder="https://youtube.com/..."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* CONFIGURACIÓN DEL BOTÓN */}
+                <div className="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm mt-4">
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">
+                      Configuración del Botón
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Personaliza el texto y colores del botón de vista previa
+                    </p>
+                  </div>
+
+                  {/* TEXTO DEL BOTÓN */}
+                  <div className="mb-6">
+                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 uppercase tracking-wider">
+                      Texto del Botón
+                    </label>
+
+                    <input
+                      type="text"
+                      value={formData.etiqueta.popup_button_text}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          etiqueta: {
+                            ...formData.etiqueta,
+                            popup_button_text: e.target.value,
+                          },
+                        })
+                      }
+                      className="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 text-sm font-medium focus:ring-2 focus:ring-green-500 dark:text-white transition-all shadow-inner"
+                      placeholder="Ver Producto"
+                    />
+                  </div>
+
+                  {/* COLORES */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                    {/* COLOR DEL BOTÓN */}
+                    <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
+                      <span className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left">
+                        Color del Botón
+                      </span>
+
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform shrink-0">
+                          <input
+                            type="color"
+                            value={formData.etiqueta.popup_button_color}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                etiqueta: {
+                                  ...formData.etiqueta,
+                                  popup_button_color: e.target.value,
+                                },
+                              })
+                            }
+                            className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
+                          />
+                        </div>
+
+                        <div className="flex flex-col">
+                          <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
+                            Seleccionar
+                          </span>
+                          <span className="text-xs text-gray-400">fondo</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* COLOR DEL TEXTO */}
+                    <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start">
+                      <span className="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-3 w-full text-center sm:text-left">
+                        Color del Texto
+                      </span>
+
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white dark:border-gray-600 shadow-md cursor-pointer hover:scale-105 transition-transform shrink-0">
+                          <input
+                            type="color"
+                            value={formData.etiqueta.popup_text_color}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                etiqueta: {
+                                  ...formData.etiqueta,
+                                  popup_text_color: e.target.value,
+                                },
+                              })
+                            }
+                            className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer"
+                          />
+                        </div>
+
+                        <div className="flex flex-col">
+                          <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
+                            Seleccionar
+                          </span>
+                          <span className="text-xs text-gray-400">texto</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* PREVIEW */}
+                  <div className="mt-8 flex justify-center">
+                    <button
+                      type="button"
+                      style={{
+                        backgroundColor: formData.etiqueta.popup_button_color,
+                        color: formData.etiqueta.popup_text_color,
+                      }}
+                      className="px-6 py-3 rounded-xl font-bold shadow-md transition-all hover:scale-105"
+                    >
+                      {formData.etiqueta.popup_button_text || "ver producto"}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="col-span-1 md:col-span-2 flex flex-col sm:flex-row justify-end gap-3 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <button
+                    type="button"
+                    onClick={onClose ? onClose : closeModal}
+                    className="neutral-btn w-full sm:w-auto !text-base !px-6 !py-2 !bg-amber-100 !text-amber-900 !border-amber-300 hover:!bg-amber-200 hover:!text-amber-950 dark:!bg-gray-700 dark:!text-gray-100 dark:!border-gray-500 dark:hover:!bg-gray-600"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSaving || isSubmitting}
+                    className="admin-act-btn w-full sm:w-auto !text-base !px-6 !py-2 disabled:opacity-60 disabled:hover:cursor-not-allowed"
+                  >
+                    {isSaving || isSubmitting ? "Guardando..." : "Guardar Blog"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para insertar enlace manual */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
+          <div className="bg-white p-6 rounded-xl w-96">
+            <h3 className="text-xl font-bold mb-4">Insertar Enlace</h3>
+            <p className="text-sm text-gray-600 mb-2">
+              Enlace para: <strong>{selectedText}</strong>
+            </p>
+            <input
+              type="text"
+              placeholder="https://..."
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              className="w-full border p-2 rounded mb-4 focus:ring-2 focus:ring-teal-500"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 text-gray-500"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleAddLink}
+                className="px-4 py-2 bg-teal-600 text-white rounded"
+              >
+                Insertar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/*  MODAL  Para insertar enlace de producto */}
+      {isProductLinkModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-[1000]">
+          <div className="bg-white p-6 rounded-xl w-96 text-gray-900">
+            <h3 className="text-xl font-bold mb-3 text-purple-600">
+              Vincular Producto
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              ¿Deseas convertir el texto "<strong>{selectedText}</strong>" en un
+              enlace directo al producto seleccionado en la Información General?
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setIsProductLinkModalOpen(false)}
+                className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleAddProduct}
+                className="px-4 py-2 bg-purple-600 text-white rounded font-semibold hover:bg-purple-700 transition-colors"
+              >
+                Confirmar Enlace
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default AddBlogModal;

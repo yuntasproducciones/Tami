@@ -1,0 +1,354 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+//import aboutHero from "@images/about/nosotros_hero.png";
+import aboutHero from "@images/about/nosotros_hero2.webp";
+
+import valoresArray from "@data/valores.data";
+import Card from "../components/about/Card.astro";
+import bg_card4 from "@images/about/nosotrostami.webp";
+
+//import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.svg";
+import bg_card4_mobile from "@images/about/nosotrosTamiResponsive.webp";
+
+import { Image, getImage } from "astro:assets";
+
+import AboutHeroBackground from "../components/about/AboutHeroBackground.jsx";
+import Picture from "astro/components/Picture.astro";
+
+
+
+
+// Optimizar la imagen de Desktop en el servidor
+const desktopImage = await getImage({
+  src: bg_card4,
+  formats: ['avif', 'webp'],
+  // Aquí puedes definir el ancho estimado para desktop si quieres optimizar más
+});
+
+// Optimizar la imagen de Mobile en el servidor
+const mobileImage = await getImage({
+  src: bg_card4_mobile,
+  formats: ['avif', 'webp'],
+  width: 780, // Tamaño optimizado para pantallas retina móviles
+});
+
+
+const optimizedHero = await getImage({ src: aboutHero, format: 'webp', width: 800 });
+
+
+---
+
+<!-- Cargar CSS de Swiper temprano -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+  media="print"
+  onload="this.media='all'"
+/>
+
+
+<Layout
+  title="¿Quiénes Somos? | Fabricantes y Proveedores de Maquinaria"
+  description="En TAMI nos especializamos en soluciones tecnológicas y maquinaria confiable para impulsar el crecimiento de empresas y emprendedores peruanos."
+  canonicalUrl="https://tamimaquinarias.com/nosotros/"
+  keywords=""
+>
+
+  <section
+    class="relative sm:h-screen min-h-[45vh] pt-16 lg:pt-20 text-white overflow-hidden"
+  >
+    <AboutHeroBackground client:load imageSrc={optimizedHero.src} />
+
+    <div
+      class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6 pt-10 pb-4 sm:pt-0
+      bg-gradient-to-b from-[#046A63]/40 to-[#023B37]/60"
+    >
+      <h2
+        class="text-xl sm:text-5xl lg:text-7xl font-extrabold mb-2 leading-tight"
+      >
+        SOBRE NOSOTROS
+      </h2>
+
+      <p
+        class="text-[12.5px] sm:text-lg md:text-xl max-w-[260px] sm:max-w-4xl
+        leading-snug sm:leading-relaxed"
+      >
+        Buscamos ayudar en tu negocio, mediante la comercialización de productos
+        para emprendimiento, trabajo y decoración, cumpliendo con los estándares
+        de calidad.
+      </p>
+    </div>
+  </section>
+
+
+  {/* 🔹 Sección Identidad y CTA */}
+  <section class="w-full px-0">
+    <div
+      class="relative overflow-hidden flex items-center h-[60vh] sm:h-[80vh] md:items-center justify-center md:justify-start"
+    >
+      <!-- Fondo mobile -->
+      <picture class="absolute inset-0 w-full h-full">
+        <source media="(max-width: 767px)" srcset={mobileImage.src} />
+        
+        <img 
+          src={desktopImage.src} 
+          alt="Fondo Tami Maquinarias"
+          loading="eager" 
+          fetchpriority="high"
+          class="w-full h-full object-cover object-center"
+        />
+      </picture>
+
+      <!-- Oscurecido -->
+      <div class="absolute inset-0 bg-black/45 z-0"></div>
+
+      <!-- Contenido -->
+      <div
+        class="z-10 text-white text-center md:text-left w-full md:max-w-5xl mx-auto px-4 sm:px-6 md:px-8 md:ml-8 lg:ml-16 md:py-8 flex flex-col justify-center relative"
+      >
+        <h2
+          class="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-3 md:mb-8 leading-tight drop-shadow-md uppercase"
+        >
+          ¿POR QUÉ ELEGIR TAMI?
+        </h2>
+
+        <p
+          class="text-[12.5px]  sm:text-base md:text-lg font-light mb-5 pl-5 pr-5 md:mb-10 opacity-95 leading-relaxed text-center md:text-justify"
+        >
+          En <span class="font-bold">Tami</span> nos especializamos en soluciones
+          de maquinaria y tecnología para empresas y emprendedores que buscan eficiencia,
+          innovación y confianza. Nuestra misión es acompañar a nuestros clientes
+          en el crecimiento de sus proyectos, brindando productos de calidad y un
+          servicio personalizado.
+        </p>
+
+        <div class="flex justify-center md:justify-start mb-3 md:mb-0">
+          <a
+            href="/catalogo-maquinarias"
+            class="bg-[#0C998A] hover:bg-teal-700 text-white font-bold text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-10 py-4 sm:py-3 md:py-3 rounded-md transition-all duration-300 inline-flex items-center justify-center shadow-lg hover:shadow-teal-500/30 hover:scale-105 active:scale-95 min-h-[48px]"
+          >
+            CONTÁCTANOS
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* 🔹 Franja con mensaje "Sobre nuestros propósitos y metas" */}
+  <div
+    class="bg-cover bg-center h-auto py-16 flex flex-col justify-center items-center"
+  >
+    <h2 class="text-4xl pl-7 pr-7 font-extrabold mb-12 text-center text-teal-600">
+      Sobre nuestros propósitos y metas
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl px-6 w-full">
+      <div
+        class="group bg-white rounded-3xl shadow-lg p-8 border border-gray-100 transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(0,120,111,0.2)] hover:-translate-y-2 min-h-80 flex flex-col justify-center"
+      >
+        <h3
+          class="text-3xl font-bold text-teal-600 mb-4 text-center transition-colors duration-300 group-hover:text-teal-500"
+        >
+          MISIÓN
+        </h3>
+        <p class="text-gray-700 text-center text-lg leading-relaxed">
+          Entregar soluciones a emprendedores peruanos que compartan nuestro
+          deseo de crecer.
+        </p>
+      </div>
+      <div
+        class="group bg-white rounded-3xl shadow-lg p-8 border border-gray-100 transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(0,120,111,0.2)] hover:-translate-y-2 min-h-80 flex flex-col justify-center"
+      >
+        <h3
+          class="text-3xl font-bold text-teal-600 mb-6 text-center transition-colors duration-300 group-hover:text-teal-500"
+        >
+          VISIÓN
+        </h3>
+        <p class="text-gray-700 text-center text-lg leading-relaxed">
+          Aspiramos a ser la solución confiable más valorada por nuestros
+          clientes.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  {/* 🔹 Sección de Valores - Carrusel en móvil */}
+  <section class="bg-white py-6 lg:py-12 px-4 lg:px-8 mb-12">
+    <h2
+      class="text-center text-teal-600 text-2xl sm:text-4xl md:text-5xl font-extrabold mb-16"
+    >
+      VALORES
+    </h2>
+
+    {/* Grid desktop */}
+    <div
+      class="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-12 justify-items-center max-w-screen-2xl mx-auto"
+    >
+      {
+        valoresArray.map((valor: any) => (
+          <div class="flex flex-col items-center w-full">
+            <Card
+              image={valor.image}
+              title={valor.title}
+              imageTitle={valor.imageTitle}
+              paragraph={valor.paragraph}
+            />
+          </div>
+        ))
+      }
+    </div>
+
+    {/* Carrusel móvil */}
+    <div class="md:hidden valores-carousel-container relative">
+      <div class="swiper valoresSwiper w-full">
+        <div class="swiper-wrapper">
+          {
+            valoresArray.map((valor: any) => (
+              <div class="swiper-slide flex justify-center px-4">
+                <Card
+                  image={valor.image}
+                  title={valor.title}
+                  imageTitle={valor.imageTitle}
+                  paragraph={valor.paragraph}
+                />
+              </div>
+            ))
+          }
+        </div>
+
+        <!-- Paginación -->
+        <div class="swiper-pagination valores-swiper-pagination"></div>
+      </div>
+    </div>
+  </section>
+
+<!-- Estilos para el carrusel -->
+  <style>
+    .valores-carousel-container {
+      padding: 0 10px;
+    }
+    .valoresSwiper {
+      width: 100%;
+      height: 100%;
+      padding-bottom: 40px;
+    }
+    .swiper-slide {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .valores-swiper-pagination {
+      bottom: 0;
+      position: relative;
+      margin-top: 8px;
+    }
+    .valores-swiper-pagination .swiper-pagination-bullet {
+      background: #0c998a;
+      opacity: 0.5;
+      width: 12px;
+      height: 12px;
+      margin: 0 8px !important;
+      position: relative;
+    }
+    .valores-swiper-pagination .swiper-pagination-bullet::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 44px;
+      height: 44px;
+    }
+    .valores-swiper-pagination .swiper-pagination-bullet-active {
+      opacity: 1;
+    }
+  </style>
+
+  <!-- Swiper JS -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"
+    defer></script>
+
+  <script>
+    // @ts-nocheck
+    
+    (function () {
+      
+      const win = window;
+
+      function waitForSwiperAndInit(maxAttempts = 50, interval = 100) {
+        let attempts = 0;
+        const timer = setInterval(() => {
+          attempts++;
+          // Verificamos si Swiper existe en window
+          if (win.Swiper) {
+            clearInterval(timer);
+            initSwiper();
+            return;
+          }
+          if (attempts >= maxAttempts) {
+            clearInterval(timer);
+            console.warn("Swiper no cargó a tiempo.");
+          }
+        }, interval);
+      }
+
+      function initSwiper() {
+        if (window.innerWidth >= 768) return;
+
+        // Accedemos a la propiedad personalizada de forma segura
+        if (win._valoresSwiperInitialized) return;
+        win._valoresSwiperInitialized = true;
+
+        try {
+          // @ts-ignore: Swiper viene del CDN
+          const swiper = new win.Swiper(".valoresSwiper", {
+            loop: false,
+            slidesPerView: 1,
+            spaceBetween: 20,
+            centeredSlides: true,
+            pagination: {
+              el: ".valores-swiper-pagination",
+              clickable: true,
+            },
+            autoplay: {
+              delay: 2000,
+              disableOnInteraction: false,
+            },
+            breakpoints: {
+              640: { slidesPerView: 1.2 },
+            },
+          });
+
+          // Usamos arrow function para que el contexto sea correcto y no falle 'this'
+          swiper.on("slideChange", (s) => {
+            if (s.isEnd) {
+              setTimeout(() => {
+                s.slideTo(0, 500);
+              }, 2000);
+            }
+          });
+        } catch (err) {
+          console.error("Error inicializando Swiper:", err);
+        }
+      }
+
+      if (win.Swiper) {
+        initSwiper();
+      } else {
+        waitForSwiperAndInit();
+      }
+
+      let resizeTimeout;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (window.innerWidth < 768 && !win._valoresSwiperInitialized) {
+            if (win.Swiper) initSwiper();
+          }
+        }, 200);
+      });
+    })();
+  </script>
+</Layout>

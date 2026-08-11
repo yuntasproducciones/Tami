@@ -1,0 +1,8 @@
+---
+import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
+import DashboardInicio from "../../components/admin/inicio/DashboardInicio";
+---
+
+<LayoutAdmin title="General">
+  <DashboardInicio client:only="react" />
+</LayoutAdmin>

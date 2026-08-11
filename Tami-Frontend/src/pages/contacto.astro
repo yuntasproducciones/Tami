@@ -1,0 +1,39 @@
+---
+import Layout from "src/layouts/Layout.astro";
+import contactoBg from "@images/contacto/contactoBackground.webp";
+import AboutHeroBackground from "src/components/about/AboutHeroBackground";
+import { getImage } from "astro:assets";
+import HeroSubtitle from "../components/contacto/HeroSubtitle";
+import FormularioContacto from "../components/contacto/FormularioContacto";
+import UbicacionContacto from "../components/contacto/UbicacionContacto";
+import { CONTACT_DATA } from "src/constants";
+
+const optimizedHero = await getImage({ src: contactoBg, format: 'webp', width: 800 });
+---
+
+<Layout 
+  title="Contacto y Cotizaciones de Maquinarias en Lima | TAMI"
+  description="¿Necesitas asesoría para tu negocio? Comunícate con TAMI Maquinarias. Atendemos consultas, soporte técnico y cotizaciones personalizadas en Perú."
+  canonicalUrl="https://tamimaquinarias.com/contacto/"
+>
+ <section
+    class="relative flex items-center justify-center text-white h-[30vh] sm:h-screen min-h-[47vh] px-4 overflow-hidden"
+  >
+   <AboutHeroBackground client:load imageSrc={optimizedHero.src} />
+   <div
+      class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6 pt-10 pb-4 sm:pt-0
+      bg-gradient-to-b from-[#046A63]/40 to-[#023B37]/60"
+    >
+      <h2
+        class="text-xl sm:text-5xl lg:text-7xl font-extrabold mb-2 leading-tight"
+      >CONTACTO</h2>
+      <HeroSubtitle client:load />
+    </div>
+ </section>
+
+  <FormularioContacto client:load contact={CONTACT_DATA} />
+
+  <UbicacionContacto contact={CONTACT_DATA} />
+
+</Layout>
+

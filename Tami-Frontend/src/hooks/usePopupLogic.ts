@@ -1,0 +1,570 @@
+import { useEffect, useState, useRef } from "react";
+import { config, getApiUrl } from "../../config";
+import { origenCliente } from "@data/origenCliente";
+import Swal from "sweetalert2";
+const MODAL_STORAGE_KEY = "catalogModalLastClosed";
+const MODAL_COOLDOWN_MS = 3 * 60 * 1000; // 3 minutos 
+const POPUP_LAST_EMAIL_BY_PHONE_KEY = "popupLastEmailByPhone";
+
+export interface PopupSettings {
+  popup_image_url?: string;
+  popup_image2_url?: string;
+  popup_mobile_image_url?: string;
+  popup_mobile_image2_url?: string;
+  popup_mobile_image_count?: number;
+  button_bg_color?: string;
+  button_text_color?: string;
+  button_text?: string;
+  popup_start_delay_minutes?: number;
+}
+
+export interface UsePopupLogicProps {
+  isPreview?: boolean;
+  initialSettings?: PopupSettings;
+}
+
+export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLogicProps) => {
+  const cachedPreviewSettings = typeof window !== "undefined"
+    ? ((window as any).__popupPreviewSettings?.settings || {})
+    : {};
+  const cachedPreviewMode = typeof window !== "undefined"
+    ? ((window as any).__popupPreviewSettings?.mode === "mobile" ? "mobile" : "desktop")
+    : "desktop";
+
+  const [pathname, setPathname] = useState<string>(() => 
+    typeof window !== "undefined" ? window.location.pathname : ""
+  );
+  const [showModal, setShowModal] = useState(isPreview);
+  const [settings, setSettings] = useState<PopupSettings>(initialSettings || cachedPreviewSettings);
+  const [loadingSettings, setLoadingSettings] = useState(!isPreview);
+  const [isClosing, setIsClosing] = useState(false);
+  const [previewMode, setPreviewMode] = useState<"desktop" | "mobile">(cachedPreviewMode);
+  const [isDelayFinished, setIsDelayFinished] = useState(false);
+
+  // Form states
+  const [nombre, setNombre] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [correo, setCorreo] = useState("");
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [productId, setProductId] = useState<number | null>(null);
+
+  const lastScrollRef = useRef(0);
+  const hasReachedBottomRef = useRef(false);
+  const hasShownRef = useRef(false);
+
+  const allowedRoutes = [
+    "/",
+    "/nosotros",
+    "/catalogo-maquinarias",
+    "/politicas-envio",
+    "/blog",
+  ];
+
+  const isProductDetail = pathname.startsWith("/catalogo-maquinarias/") && pathname !== "/catalogo-maquinarias";
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    setPathname(window.location.pathname);
+    
+    const handleLocationChange = () => {
+      setPathname(window.location.pathname);
+    };
+
+    window.addEventListener("popstate", handleLocationChange);
+    return () => window.removeEventListener("popstate", handleLocationChange);
+  }, []);
+
+  useEffect(() => {
+    if (isPreview) {
+      setLoadingSettings(false);
+      return;
+    }
+  
+    if (!pathname) return;
+  
+    let cancelled = false;
+    const controller = new AbortController();
+  
+    const fetchSettings = async () => {
+      try {
+        // 1. Preparamos ambas peticiones para lanzarlas en paralelo.
+        //    (quitamos el "?t=" para permitir cache de navegador/CDN;
+        //    si tu backend NO manda headers de Cache-Control, vuelve a
+        //    agregarlo, pero considera resolverlo en el backend en vez
+        //    de forzar el cache-busting en cada carga)
+        const globalPromise = fetch(
+          getApiUrl(config.endpoints.popups.getSettings),
+          { signal: controller.signal }
+        );
+  
+        let productLink: string | null = null;
+        if (isProductDetail) {
+          const parts = pathname.split("/").filter(Boolean);
+          productLink = parts[parts.length - 1] || null;
+        }
+  
+        const productPromise = isProductDetail && productLink
+          ? fetch(getApiUrl(`/api/v1/productos/link/${productLink}`), { signal: controller.signal })
+          : Promise.resolve(null);
+  
+        // 2. Ambas peticiones corren al mismo tiempo, no una tras otra.
+        const [response, prodRes] = await Promise.all([globalPromise, productPromise]);
+  
+        if (cancelled) return;
+  
+        let globalData: any = {};
+        if (response.ok) {
+          const responseData = await response.json();
+          globalData = responseData.data || responseData;
+        }
+  
+        let finalSettings: PopupSettings = {
+          ...globalData,
+          popup_image_url: globalData.image1 || globalData.popup_image_url,
+          popup_image2_url: globalData.image2 || globalData.popup_image2_url,
+          popup_mobile_image_url: globalData.imageMobile || globalData.popup_mobile_image_url,
+          popup_mobile_image2_url: globalData.imageMobile2 || globalData.popup_mobile_image2_url,
+          popup_mobile_image_count: 2,
+          button_text: globalData.button_text || globalData.btnText || "CONOCER MAS",
+          popup_start_delay_minutes: globalData.popup_start_delay_minutes || globalData.popupInicioDelay || 60,
+        };
+  
+        if (isProductDetail) {
+          finalSettings.popup_start_delay_minutes =
+            globalData.product_popup_delay_minutes || globalData.popupProductosDelay || 60;
+  
+          if (prodRes && prodRes.ok) {
+            try {
+              const prodJson = await prodRes.json();
+              const product = prodJson.data || prodJson;
+              setProductId(product.id || null);
+  
+              const imagenPopup = product.producto_imagenes?.find((img: any) => img.tipo === "popup");
+              const imagenPopup2 = product.producto_imagenes?.find((img: any) => {
+                const tipo = (img.tipo || "").toLowerCase();
+                return tipo === "popup2" || tipo === "popup_2";
+              });
+              const imagenPopupMobile = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile");
+              const imagenPopupMobile2 = product.producto_imagenes?.find((img: any) => img.tipo === "popup_mobile2");
+  
+              finalSettings = {
+                ...finalSettings,
+                popup_image_url: imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : finalSettings.popup_image_url,
+                popup_image2_url: imagenPopup2 ? `${config.apiUrl}${imagenPopup2.url_imagen}` : finalSettings.popup_image2_url,
+                popup_mobile_image_url: imagenPopupMobile
+                  ? `${config.apiUrl}${imagenPopupMobile.url_imagen}`
+                  : (imagenPopup ? `${config.apiUrl}${imagenPopup.url_imagen}` : finalSettings.popup_mobile_image_url),
+                popup_mobile_image2_url: imagenPopupMobile2
+                  ? `${config.apiUrl}${imagenPopupMobile2.url_imagen}`
+                  : (imagenPopup2 ? `${config.apiUrl}${imagenPopup2.url_imagen}` : finalSettings.popup_mobile_image2_url),
+                popup_mobile_image_count: 2,
+                button_bg_color: product.etiqueta?.popup_button_color || finalSettings.button_bg_color,
+                button_text_color: product.etiqueta?.popup_text_color || finalSettings.button_text_color,
+                button_text: product.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
+              };
+            } catch (e) {
+              console.error("❌ Error parsing product-specific data:", e);
+            }
+          } else if (prodRes) {
+            console.warn("⚠️ Product fetch failed with status:", prodRes.status);
+          }
+        }
+  
+        if (!cancelled) setSettings(finalSettings);
+      } catch (err) {
+        if ((err as any)?.name !== "AbortError") {
+          console.error("❌ fetchSettings error:", err);
+        }
+      } finally {
+        if (!cancelled) setLoadingSettings(false);
+      }
+    };
+  
+    // 3. Diferimos la petición: el popup no se muestra de inmediato
+    //    (default 60 min de delay), así que no hay razón para competir
+    //    por ancho de banda con los recursos críticos del primer render.
+    let idleId: number | ReturnType<typeof setTimeout>;
+    if ("requestIdleCallback" in window) {
+      idleId = window.requestIdleCallback(() => fetchSettings());
+    } else {
+      idleId = setTimeout(fetchSettings, 2000);
+    }
+  
+    return () => {
+      cancelled = true;
+      controller.abort();
+      if ("cancelIdleCallback" in window && typeof idleId === "number") {
+        window.cancelIdleCallback(idleId);
+      } else {
+        clearTimeout(idleId as ReturnType<typeof setTimeout>);
+      }
+    };
+  }, [isPreview, pathname, isProductDetail]);
+
+  // Preview event listener
+  useEffect(() => {
+    if (!isPreview) return;
+
+    const handlePreviewUpdate = (e: any) => {
+      const { settings: newSettings, mode } = e.detail;
+      console.log("📋 [usePopupLogic] Event received! mode:", mode);
+      console.log("📋 [usePopupLogic] mobile_image_url:", newSettings?.popup_mobile_image_url?.substring(0, 50));
+      if (newSettings) {
+        setSettings((prev) => ({ ...prev, ...newSettings }));
+      }
+      if (mode) {
+        setPreviewMode(mode);
+      }
+    };
+
+    window.addEventListener("update-popup-preview", handlePreviewUpdate);
+    return () => window.removeEventListener("update-popup-preview", handlePreviewUpdate);
+  }, [isPreview]);
+
+  // Auto-time modal
+  useEffect(() => {
+    if (isPreview) return;
+    
+    if (!pathname || (!allowedRoutes.includes(pathname) && !isProductDetail)) {
+      return;
+    }
+
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+
+    const isAnyModalOpen = document.querySelector(".modal-overlay");
+    const isCatalogModalOpen = document.getElementById("catalog-modal");
+
+    if (!loadingSettings && !hasShownRef.current && !isAnyModalOpen && !isCatalogModalOpen && !showModal) {
+      const delaySeconds = settings?.popup_start_delay_minutes ?? 60;
+      const delayMs = delaySeconds * 1000;
+      let remainingSeconds = Math.max(0, Math.floor(delayMs / 1000));
+
+      if (remainingSeconds === 0) {
+        setShowModal(true);
+        hasShownRef.current = true;
+        setIsDelayFinished(true);
+        return;
+      }
+
+      intervalId = setInterval(() => {
+        remainingSeconds -= 1;
+        
+        if (remainingSeconds <= 0) {
+          setShowModal(true);
+          hasShownRef.current = true;
+          setIsDelayFinished(true);
+          if (intervalId) clearInterval(intervalId);
+        }
+      }, 1000);
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [pathname, showModal, isClosing, loadingSettings, settings?.popup_start_delay_minutes]);
+
+  // Exit Intent
+  useEffect(() => {
+    if (isPreview) return;
+    const handleMouseLeave = (e: MouseEvent) => {
+      if (e.clientY <= 0) {
+        if (showModal || isClosing || !isDelayFinished) return;
+        const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
+        const now = Date.now();
+        const isAnyModalOpen = document.querySelector(".modal-overlay");
+  
+        if (now - lastClosed >= MODAL_COOLDOWN_MS && !hasShownRef.current && !isAnyModalOpen && !showModal) {
+          setShowModal(true);
+          hasShownRef.current = true;
+        }
+      }
+    };
+    document.addEventListener("mouseleave", handleMouseLeave);
+    return () => document.removeEventListener("mouseleave", handleMouseLeave); //ahora usamos mouseleave 
+  }, [pathname, showModal, isClosing, isDelayFinished]);
+
+  // Global manual trigger
+  useEffect(() => {
+    if (isPreview) return;
+    const handler = () => {
+      if (!pathname || !allowedRoutes.includes(pathname)) return;
+      if (!document.querySelector(".modal-overlay")) {
+        setShowModal(true);
+      }
+    };
+    window.addEventListener("open-scroll-modal", handler);
+    return () => window.removeEventListener("open-scroll-modal", handler);
+  }, [pathname]);
+
+  // Scroll trigger
+  useEffect(() => {
+    if (isPreview) return;
+  
+    let ticking = false;
+  
+    const processScroll = () => {
+      if (!pathname || !allowedRoutes.includes(pathname)) return;
+      if (showModal || isClosing) return;
+  
+      const currentScroll = window.scrollY;
+      const scrollDirection = currentScroll < lastScrollRef.current ? "up" : "down";
+      lastScrollRef.current = currentScroll;
+  
+      const atBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight;
+      if (atBottom) hasReachedBottomRef.current = true;
+  
+      if (hasReachedBottomRef.current && scrollDirection === "up" && !hasShownRef.current && isDelayFinished) {
+        const lastClosed = parseInt(localStorage.getItem(MODAL_STORAGE_KEY) || "0", 10);
+        if (Date.now() - lastClosed < MODAL_COOLDOWN_MS) return;
+        setShowModal(true);
+        hasShownRef.current = true;
+        hasReachedBottomRef.current = false;
+      }
+    };
+  
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        processScroll();
+        ticking = false;
+      });
+    };
+  
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [pathname, showModal, isClosing, isDelayFinished]);
+
+  const resetForm = () => {
+    setNombre("");
+    setTelefono("");
+    setCorreo("");
+    setErrors({});
+  };
+
+  const closeModal = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setShowModal(false);
+      setIsClosing(false);
+      resetForm();
+      localStorage.setItem(MODAL_STORAGE_KEY, Date.now().toString());
+    }, 1000);
+  };
+
+  const validateForm = (formValues: { nombre: string; telefono: string; correo: string }) => {
+    const { nombre, telefono, correo } = formValues;
+    const newErrors: { [key: string]: string } = {};
+    if (!nombre || nombre.length < 3 || nombre.length > 75) {
+      newErrors.general_top = "Ingresa un nombre valido (3 a 75 caracteres)";
+      setErrors(newErrors);
+      return false;
+    }
+
+    if (!/^\d{9}$/.test(telefono)) {
+      newErrors.general_top = "Ingresa un telefono valido de 9 digitos";
+      setErrors(newErrors);
+      return false;
+    }
+
+    if (!correo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+      newErrors.general_top = "Ingresa un correo valido";
+      setErrors(newErrors);
+      return false;
+    }
+
+    setErrors({});
+    return true;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const formElement = e.currentTarget as HTMLFormElement;
+    const submittedFormData = new FormData(formElement);
+
+    const submittedNombre = (submittedFormData.get("nombre")?.toString() ?? nombre).trim();
+    const submittedTelefono = (submittedFormData.get("telefono")?.toString() ?? telefono)
+      .replace(/\D/g, "")
+      .trim();
+    const submittedCorreo = (submittedFormData.get("correo")?.toString() ?? correo).trim();
+
+    setNombre(submittedNombre);
+    setTelefono(submittedTelefono);
+    setCorreo(submittedCorreo);
+
+    if (!validateForm({ nombre: submittedNombre, telefono: submittedTelefono, correo: submittedCorreo })) return;
+
+    const lastEmailByPhoneKey = `${POPUP_LAST_EMAIL_BY_PHONE_KEY}:${submittedTelefono}`;
+    const lastEmailByPhone = typeof window !== "undefined"
+      ? window.localStorage.getItem(lastEmailByPhoneKey)
+      : null;
+    const shouldSendEmailFallback = Boolean(isProductDetail && lastEmailByPhone && lastEmailByPhone !== submittedCorreo);
+
+    setIsSubmitting(true);
+    try {
+      const formData = new FormData();
+      formData.append("name", submittedNombre);
+      formData.append("email", submittedCorreo);
+      formData.append("correo", submittedCorreo);
+      formData.append("recipient_email", submittedCorreo);
+      formData.append("celular", `+51${submittedTelefono}`);
+      
+      // Enviar origen y datos de producto si existen
+      if (isProductDetail) {
+        formData.append("source_id", origenCliente.PRODUCTO_DETALLE);
+        
+        // Obtener link del pathname si no tenemos el ID
+        const parts = pathname.split("/").filter(Boolean);
+        const productLink = parts[parts.length - 1];
+        
+        if (productId) formData.append("producto_id", productId.toString());
+        if (productLink) formData.append("link", productLink);
+      } else {
+        formData.append("source_id", origenCliente.INICIO);
+      }
+
+      const response = await fetch(getApiUrl(config.endpoints.popups.submit), {
+        method: "POST",
+        cache: "no-store",
+        body: formData,
+      });
+
+      const isMobile = window.innerWidth <= 768;
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        if (errorData?.errors) {
+          const newErrors: { [key: string]: string } = {};
+          if (errorData.errors.name) newErrors.nombre = errorData.errors.name.join(" ");
+          if (errorData.errors.celular) newErrors.telefono = errorData.errors.celular.join(" ");
+          if (errorData.errors.email) newErrors.correo = errorData.errors.email.join(" ");
+          setErrors(newErrors);
+        } else {
+          const backendMessage = errorData?.message || "No se pudo enviar la información. Intenta nuevamente.";
+          setErrors({ general: backendMessage });
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: backendMessage,
+            position: "bottom-end",
+            toast: true,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            background: "#FEE2E2",
+            color: "#7F1D1D",
+            width: isMobile ? 250 : 400,
+            padding: isMobile ? "0.5rem" : "1rem",
+            customClass: {
+              title: isMobile
+                ? "!text-[12px] !leading-4"
+                : "!text-md",
+              htmlContainer: isMobile
+                ? "!text-[11px]"
+                : "!text-md",
+            },
+          });
+      }
+        return;
+      }
+
+      const responseJson = await response.json().catch(() => null);
+      const responseClient = responseJson?.data ?? responseJson;
+      const responseClientId = responseClient?.id;
+
+      if (responseClientId && responseClient?.email && responseClient.email !== submittedCorreo) {
+        try {
+          await fetch(getApiUrl(config.endpoints.clientes.update(responseClientId)), {
+            method: "PUT",
+            cache: "no-store",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: submittedNombre,
+              celular: `+51${submittedTelefono}`,
+              email: submittedCorreo,
+              source_id: isProductDetail ? origenCliente.PRODUCTO_DETALLE : origenCliente.INICIO,
+            }),
+          });
+        } catch (updateError) {
+          console.warn("[usePopupLogic] Could not update popup client email.", updateError);
+        }
+      }
+
+      if (shouldSendEmailFallback) {
+        const fallbackResponse = await fetch(
+          getApiUrl(config.endpoints.email.sendEmailByProductLink),
+          {
+            method: "POST",
+            cache: "no-store",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: submittedNombre,
+              phone: `+51${submittedTelefono}`,
+              celular: `+51${submittedTelefono}`,
+              telefono: `+51${submittedTelefono}`,
+              email: submittedCorreo,
+              link: window.location.href,
+            }),
+          },
+        );
+
+        if (!fallbackResponse.ok) {
+          console.warn("[usePopupLogic] Email fallback failed for changed contact email.");
+        }
+      }
+
+      window.localStorage.setItem(lastEmailByPhoneKey, submittedCorreo);
+      setErrors({ general: "Información enviada con éxito" });
+
+      Swal.fire({
+            toast: true,
+            position: "bottom-end",
+            icon: "success",
+            title: "¡Gracias! Nos pondremos en contacto contigo pronto.",
+            showConfirmButton: false,
+            timer: 2000, 
+            background: "#D1FAE5",
+            color: "#065F46",
+            width: isMobile ? 250 : 400,
+            padding: isMobile ? "0.5rem" : "1rem",
+            customClass: {
+              title: isMobile
+                ? "!text-[12px] !leading-4"
+                : "!text-md",
+              htmlContainer: isMobile
+                ? "!text-[11px]"
+                : "!text-md",
+            },
+          });
+      setTimeout(() => {
+        closeModal();
+        setErrors({});
+      }, 1000);
+    } catch (err: any) {
+      console.error("[usePopupLogic] Error submitting form:", err);
+      setErrors({ general: err.message || "Error desconocido." });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return {
+    showModal,
+    settings,
+    isClosing,
+    previewMode,
+    isDelayFinished,
+    nombre,
+    telefono,
+    correo,
+    errors,
+    isSubmitting,
+    setNombre,
+    setTelefono,
+    setCorreo,
+    closeModal,
+    handleSubmit,
+    isAllowed: isPreview || allowedRoutes.includes(pathname) || isProductDetail,
+  };
+};

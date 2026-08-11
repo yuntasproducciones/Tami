@@ -1,0 +1,189 @@
+---
+import shippingPoliciesHero from "@images/shipping-policies/envios_hero.webp";
+import mapaPeru from "@images/shipping-policies/mapa.webp";
+import camion from "@images/shipping-policies/camion.webp";
+import caja from "@images/shipping-policies/caja.webp";
+import Layout from "../layouts/Layout.astro";
+import { Image } from "astro:assets";
+
+const whatsappLink = "https://api.whatsapp.com/send?phone=51978883199";
+---
+
+<Layout
+  title="Políticas de Envío y Despacho en Lima y Provincias"
+  description="Consulta nuestras tarifas fijas de envío, coberturas en Lima Metropolitana y los procesos de despacho para provincias de forma rápida y segura."
+  canonicalUrl="https://tamimaquinarias.com/politicas-envio/"
+>
+  <!-- Hero -->
+  <section
+    class="relative flex items-center justify-center text-white h-[30vh] sm:h-screen min-h-[47vh] px-4 overflow-hidden"
+  >
+    <Image
+      src={shippingPoliciesHero}
+      alt="Fondo de Políticas de Envío"
+      class="absolute inset-0 w-full h-full object-cover object-center -z-20"
+      loading="eager"
+      fetchpriority="high"
+      quality={80}
+      widths={[468, 800, 1200]}
+      sizes="(max-width: 640px) 468px, (max-width: 1024px) 800px, 1200px"
+    />
+    <div class="absolute inset-0 bg-gradient-to-b from-[#00786F]/75 to-black/75 -z-10"></div>
+
+    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6 pt-10 pb-4 sm:pt-0
+      bg-gradient-to-b from-[#046A63]/40 to-[#023B37]/60">
+      <p
+        class="mt-3 mb-4 font-extrabold leading-tight text-2xl sm:text-5xl lg:text-7xl xl:text-8xl 2xl:text-[96px] drop-shadow-2xl"
+      >
+        POLÍTICA DE ENVÍOS
+      </p>
+
+      <p class="text-[12.5px] sm:text-lg md:text-xl max-w-[260px] sm:max-w-4xl
+        leading-snug sm:leading-relaxed">
+        Descubre nuestras políticas de envío, pensadas para garantizar una
+        experiencia <br />
+        confiable y segura en cada pedido.
+      </p>
+    </div>
+  </section>
+
+  <!-- Contenido -->
+  <section
+    class="grid grid-cols-1 sm:grid-cols-2 items-center justify-items-center gap-10 py-12 px-6 lg:px-16 bg-white/70 backdrop-blur-sm rounded-3xl shadow-[0_8px_25px_rgba(0,0,0,0.15)]"
+  >
+    <h1
+      class="col-span-full text-3xl sm:text-4xl lg:text-5xl font-extrabold text-teal-700 dark:text-teal-500 mb-6 uppercase tracking-tight text-center"
+    >
+  Políticas de Envío y Despacho en Lima | TAMI Maquinarias
+    </h1>
+    <!-- Mapa -->
+    <div class="flex justify-center items-center">
+      <Image
+        src={mapaPeru}
+        alt="Mapa apuntando Lima"
+        title="Mapa apuntando Lima"
+        width={459}
+        height={634}
+        quality={80}
+        class="w-3/4 md:w-full lg:w-full h-auto"
+        style="aspect-ratio: 459 / 634; min-height: 273px;"
+        widths={[273, 459]}
+        sizes="(max-width: 640px) 273px, 459px"
+      />
+    </div>
+
+    <!-- Tarjetas de Envíos -->
+    <div
+      class="flex flex-col items-center text-center sm:items-center sm:text-center px-8 py-8 space-y-6 border border-gray-200 rounded-2xl shadow-lg bg-white"
+    >
+      <!-- Envíos Económicos -->
+      <div class="w-full">
+        <div
+          class="flex items-center justify-center sm:justify-start gap-3 bg-teal-700 hover:bg-teal-900 transition text-white rounded-2xl px-6 py-5 font-semibold text-sm lg:text-base 2xl:text-2xl shadow-md w-full"
+        >
+          <Image
+            src={camion}
+            alt="Icono de Camión"
+            width={45}
+            height={64}
+            class="h-16 w-auto sm:h-20 lg:h-24 2xl:h-28 object-contain mr-4 lg:mr-8 drop-shadow-md"
+            style="aspect-ratio: 45 / 64; min-height: 64px;"
+          />
+          <p
+            class="text-lg sm:text-xl lg:text-2xl 2xl:text-3xl font-bold leading-snug text-center sm:text-left"
+          >
+            ENVÍOS ECONÓMICOS EN LIMA <br />
+            METROPOLITANA
+          </p>
+        </div>
+
+        <!-- Distritos -->
+        <div class="w-full flex flex-col items-center space-y-3 mt-6">
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-full text-center bg-teal-700 hover:bg-teal-800 transition text-white rounded-full px-5 py-2 font-semibold text-sm lg:text-base 2xl:text-2xl shadow-md"
+          >
+            La Victoria
+          </a>
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-full text-center bg-teal-700 hover:bg-teal-800 transition text-white rounded-full px-5 py-2 font-semibold text-sm lg:text-base 2xl:text-2xl shadow-md"
+          >
+            Centro de Lima
+          </a>
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-full text-center bg-teal-700 hover:bg-teal-800 transition text-white rounded-full px-5 py-2 font-semibold text-sm lg:text-base 2xl:text-2xl shadow-md"
+          >
+            Santa Anita
+          </a>
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-full text-center bg-teal-700 hover:bg-teal-800 transition text-white rounded-full px-5 py-2 font-semibold text-sm lg:text-base 2xl:text-2xl shadow-md"
+          >
+            Rimac
+          </a>
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-full text-center bg-teal-700 hover:bg-teal-800 transition text-white rounded-full px-5 py-2 font-semibold text-sm lg:text-base 2xl:text-2xl shadow-md"
+          >
+            Lince
+          </a>
+        </div>
+      </div>
+
+      <!-- Lima Metropolitana -->
+      <div
+        class="flex items-center justify-center sm:justify-start gap-3 bg-teal-700 hover:bg-teal-900 transition text-white rounded-2xl px-6 py-5 font-semibold text-sm lg:text-base 2xl:text-2xl shadow-md w-full"
+      >
+        <Image
+          src={caja}
+          alt="Icono de Caja"
+          width={45}
+          height={64}
+          class="h-16 w-auto sm:h-20 lg:h-24 2xl:h-28 object-contain mr-4 lg:mr-8"
+          style="aspect-ratio: 45 / 64; min-height: 64px;"
+        />
+        <p
+          class="text-lg sm:text-xl lg:text-2xl 2xl:text-3xl font-bold leading-snug"
+        >
+          LIMA METROPOLITANA <br />
+          <span class="font-medium text-base lg:text-lg 2xl:text-2xl">
+            Tarifa fija S/20 soles
+          </span>
+        </p>
+      </div>
+
+      <!-- Envíos a Provincias -->
+      <div
+        class="flex items-center justify-center sm:justify-start gap-3 bg-teal-700 hover:bg-teal-900 transition text-white rounded-2xl px-6 py-5 font-semibold text-sm lg:text-base 2xl:text-2xl shadow-md w-full"
+      >
+        <Image
+          src={caja}
+          alt="Icono de Caja"
+          width={45}
+          height={64}
+          class="h-16 w-auto sm:h-20 lg:h-24 2xl:h-28 object-contain mr-4 lg:mr-8"
+        />
+        <p
+          class="text-lg sm:text-xl lg:text-2xl 2xl:text-3xl font-bold leading-snug"
+        >
+          ENVÍOS A PROVINCIAS <br />
+          <span class="font-medium text-base lg:text-lg 2xl:text-2xl">
+            Tarifa fija S/20 soles
+          </span>
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>

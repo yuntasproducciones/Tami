@@ -1,0 +1,194 @@
+---
+import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
+import TabPopups from "../../components/admin/popups/TabPopups.astro";
+import TabWhatsapp from "../../components/admin/popups/TabWhatsapp.astro";
+import TabEmail from "../../components/admin/popups/TabEmail.astro";
+import TabProducto from "../../components/admin/popups/TabProducto.tsx";
+import PreviewSection from "../../components/admin/popups/PreviewSection.astro";
+---
+
+<LayoutAdmin title="POPUPS">
+    <div
+        class="p-0 h-full w-full bg-gray-50 dark:bg-gray-900 overflow-x-hidden"
+    >
+        <div
+            class="bg-teal-500 rounded-t-xl p-4 flex justify-between items-center shadow-lg relative z-10 w-full"
+        >
+            <div class="flex items-center gap-3">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-8 w-8 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                    ></path>
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <div>
+                    <h1
+                        class="text-2xl font-bold text-white tracking-wide drop-shadow-sm"
+                    >
+                        Configuración de Pop-ups
+                    </h1>
+                    <p class="text-teal-100 text-sm">
+                        Personaliza el aspecto de tus ventanas emergentes
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido Principal -->
+        <div
+            class="bg-white dark:bg-gray-800 rounded-b-xl shadow-xl border border-t-0 p-8 border-gray-200 dark:border-gray-700 min-h-[60vh]"
+        >
+            <div class="grid grid-cols-1 lg:grid-cols-[450px_1fr] gap-10">
+                <!-- Columna Izquierda: Formulario de Opciones -->
+                <div
+                    class="space-y-6 lg:border-r lg:border-gray-200 lg:dark:border-gray-700 lg:pr-8"
+                >
+                    <!-- Top Level: Inicio / Producto -->
+                    <div class="flex gap-4 mb-6 pb-2">
+                        <button
+                            id="navInicio"
+                            class="px-6 py-2 rounded-full bg-teal-600 text-white text-sm font-bold shadow-md transition-all active:scale-95"
+                        >
+                            Inicio
+                        </button>
+                        <button
+                            id="navProducto"
+                            class="px-6 py-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all active:scale-95"
+                        >
+                            Producto
+                        </button>
+                    </div>
+
+                    <!-- Contenido de las Pestañas -->
+                    <div class="space-y-6">
+                        <!-- Sección Inicio -->
+                        <div id="sectionInicio" class="space-y-6">
+                            <!-- Sub-navegación para Inicio: Pop-ups / WhatsApp / Correo -->
+                            <div class="flex gap-2 mb-6 pb-2">
+                                <button
+                                    id="tabPopups"
+                                    class="px-4 py-2 rounded-md bg-teal-600 dark:bg-teal-500 text-white text-sm font-medium shadow-sm transition-all"
+                                >
+                                    Pop-ups
+                                </button>
+
+                                <button
+                                    id="tabWhatsapp"
+                                    class="px-4 py-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-gray-700 dark:hover:text-gray-200 text-sm font-medium transition-all"
+                                >
+                                    WhatsApp
+                                </button>
+
+                                <button
+                                    id="tabCorreo"
+                                    class="px-4 py-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-gray-700 dark:hover:text-gray-200 text-sm font-medium transition-all"
+                                >
+                                    Correo
+                                </button>
+                            </div>
+
+                            <!-- Contenido Inicio -->
+                            <div id="containerPopupsInicio">
+                                <TabPopups />
+                            </div>
+                            
+                            <TabWhatsapp />
+                            <TabEmail />
+                        </div>
+
+                        <!-- Sección Producto -->
+                        <div id="sectionProducto" class="hidden space-y-8">
+                            <TabProducto client:load />
+
+                            <!-- Configuración Global: Tiempo de Aparición del Pop-up de Producto -->
+                            <div id="globalAppearanceTimeContainer" class="bg-gray-50 dark:bg-gray-800/40 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm flex flex-col items-center sm:items-start mt-8">
+                                <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Tiempo de Aparición Global</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 w-full text-center sm:text-left">Configura el tiempo de espera antes de que aparezca el pop-up en la página de cualquier producto.</p>
+                                <label for="popupProductosDelay" class="block text-sm font-bold text-gray-600 dark:text-gray-400 mb-2 w-full text-center sm:text-left">Pop-up de Producto</label>
+                                <div class="relative w-full max-w-[200px]">
+                                    <select id="popupProductosDelay" class="w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-2.5 pr-10 text-sm font-medium focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer shadow-inner appearance-none">
+                                        <option value="30">30 segundos</option>
+                                        <option value="35">35 segundos</option>
+                                        <option value="40">40 segundos</option>
+                                        <option value="45">45 segundos</option>
+                                        <option value="50">50 segundos</option>
+                                        <option value="55">55 segundos</option>
+                                        <option value="60">1 minuto</option>
+                                        <option value="120">2 minutos</option>
+                                        <option value="180">3 minutos</option>
+                                        <option value="240">4 minutos</option>
+                                        <option value="300">5 minutos</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-500 dark:text-gray-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botón de Guardar (Compartido) -->
+                        <div id="sharedSaveFooter" class="mt-8 flex flex-col gap-2">
+                            <p
+                                id="popupStatus"
+                                class="text-sm text-gray-600 dark:text-gray-300"
+                                role="status"
+                                aria-live="polite"
+                            >
+                            </p>
+                            <div class="flex justify-center lg:justify-end">
+                                <button
+                                    type="button"
+                                    id="btnGuardarPopups"
+                                    class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors disabled:opacity-50"
+                                >
+                                    Guardar Cambios
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <PreviewSection />
+            </div>
+        </div>
+    </div>
+</LayoutAdmin>
+
+<script>
+    import { initPopupManager } from "../../scripts/admin/popupsManager";
+
+    const startPopupManager = () => initPopupManager();
+
+    document.addEventListener("DOMContentLoaded", () => {
+        startPopupManager();
+        
+        // Listen for tab changes in TabProducto
+        window.addEventListener("product-tab-change", (e: any) => {
+            const activeTab = e.detail;
+            const container = document.getElementById("globalAppearanceTimeContainer");
+            if (container) {
+                if (activeTab === 'popups') {
+                    container.classList.remove("hidden");
+                } else {
+                    container.classList.add("hidden");
+                }
+            }
+        });
+    });
+    document.addEventListener("astro:page-load", startPopupManager);
+</script>

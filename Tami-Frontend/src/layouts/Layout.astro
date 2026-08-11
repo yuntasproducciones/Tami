@@ -1,0 +1,163 @@
+---
+import "../styles/global.css";
+import GoogleAnalytics from "../components/GoogleAnalytics.astro";
+import Footer from "../components/ui/footer/Footer.astro";
+import NavBar from "../components/ui/navbar/NavBar";
+import ScrollModal from "../components/ui/ScrollModal.tsx";
+import Toast from "../components/ui/Toast.astro";
+import ChatbotWidget from "../components/ui/chatbot/ChatbotWidget.tsx";
+import SocialWidget from "src/components/ui/SocialWidget.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  canonicalUrl?: string;
+  keywords?: string;
+  forceSolidNav?: boolean;
+}
+const {
+  title,
+  description,
+  canonicalUrl,
+  keywords,
+  forceSolidNav = false,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="google-site-verification"
+      content="TbHwfWuj0hGthzgi9Wno1Q1lT5t1h_iFwFyf6uqCIKs"
+    />
+    <link rel="icon" type="image/webp+xml" href="/logo.webp" />
+    <!-- Preload de fuentes locales WOFF2 -->
+    <link
+      rel="preload"
+      href="/fonts/montserrat-regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/montserrat-600.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/montserrat-800.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <link rel="preconnect" href="https://i.imgur.com" />
+    <link rel="preconnect" href="https://apitami.tamimaquinarias.com" />
+
+    <GoogleAnalytics />
+
+    <link rel="canonical" href={canonicalUrl} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="author" content="Tamimaquinarias" />
+    <meta name="robots" content="index, follow" />
+    <meta name="publisher" content="Tami Maquinarias" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {keywords && <meta name="keywords" content={keywords} />}
+    <!-- <style>
+      body {
+        font-family:
+          "Montserrat",
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+
+        width: 100%;
+        max-width: 100vw;
+        overflow-x: hidden;
+      }
+      .font-montserrat {
+        font-family:
+          "Montserrat",
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+      }
+
+      .float {
+        text-align: center;
+        font-size: 30px;
+        z-index: 100;
+      }
+
+      .font-loading {
+        visibility: hidden;
+      }
+
+      .fonts-loaded .font-loading {
+        visibility: visible;
+      }
+    </style> -->
+
+    <meta
+      name="google-site-verification"
+      content="fMYl61WKoofkx6daixXAZuFbR-zw9NlYGrf22iA1r0w"
+    />
+    <slot name="head" />
+  </head>
+
+  <body class="font-montserrat w-full">
+    <NavBar client:idle forceSolid={forceSolidNav} />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+    {
+      /**
+       * don't inject the catalog popup on the productos section
+       * (the modal itself also checks allowedRoutes, but excluding
+       * it here avoids mounting it entirely).
+       */
+    }
+    {
+      !(Astro.url.pathname === "/catalogo-maquinarias") && (
+        <ScrollModal client:idle />
+      )
+    }
+    {/* Activado con el atributo `client:idle`.*/}
+    <script is:inline>
+      function addOpenScrollListeners() {
+        document.querySelectorAll("#open-scroll-btn").forEach((btn) => {
+          if (!btn.dataset.listenerAdded) {
+            btn.addEventListener("click", () => {
+              window.dispatchEvent(new Event("open-scroll-modal"));
+            });
+            btn.dataset.listenerAdded = "true";
+          }
+        });
+      }
+
+      // Inicial
+      addOpenScrollListeners();
+
+      // Observer para detectar nuevos botones en el DOM
+      const observer = new MutationObserver(() => {
+        addOpenScrollListeners();
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    </script>
+    <SocialWidget />
+    <ChatbotWidget client:only="react" />
+    <Toast />
+  </body>
+</html>
