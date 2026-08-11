@@ -43,6 +43,7 @@ const BlogsTable = () => {
   const [filteredData, setFilteredData] = useState<Blog[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const prevSearchTermRef = useRef("");
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [loadingDeleteId, setLoadingDeleteId] = useState<number | null>(null);
@@ -142,9 +143,9 @@ const BlogsTable = () => {
   }, []);
 
   useEffect(() => {
+    // Filtrar cambie lo que cambie
     if (searchTerm === "") {
       setFilteredData(data);
-      setCurrentPage(1);
     } else {
       const filtered = data.filter((blog) =>
         (blog.titulo ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -152,8 +153,16 @@ const BlogsTable = () => {
         blog.id.toString().includes(searchTerm)
       );
       setFilteredData(filtered);
+    }
+
+    // busca 
+    if (searchTerm !== prevSearchTermRef.current) {
       setCurrentPage(1);
     }
+
+    //guarda temporalmente el valor y actualiza memoria
+    prevSearchTermRef.current = searchTerm
+
   }, [searchTerm, data]);
 
   const handleBlogAdded = () => {
@@ -313,35 +322,35 @@ const BlogsTable = () => {
                         </div>
 
                         {blog.imagenes?.[i]?.ruta_imagen && (
-                        <div className="relative w-full md:w-1/2 h-48 md:h-72 lg:h-96 overflow-hidden rounded-lg md:rounded-xl shadow-md flex justify-center items-center bg-gray-50">
-                          <img
-                            src={
-                              blog.imagenes[i].ruta_imagen.startsWith("http") || blog.imagenes[i].ruta_imagen.startsWith("//")
-                                ? blog.imagenes[i].ruta_imagen
-                                : `${getApiUrl(blog.imagenes[i].ruta_imagen.startsWith("/") ? blog.imagenes[i].ruta_imagen : `/${blog.imagenes[i].ruta_imagen}`)}`
-                            }
-                            alt={blog.titulo}
-                            loading="lazy"
-                            // Cambiado object-cover por object-contain para que no se recorte
-                            className="w-full h-full object-contain transition-transform duration-300 hover:scale-105"
-                          />
-                        </div>
-                      )}
+                          <div className="relative w-full md:w-1/2 h-48 md:h-72 lg:h-96 overflow-hidden rounded-lg md:rounded-xl shadow-md flex justify-center items-center bg-gray-50">
+                            <img
+                              src={
+                                blog.imagenes[i].ruta_imagen.startsWith("http") || blog.imagenes[i].ruta_imagen.startsWith("//")
+                                  ? blog.imagenes[i].ruta_imagen
+                                  : `${getApiUrl(blog.imagenes[i].ruta_imagen.startsWith("/") ? blog.imagenes[i].ruta_imagen : `/${blog.imagenes[i].ruta_imagen}`)}`
+                              }
+                              alt={blog.titulo}
+                              loading="lazy"
+                              // Cambiado object-cover por object-contain para que no se recorte
+                              className="w-full h-full object-contain transition-transform duration-300 hover:scale-105"
+                            />
+                          </div>
+                        )}
                       </div>
                     </section>
                   ))}
                   <div className="flex justify-center mb-8 md:mb-12">
-                  <a
-                    id="btn-ver-producto"
-                    href="#"
-                    className="text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105"
-                    style={{
-                      backgroundColor: blog.etiqueta?.popup_button_color || "#22c55e",
-                      color: blog.etiqueta?.popup_text_color || "#ffffff",
-                    }}
-                  >
-                    {blog.etiqueta?.popup_button_text?.trim() || "Ver Producto"}
-                  </a>
+                    <a
+                      id="btn-ver-producto"
+                      href="#"
+                      className="text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105"
+                      style={{
+                        backgroundColor: blog.etiqueta?.popup_button_color || "#22c55e",
+                        color: blog.etiqueta?.popup_text_color || "#ffffff",
+                      }}
+                    >
+                      {blog.etiqueta?.popup_button_text?.trim() || "Ver Producto"}
+                    </a>
                   </div>
                   {blog.video_id?.trim() && (
                     <section className="rounded-lg md:rounded-xl shadow-md py-4 md:py-8 px-4 md:px-12 bg-gray-50 mt-12 border border-gray-100">

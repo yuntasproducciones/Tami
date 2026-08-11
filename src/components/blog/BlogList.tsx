@@ -75,6 +75,7 @@ const BlogList = ({ searchTerm, sortOrder }: BlogListProps) => {
 
     return sorted;
   }, [blogs, searchTerm, sortOrder]);
+  
   // Paginación
   const totalPages = Math.ceil(filteredAndSortedBlogs.length / itemsPerPage);
 
