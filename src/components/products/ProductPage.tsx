@@ -12,6 +12,16 @@ import { Pagination, Autoplay } from 'swiper/modules';
 import SimilarProductCard from './SimilarProductCard';
 import SimilarProductsSection from './SimilarProductSection';
 
+const setMetaKeywords = (keywords: string) => {
+    let tag = document.querySelector<HTMLMetaElement>('meta[name="keywords"]');
+    if (!tag) {
+        tag = document.createElement("meta");
+        tag.setAttribute("name", "keywords");
+        document.head.appendChild(tag);
+    }
+    tag.setAttribute("content", keywords);
+};
+
 declare global {
     interface Window {
         __detalleProducto?: any;
@@ -132,6 +142,11 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
             // Solo mantén esto, que no afecta el SEO negativo
             document.title = producto.etiqueta?.meta_titulo || producto.titulo;
+
+            // Keywords SEO por producto
+            if (producto.etiqueta?.keywords) {
+                setMetaKeywords(producto.etiqueta.keywords);
+            }
         }
     }, [producto]);
 
