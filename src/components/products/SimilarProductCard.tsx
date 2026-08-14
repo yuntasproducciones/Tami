@@ -15,8 +15,7 @@ const SimilarProductCard: React.FC<Props> = ({ product }) => {
     setCacheBuster(`?t=${Date.now()}`);
   }, []);
 
-  const imgUrl = product.imagenes.filter((img) => img.tipo === "galeria")[0]
-    ?.url_imagen;
+  const imgUrl = product.imagenes?.filter((img) => img.tipo === "galeria")[0]?.url_imagen;
 
   let finalImageSrc = "/placeholder.png";
 
@@ -31,25 +30,27 @@ const SimilarProductCard: React.FC<Props> = ({ product }) => {
   return (
     <a
       href={`/catalogo-maquinarias/detalle?link=${product.link}`}
+  
       className="
-        group relative block w-full 
+        group/card relative block w-full 
         rounded-xl shadow-lg border border-gray-100 overflow-hidden 
         transition-all duration-500 ease-out
         focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-opacity-75
         hover:shadow-[0_20px_45px_-12px_rgba(0,182,255,0.25)] hover:-translate-y-2 hover:border-cyan-300/50
+        select-none
       "
       title={`Ver detalles de ${product.titulo}`}
     >
-
       <div className="relative w-full aspect-square bg-white">
         <img
           src={finalImageSrc}
           alt={product.nombre}
           title={product.nombre}
+          draggable={false}
           className="
             w-full h-full object-contain p-4 
             transition-transform duration-700 ease-out
-            group-hover:scale-110
+            group-hover/card:scale-110
           "
           loading="lazy"
           onError={(e) => {
@@ -64,10 +65,10 @@ const SimilarProductCard: React.FC<Props> = ({ product }) => {
           flex items-center justify-between gap-4
           bg-gradient-to-t from-white via-white/95 to-white/80
           backdrop-blur-[4px] border-t border-gray-100/50
-          transition-colors duration-500 group-hover:from-cyan-50 group-hover:via-cyan-50/95
+          transition-colors duration-500 group-hover/card:from-cyan-50 group-hover/card:via-cyan-50/95
         "
       >
-        <p className="font-bold text-base text-[#0374a2] leading-tight flex-1 line-clamp-2 transition-colors duration-300 group-hover:text-[#005f86]">
+        <p className="font-bold text-base text-[#0374a2] leading-tight flex-1 line-clamp-2 transition-colors duration-300 group-hover/card:text-[#005f86]">
           {product.nombre}
         </p>
         <span
@@ -75,7 +76,7 @@ const SimilarProductCard: React.FC<Props> = ({ product }) => {
             flex-shrink-0 bg-gray-100 text-[#003e56] 
             px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wide
             transition-all duration-300 
-            group-hover:bg-[#00b6ff] group-hover:text-white group-hover:shadow-md group-hover:scale-105 active:scale-95
+            group-hover/card:bg-[#00b6ff] group-hover/card:text-white group-hover/card:shadow-md group-hover/card:scale-105 active:scale-95
           "
         >
           Comprar

@@ -450,6 +450,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
             </div >
 
             {/* -------------------- PRODUCTOS SIMILARES Section (H2) -------------------- */}
+            
             < div className="max-w-full mx-auto px-4 md:px-8 py-8" >
                 <SimilarProductsSection
                     products={producto.productos_relacionados || []}
