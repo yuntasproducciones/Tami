@@ -4,6 +4,9 @@ import { Pagination, Autoplay } from 'swiper/modules';
 import SimilarProductCard from './SimilarProductCard';
 import type Producto from '../../models/Product';
 
+
+import 'swiper/css';
+import 'swiper/css/pagination';
 interface Props {
     products: Producto[];
 }
