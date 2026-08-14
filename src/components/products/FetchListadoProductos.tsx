@@ -2,10 +2,18 @@ import { config, getApiUrl } from "config";
 import { useEffect, useState, useCallback, useMemo, useRef, type JSX } from "react";
 import React from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { Label } from "recharts";
 import type Producto from "src/models/Product";
 
 const CACHE_KEY = "productos_cache";
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
+//Editar y añadir categorias
+const CATEGORIAS = [
+  { key: "Negocio", label: "NEGOCIO", color: "#00B6FF" },
+  { key: "Maquinaria", label: "MAQUINARIA", color: "#04B088" },
+  { key: "decoracion", label: "DECORACIÓN", color: "#5D39FB" },
+] as const;
 
 interface CacheData {
   data: Producto[];
@@ -40,7 +48,6 @@ const setCachedData = (data: Producto[]) => {
 const ApiUrl = config.apiUrl;
 
 export default function ListadoDeProductos() {
-  const [openCategorias, setOpenCategorias] = useState(false);
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,8 +57,11 @@ export default function ListadoDeProductos() {
   // Filtros
   const [filtroNombre, setFiltroNombre] = useState("");
   const [filtroCategoria, setFiltroCategoria] = useState<string | null>(null);
-  const [mostrarCategorias, setMostrarCategorias] = useState(true);
   const [orden, setOrden] = useState<"asc" | "desc" | "">("");
+
+  // Droppdown de categoria independiente para desktop y mobile
+  const [categoriaOpenDesktop, setCategoriaOpenDesktop] = useState(false);
+  const [categoriaOpenMobile, setCategoriaOpenMobile] = useState(false);
 
   useEffect(() => {
     console.log("productos:", productos.length);
@@ -173,6 +183,12 @@ export default function ListadoDeProductos() {
       .replace(/\p{Diacritic}/gu, "")
       .trim();
 
+  const handleLimpiarFiltros = useCallback(() => {
+    setFiltroNombre("");
+    setFiltroCategoria(null);
+    setOrden("");
+  }, []);
+
   const productosFiltrados = useMemo(() => {
     let filtrados = [...productos];
 
@@ -240,142 +256,45 @@ export default function ListadoDeProductos() {
 
   return (
     <div className="flex flex-col gap-4 p-8 w-full max-w-[1440px] mx-auto">
-      
+
       {/* CORRECCIÓN SEO: Inclusión obligatoria del H1 del Catálogo */}
-      <h1 className="text-3xl md:text-5xl font-extrabold text-[#015f86] uppercase mb-4 tracking-wide text-center md:text-left border-b pb-4 border-gray-200">
+      <h1 className="text-3xl md:text-5xl font-extrabold text-[#015f86] uppercase mb-4 tracking-wide text-center md:text-left border-gray-200">
         Catálogo de Maquinarias Industriales y Comerciales
       </h1>
 
-      <div className="flex flex-col md:flex-row gap-8 w-full">
+      <p className="text-1xl md:text-2xl font-regular text-[#015f86] mb-1 pb-4 tracking-wide text-center md:text-left border-b pb-4">
+        Encuentra el equipo que necesitas para tu negocio
+      </p>
+
+      <div className="flex flex-col md:flex-row gap-8 w-full item-start">
         {/* FILTROS DESKTOP - CORRECCIÓN SEO: Eliminados H2 y H3 de la barra lateral */}
-        <aside className="md:w-4/12 xl:w-3/12 hidden sm:block">
-          <div className="p-4 border rounded-xl shadow-[0_0_10px_rgba(0,0,0,0.25)] shadow-[#00B6FF] space-y-4" style={{ borderColor: '#00B6FF' }}>
-            <p className="uppercase text-[#009688] font-bold text-center text-3xl mb-2" style={{ textDecoration: 'underline', textUnderlineOffset: '6px' }}>
-              FILTROS
-            </p>
-            {/* Filtro nombre */}
-            <div>
-              <p className="font-bold text-[#009688] text-lg uppercase mb-1">NOMBRE</p>
-              <input
-                type="text"
-                value={filtroNombre}
-                onChange={(e) => setFiltroNombre(e.target.value)}
-                placeholder="Buscar"
-                className="p-3 shadow rounded-lg w-full outline-none focus:ring-2 focus:ring-[#009688] text-[#009688] font-semibold bg-white mb-4"
-                style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
-              />
-            </div>
-            {/* Categorías */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <p className="font-bold text-[#009688] text-lg uppercase">CATEGORIAS</p>
-                <span className="text-[#009688] text-xl font-bold">&#9660;</span>
-              </div>
-              <div className="flex flex-col gap-4">
-                <button
-                  type="button"
-                  onClick={() => setFiltroCategoria(filtroCategoria === 'Negocio' ? null : 'Negocio')}
-                  className={`py-3 px-0 rounded-xl text-lg font-bold uppercase shadow-md w-full transition-all duration-300 active:scale-95 hover:brightness-110 hover:shadow-lg hover:-translate-y-0.5 ${filtroCategoria === 'Negocio' ? 'ring-2 ring-white scale-[1.02]' : ''}`}
-                  style={{ background: '#00B6FF', color: '#fff', boxShadow: '0 4px 12px rgba(0,182,255,0.2)' }}
-                >
-                  NEGOCIO
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFiltroCategoria(filtroCategoria === 'Maquinaria' ? null : 'Maquinaria')}
-                  className={`py-3 px-0 rounded-xl text-lg font-bold uppercase shadow-md w-full transition-all duration-300 active:scale-95 hover:brightness-110 hover:shadow-lg hover:-translate-y-0.5 ${filtroCategoria === 'Maquinaria' ? 'ring-2 ring-white scale-[1.02]' : ''}`}
-                  style={{ background: '#04B088', color: '#fff', boxShadow: '0 4px 12px rgba(4,176,136,0.2)' }}
-                >
-                  MAQUINARIA
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFiltroCategoria(filtroCategoria === 'decoracion' ? null : 'decoracion')}
-                  className={`py-3 px-0 rounded-xl text-lg font-bold uppercase shadow-md w-full transition-all duration-300 active:scale-95 hover:brightness-110 hover:shadow-lg hover:-translate-y-0.5 ${filtroCategoria === 'decoracion' ? 'ring-2 ring-white scale-[1.02]' : ''}`}
-                  style={{ background: '#5D39FB', color: '#fff', boxShadow: '0 4px 12px rgba(93,57,251,0.2)' }}
-                >
-                  decoracion
-                </button>
-              </div>
-            </div>
-            {/* Limpiar filtros */}
-            <div className="flex justify-center pt-8">
-              <button
-                onClick={() => {
-                  setFiltroNombre("");
-                  setFiltroCategoria(null);
-                  setOrden("");
-                }}
-                className="py-3 px-6 uppercase bg-white text-[#009688] font-bold text-lg rounded-xl shadow-md transition-all duration-150 hover:bg-[#e0f7fa] hover:shadow-lg active:scale-95 border border-[#009688]"
-                style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
-              >
-                LIMPIAR FILTROS
-              </button>
-            </div>
-          </div>
+        <aside className="md:w-4/12 xl:w-3/12 hidden sm:block md:sticky md:top-[160px] md:self-start">
+
+          <FiltrosPanel
+            filtroNombre={filtroNombre}
+            setFiltroNombre={setFiltroNombre}
+            filtroCategoria={filtroCategoria}
+            setFiltroCategoria={setFiltroCategoria}
+            categoriaOpen={categoriaOpenDesktop}
+            setCategoriaOpen={setCategoriaOpenDesktop}
+            onLimpiar={handleLimpiarFiltros}
+          />
+
         </aside>
 
         {/* FILTROS MOBILE */}
         <div className="block w-full m-auto sm:hidden relative">
-          <div className="p-4 flex flex-col gap-4 border rounded shadow-[0_0_10px_rgba(0,0,0,0.25)] shadow-[#00786F] bg-white">
-            <input
-              type="text"
-              value={filtroNombre}
-              onChange={(e) => setFiltroNombre(e.target.value)}
-              placeholder="Buscar"
-              className="p-3 shadow rounded-lg w-full outline-none focus:ring-2 focus:ring-[#009688] text-[#009688] font-semibold bg-white mb-2"
-              style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
-            />
-            <div className="flex gap-2 mb-2">
-              <button
-                type="button"
-                onClick={() => setOpenCategorias(prev => !prev)}
-                aria-label="Mostrar u ocultar categorías"
-                className="flex-1 py-2 rounded-lg font-bold uppercase text-[#009688] bg-white shadow hover:bg-[#e0f7fa] border border-[#009688]"
-              >
-                CATEGORÍAS {openCategorias ? "✕" : "☰"}
-              </button>
-              <button
-                type="button"
-                className="flex-1 py-2 rounded-lg font-bold uppercase text-[#009688] bg-white shadow hover:bg-[#e0f7fa] border border-[#009688]"
-                onClick={() => {
-                  setFiltroNombre("");
-                  setFiltroCategoria(null);
-                  setOrden("");
-                }}
-              >
-                LIMPIAR
-              </button>
-            </div>
-            {openCategorias && (
-              <div className="flex flex-col gap-3 mt-2">
-                <button
-                  type="button"
-                  onClick={() => setFiltroCategoria(filtroCategoria === 'decoracion' ? null : 'decoracion')}
-                  className={`py-3 rounded-xl text-base font-bold uppercase shadow-md w-full transition-all duration-150 active:scale-95 hover:opacity-90 hover:shadow-lg ${filtroCategoria === 'decoracion' ? 'ring-2 ring-white' : ''}`}
-                  style={{ background: '#5D39FB', color: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
-                >
-                  decoracion
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFiltroCategoria(filtroCategoria === 'Maquinaria' ? null : 'Maquinaria')}
-                  className={`py-3 rounded-xl text-base font-bold uppercase shadow-md w-full transition-all duration-150 active:scale-95 hover:opacity-90 hover:shadow-lg ${filtroCategoria === 'Maquinaria' ? 'ring-2 ring-white' : ''}`}
-                  style={{ background: '#04B088', color: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
-                >
-                  MAQUINARIA
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFiltroCategoria(filtroCategoria === 'Negocio' ? null : 'Negocio')}
-                  className={`py-3 rounded-xl text-base font-bold uppercase shadow-md w-full transition-all duration-150 active:scale-95 hover:opacity-90 hover:shadow-lg ${filtroCategoria === 'Negocio' ? 'ring-2 ring-white' : ''}`}
-                  style={{ background: '#00B6FF', color: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.10)' }}
-                >
-                  NEGOCIO
-                </button>
-              </div>
-            )}
-          </div>
+
+          <FiltrosPanel
+            filtroNombre={filtroNombre}
+            setFiltroNombre={setFiltroNombre}
+            filtroCategoria={filtroCategoria}
+            setFiltroCategoria={setFiltroCategoria}
+            categoriaOpen={categoriaOpenMobile}
+            setCategoriaOpen={setCategoriaOpenMobile}
+            onLimpiar={handleLimpiarFiltros}
+          />
+
         </div>
 
         {/* SECCIÓN PRINCIPAL DE PRODUCTOS */}
@@ -411,10 +330,10 @@ export default function ListadoDeProductos() {
             {seccionesArray.map(
               (seccion) =>
                 seccion.productosDeLaSeccion.length > 0 && (
-                  <MemoizedSeccion 
-                    key={seccion.nombre} 
-                    nombre={seccion.nombre} 
-                    productosDeLaSeccion={seccion.productosDeLaSeccion} 
+                  <MemoizedSeccion
+                    key={seccion.nombre}
+                    nombre={seccion.nombre}
+                    productosDeLaSeccion={seccion.productosDeLaSeccion}
                   />
                 )
             )}
@@ -431,6 +350,143 @@ export default function ListadoDeProductos() {
     </div>
   );
 }
+
+/* -------------------- PANEL DE FILTROS (reutilizable) -------------------- */
+function FiltrosPanel({
+  filtroNombre,
+  setFiltroNombre,
+  filtroCategoria,
+  setFiltroCategoria,
+  categoriaOpen,
+  setCategoriaOpen,
+  onLimpiar,
+  compact = false,
+}: {
+  filtroNombre: string;
+  setFiltroNombre: (v: string) => void;
+  filtroCategoria: string | null;
+  setFiltroCategoria: (v: string | null) => void;
+  categoriaOpen: boolean;
+  setCategoriaOpen: (v: boolean) => void;
+  onLimpiar: () => void;
+  compact?: boolean;
+}) {
+  return (
+    <div
+      className="p-4 border rounded-xl shadow-[0_0_10px_rgba(0,0,0,0.25)] space-y-4 bg-white"
+      style={{ borderColor: "#01958C" }}
+    >
+      <p
+        className={`uppercase text-[#009688] font-bold text-center ${compact ? "text-2xl" : "text-3xl"} mb-2`}
+        style={{ textDecoration: "underline", textUnderlineOffset: "6px" }}
+      >
+        FILTROS
+      </p>
+      {/* Filtro nombre */}
+      <div>
+        <p className="font-bold text-[#009688] text-lg uppercase mb-1">NOMBRE</p>
+        <input
+          type="text"
+          value={filtroNombre}
+          onChange={(e) => setFiltroNombre(e.target.value)}
+          placeholder="Buscar"
+          className="p-3 shadow rounded-lg w-full outline-none focus:ring-2 focus:ring-[#009688] text-[#009688] font-semibold bg-white"
+          style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.10)" }}
+        />
+      </div>
+      {/* Categoría: dropdown tipo acordeón (empuja el contenido de abajo) */}
+      <div>
+        <button
+          type="button"
+          onClick={() => setCategoriaOpen(!categoriaOpen)}
+          aria-expanded={categoriaOpen}
+          className="flex items-center justify-between w-full py-1"
+        >
+          <span className="font-bold text-[#009688] text-lg uppercase">CATEGORÍA</span>
+          <FaChevronDown
+            className={`text-[#009688] transition-transform duration-300 ease-in-out ${categoriaOpen ? "rotate-180" : "rotate-0"
+              }`}
+          />
+        </button>
+        {/* Truco de grid-template-rows: permite animar de 0 a "auto" con
+            transición suave, sin medir alturas por JS. */}
+        <div
+          className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${categoriaOpen ? "grid-rows-[1fr] mt-3" : "grid-rows-[0fr]"
+            }`}
+        >
+          <div className="overflow-hidden">
+            <div className="flex flex-col gap-3 pb-1">
+              {CATEGORIAS.map((cat) => (
+                <CategoriaButton
+                  key={cat.key}
+                  label={cat.label}
+                  color={cat.color}
+                  compact={compact}
+                  selected={filtroCategoria === cat.key}
+                  onClick={() =>
+                    setFiltroCategoria(filtroCategoria === cat.key ? null : cat.key)
+                  }
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Limpiar filtros */}
+      <div className="flex justify-center pt-4">
+        <button
+          onClick={onLimpiar}
+          className="py-3 px-6 uppercase bg-white text-[#009688] font-bold text-lg rounded-xl shadow-md transition-all duration-150 hover:bg-[#e0f7fa] hover:shadow-lg active:scale-95 border border-[#009688]"
+          style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.10)" }}
+        >
+          LIMPIAR FILTRO
+        </button>
+      </div>
+    </div>
+  );
+}
+/* -------------------- BOTÓN DE CATEGORÍA -------------------- */
+// Estado normal: fondo blanco, borde y texto del color de la categoría.
+// Hover o seleccionado: se rellena con el color de la categoría y el texto
+// pasa a blanco. Al deseleccionar, vuelve al estado normal.
+function CategoriaButton({
+  label,
+  color,
+  selected,
+  compact = false,
+  onClick,
+}: {
+  label: string;
+  color: string;
+  selected: boolean;
+  compact?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={selected}
+      className={`${compact ? "py-3 text-base" : "py-3 px-0 text-lg"} rounded-xl font-bold uppercase shadow-md w-full border-2 transition-all duration-300 ease-out active:scale-95 hover:!text-white hover:shadow-lg hover:-translate-y-0.5 ${selected
+        ? "bg-[var(--cat-color)] text-white ring-2 ring-white scale-[1.02]"
+        : "bg-white hover:bg-[var(--cat-color)]"
+        }`}
+      style={
+        {
+          "--cat-color": color,
+          borderColor: color,
+          color: selected ? "#fff" : color,
+          boxShadow: selected
+            ? `0 4px 12px ${color}33`
+            : "0 2px 8px rgba(0,0,0,0.10)",
+        } as React.CSSProperties
+      }
+    >
+      {label}
+    </button>
+  );
+}
+
 
 /* -------------------- SKELETON -------------------- */
 function LoadingSkeleton() {
