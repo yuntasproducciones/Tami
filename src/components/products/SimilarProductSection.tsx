@@ -5,11 +5,8 @@ import SimilarProductCard from './SimilarProductCard';
 import type Producto from '../../models/Product';
 
 
-// Fuentes Css de Swiper
 import 'swiper/css';
 import 'swiper/css/pagination';
-
-
 interface Props {
     products: Producto[];
 }
