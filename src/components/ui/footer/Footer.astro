@@ -7,16 +7,20 @@ import CopyText from "./CopyText.astro";
 import { Image } from "astro:assets";
 ---
 
-<footer class="bg-teal-700 text-white py-6 lg:py-12 sm:px-16">
+
+<footer class="bg-teal-700 text-white py-8 lg:py-12 sm:px-16">
   <div
-    class="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-[50%_22%_28%] gap-4 lg:gap-4 text-center lg:text-left h-full"
+    class="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-[35%_40%_25%] gap-4 lg:gap-4 text-center lg:text-left h-full"
   >
-    
     <!-- BLOQUE 1: Logo + Línea + Enlaces -->
-    <div class="flex flex-col lg:flex-row items-center lg:items-stretch justify-center w-full gap-2 lg:gap-10">
-      
+
+    <div
+      class="flex flex-col lg:flex-row items-center lg:items-stretch justify-start w-full gap-4 lg:gap-8"
+    >
       <!-- LOGO -->
-      <div class="w-full lg:w-auto flex items-center justify-center lg:justify-start lg:self-start lg:mt-1">
+      <div
+        class="w-full lg:w-auto flex items-center justify-center lg:justify-start lg:self-start lg:mt-1"
+      >
         <Image
           src={logoTami}
           alt="Logo de Tami"
@@ -27,96 +31,144 @@ import { Image } from "astro:assets";
           quality={80}
           width={120}
           height={149}
-          class="shrink-0 w-24 lg:w-[120px] h-auto" 
+          class="shrink-0 w-24 lg:w-[120px] h-auto"
         />
       </div>
 
-
-      <div class="hidden lg:block lg:border-l-2 border-white opacity-70 self-stretch"></div>
-
-      <!-- 3. ENLACES -->
-      <!-- 
-
-      -->
-      <div class="w-full flex flex-col items-center justify-center lg:block pt-1">
-        
-        <div class="flex flex-col lg:flex-row items-center lg:items-stretch justify-center w-full gap-0 lg:gap-10">
-          
-          <!-- Primera lista -->
-          <ul class="space-y-0.5 mb-2 lg:mb-0">
-            <li><a href="/" class="hover:text-orange-300 transition-colors">Inicio</a></li>
-            <li><a href="/nosotros" class="hover:text-orange-300 transition-colors">Nosotros</a></li>
-            <li><a href="/catalogo-maquinarias" class="hover:text-orange-300 transition-colors">Productos</a></li>
-            <li><a href="/politicas-envio" class="hover:text-orange-300 transition-colors">Políticas de Envíos</a></li>
-            <li><a href="/blog" class="hover:text-orange-300 transition-colors">Blogs</a></li>
-          </ul>
-
-          <!-- Segunda lista -->
-          <ul class="space-y-0.5">
-            <li><a href="/libro-reclamaciones" class="hover:text-orange-300 transition-colors">Libro de reclamaciones</a></li>
-            <li><a href="/terminos-condiciones" class="hover:text-orange-300 transition-colors">Términos y Condiciones</a></li>
-            <li><a href="/politicas-privacidad" class="hover:text-orange-300 transition-colors">Políticas de Privacidad</a></li>
-          </ul>
-
-        </div>
+      <div
+        class="hidden lg:block lg:border-l-2 border-white opacity-70 self-stretch"
+      >
       </div>
 
-      <!-- Separador móvil después de enlaces -->
-      <div class="block lg:hidden w-1/2 border-t-2 border-white opacity-40 my-3 mx-auto"></div>
+      <!-- 3. BLOQUE ENLACES -->
+
+      <div
+        class="w-auto flex flex-col items-center justify-center lg:block pt-1"
+      >
+        <div
+          class="flex flex-col lg:flex-row items-center lg:items-stretch justify-center w-full gap-0 lg:gap-4"
+        >
+          <!-- Primera lista -->
+          <ul class="space-y-10 mb-2 lg:mb-0 flex-40">
+            <li>
+              <a href="/" class="hover:text-orange-300 transition-colors"
+                >Inicio</a>
+            </li>
+            <li>
+              <a
+                href="/nosotros"
+                class="hover:text-orange-300 transition-colors">Nosotros</a>
+            </li>
+            <li>
+              <a
+                href="/catalogo-maquinarias"
+                class="hover:text-orange-300 transition-colors">Productos</a>
+            </li>
+            <li>
+              <a
+                href="/politicas-envio"
+                class="hover:text-orange-300 transition-colors"
+                >Políticas de Envíos</a>
+            </li>
+            <li>
+              <a href="/blog" class="hover:text-orange-300 transition-colors"
+                >Blogs</a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
 
-    <!-- BLOQUE 2: Horario de atención -->
+    <!-- Separador móvil después de enlaces -->
+    <div
+      class="block lg:hidden w-1/2 border-t-2 border-white opacity-40 my-3 mx-auto"
+    >
+    </div>
 
-    <div class="flex justify-center lg:justify-start lg:pl-8 pt-0">
-      <div class="flex flex-col justify-between h-auto gap-2 text-center lg:text-left">
-        <div>
-          <p class="font-semibold mb-1 text-base">Horario de atención</p>
-          <p class="text-base leading-relaxed">Lunes a Viernes<br />9:00 am a 9:00 pm</p>
-        </div>
-        <div>
-          <p class="font-semibold mb-1 text-base">Para mayor información</p>
-          <div class="flex flex-col gap-0.5 items-center lg:items-start">
-             <CopyText>informestami01@gmail.com</CopyText>
-             <CopyText>+51978883199</CopyText>
-          </div>
+    <!-- Bloque Horario y Informacion-->
+    <!-- <div
+      class="flex flex-col justify-between pt-0 lg:ml-16 lg:mr-16 text-center lg:text-left gap-4 lg:gap-0"
+    > -->
+      <div class=" flex flex-col justify-between pt-0 -lg:ml-10 text-center lg:text-left gap-4 lg:gap-0">
+      <div class="space-y-2">
+        <p class="font-semibold text-base mb-2">Horario de atención</p>
+        <p class="text-base leading-relaxed">Lunes a Viernes</p>
+        <p class="text-base leading-relaxed">9:00 am a 9:00 pm</p>
+      </div>
+
+      <div class="space-y-2">
+        <p class="font-semibold mb-2 text-base">Para mayor información</p>
+        <div class="flex flex-col gap-2 items-center lg:items-start">
+          <CopyText>informestami01@gmail.com</CopyText>
+          <CopyText>+51978883199</CopyText>
         </div>
       </div>
     </div>
 
     <!-- BLOQUE 3: Contacto -->
-    <div class="flex flex-col items-center justify-start space-y-4 lg:space-y-4 text-white">
-      <button
-        type="button"
-        title="Abrir formulario de asesoría"
-        class="cursor-pointer text-lg font-bold tracking-wide hover:opacity-80 transition-opacity"
-        id="open-scroll-btn"
-      >
-        ¡CONTÁCTANOS!
-      </button>
+    <div
+      class="flex flex-col items-center lg:items-end justify-between space-y-8"
+    >
+      <div class="flex flex-col items-center lg:items-end space-y-4">
+        <button
+          type="button"
+          title="Abrir formulario de asesoría"
+          class="cursor-pointer text-lg font-bold tracking-wide hover:opacity-80 transition-opacity"
+          id="open-scroll-btn"
+        >
+          ¡CONTÁCTANOS!
+        </button>
 
-      <div class="w-full text-center">
-        <div class="flex gap-4 justify-center flex-wrap">
-          {
-            socialMediaLinks.map((item) => (
-              <a
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                title={item.linkTitle}
-                class="w-10 h-10 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
-              >
-                <img
-                  src={item.image.src}
-                  alt={item.imageTitle}
-                  class="w-6 h-6"
-                  width="24"
-                  height="24"
-                />
-              </a>
-            ))
-          }
+        <div class="w-full text-center">
+          <div class="flex gap-4 justify-center flex-wrap">
+            {
+              socialMediaLinks.map((item) => (
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={item.linkTitle}
+                  class="w-10 h-10 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
+                >
+                  <img
+                    src={item.image.src}
+                    alt={item.imageTitle}
+                    class="w-6 h-6"
+                    width="24"
+                    height="24"
+                  />
+                </a>
+              ))
+            }
+          </div>
         </div>
       </div>
+
+      <div class="w-full pb-5 pl-10 lg:text-right">
+        <!-- Segunda lista -->
+        <ul class="space-y-2.5 flex flex-col">
+       
+          <li>
+            <a
+              href="/terminos-condiciones"
+              class="hover:text-orange-300 transition-colors"
+              >Términos y Condiciones</a>
+          </li>
+          <li>
+            <a
+              href="/politicas-privacidad"
+              class="hover:text-orange-300 transition-colors"
+              >Políticas de Privacidad</a>
+          </li>
+             <li>
+            <a
+              href="/libro-reclamaciones"
+              class="hover:text-orange-300 transition-colors"
+              >Libro de reclamaciones</a>
+          </li>
+        </ul>
+      </div>
+
     </div>
   </div>
 </footer>

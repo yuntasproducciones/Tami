@@ -12,6 +12,16 @@ import { Pagination, Autoplay } from 'swiper/modules';
 import SimilarProductCard from './SimilarProductCard';
 import SimilarProductsSection from './SimilarProductSection';
 
+const setMetaKeywords = (keywords: string) => {
+    let tag = document.querySelector<HTMLMetaElement>('meta[name="keywords"]');
+    if (!tag) {
+        tag = document.createElement("meta");
+        tag.setAttribute("name", "keywords");
+        document.head.appendChild(tag);
+    }
+    tag.setAttribute("content", keywords);
+};
+
 declare global {
     interface Window {
         __detalleProducto?: any;
@@ -132,6 +142,11 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
             // Solo mantén esto, que no afecta el SEO negativo
             document.title = producto.etiqueta?.meta_titulo || producto.titulo;
+
+            // Keywords SEO por producto
+            if (producto.etiqueta?.keywords) {
+                setMetaKeywords(producto.etiqueta.keywords);
+            }
         }
     }, [producto]);
 
@@ -204,52 +219,84 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
             `}</style>
 
             {/* -------------------- HERO Section (H1) -------------------- */}
-            <div className="
-                    relative pt-32 md:pt-40 pb-20 min-h-screen 
-                    text-white overflow-hidden flex items-center
-                    bg-gradient-to-r from-[#041119] to-[#003d56] 
-                ">
-                <div className="w-full pl-15 pr-13 md:pl-20 z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                    <div className="flex flex-col justify-center text-left">
-                        {/* H1 Semántico Perfecto */}
-                        <h1 className="text-4xl md:text-6xl font-extrabold uppercase mb-6 break-words detalle-producto-titulo-desktop" style={detalleProductoTituloStyle}>
-                            <span className="block text-white">{productTitleFirstWord}</span>
-                            {productTitleRest && (
-                                <span className="block" style={{ color: detailTitleColor }}>
-                                    {productTitleRest}
-                                </span>
-                            )}
-                        </h1>
+    <div className="relative pt-32 md:pt-40 pb-32 text-slate-800 overflow-hidden bg-white">
 
-                        <h2 className="text-lg md:text-2xl opacity-90 mb-10 max-full uppercase tracking-wider font-light break-words">
-                            {producto.subtitulo}
-                        </h2>
+    <div className="absolute top-0 left-0 right-0 h-25 sm:h-37 bg-gradient-to-r from-[#004b6e] via-[#005d82] to-[#006888] z-0">
+        <svg 
+            className="hidden sm:block absolute bottom-0 left-0 w-full h-6 text-white fill-current transform translate-y-full" 
+            viewBox="0 0 1440 48" 
+            preserveAspectRatio="none"
+        >
+            <path d="M0,0 C288,32 576,48 864,32 C1152,16 1440,32 1440,32 L1440,0 L0,0 Z"></path>
+        </svg>
+    </div>
 
-                        <button
-                            id="btnQuotationHero"
-                            className="w-fit bg-[#00b6ff] text-white px-10 py-3 rounded-lg font-bold text-lg uppercase shadow-lg border border-white transform transition-all duration-150 ease-in-out hover:brightness-110 active:brightness-95"
-                            onClick={handleWhatsAppClick}
-                        >
-                            ¡Cotízalo!
-                        </button>
-                    </div>
 
-                    <div className="relative flex items-center justify-center w-full h-full">
-                        <div className="relative w-[90%] aspect-square flex items-center justify-center rounded-full bg-white shadow-2xl overflow-hidden">
-                            <img
-                                src={getFullImageUrl(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png')}
-                                alt={producto.nombre}
-                                title={producto.nombre}
-                                className="w-full h-full object-contain object-center"
-                                fetchPriority="high"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div className="w-full max-w-7xl mx-auto px-6 md:px-12 z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative">
+        
+        {/* Columna Derecha */}
+        <div className="flex flex-col justify-center text-left">
+            {/* Titulo y detalles*/}
+            <h1 className="text-4xl md:text-6xl font-extrabold uppercase mb-6 break-words detalle-producto-titulo-desktop" style={detalleProductoTituloStyle}>
+                <span className="block text-slate-900">{productTitleFirstWord}</span>
+                {productTitleRest && (
+                    <span className="block" style={{ color: detailTitleColor }}>
+                        {productTitleRest}
+                    </span>
+                )}
+            </h1>
+
+            <h2 className="text-lg md:text-2xl text-slate-600 mb-10 max-w-full uppercase tracking-wider font-light break-words">
+                {producto.subtitulo}
+            </h2>
+
+            <button
+                id="btnQuotationHero"
+                className="w-fit bg-[#00b6ff] text-white px-10 py-3 rounded-lg font-bold text-lg uppercase shadow-lg border border-transparent transform transition-all duration-150 ease-in-out hover:brightness-110 active:brightness-95"
+                onClick={handleWhatsAppClick}
+            >
+                ¡Cotízalo!
+            </button>
+        </div>
+
+        {/* Columna Izquierda */}
+        <div className="flex items-center justify-center w-full h-full">
+            <img
+                src={getFullImageUrl(producto.imagenes?.[0]?.url_imagen ?? '/placeholder.png')}
+                alt={producto.nombre}
+                title={producto.nombre}
+                className="w-full max-w-md md:max-w-lg h-auto object-contain"
+                fetchPriority="high"
+            />
+        </div>
+    </div>
+    {/* Wave */}
+    <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-none z-10 wave">
+        <svg 
+            className="relative block w-full h-[120px] md:h-[180px]" 
+            xmlns="http://www.w3.org/2000/svg" 
+            viewBox="0 0 1440 320"
+            preserveAspectRatio="none"
+        >
+            <defs>
+                <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#004b6e" />
+                    <stop offset="50%" stopColor="#005d82" />
+                    <stop offset="100%" stopColor="#006888" />
+                </linearGradient>
+            </defs>
+            <path 
+                fill="url(#waveGradient)" 
+                fillOpacity="1" 
+                d="M0,96L288,96L576,128L864,160L1152,160L1440,96L1440,320L1152,320L864,320L576,320L288,320L0,320Z"
+            ></path>
+        </svg>            
+    </div>
+
+</div>
 
             {/* -------------------- MAIN PRODUCT DETAILS Section -------------------- */}
-            <div className="max-w-full mx-auto px-4 md:px-8 py-20 -mt-full relative z-20">
+            <div className="max-w-full mx-auto px-4 md:px-8 py-20 -mt-full relative z-20 bg-gradient-to-r from-[#004b6e] via-[#005d82] to-[#006888]  z-0">
                 <div className="bg-white rounded-3xl shadow-2xl shadow-cyan-100 p-8 md:p-12 border border-gray-400">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
 
@@ -418,6 +465,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
             </div >
 
             {/* -------------------- PRODUCTOS SIMILARES Section (H2) -------------------- */}
+            
             < div className="max-w-full mx-auto px-4 md:px-8 py-8" >
                 <SimilarProductsSection
                     products={producto.productos_relacionados || []}
