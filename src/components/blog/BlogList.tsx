@@ -3,6 +3,7 @@ import CardBlog from "./CardBlog";
 import type Blog from "src/models/Blog";
 import { getApiUrl, config } from "config";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { matchesBlogSearch } from "src/utils/blog";
 
 interface BlogListProps {
   searchTerm: string;
@@ -51,12 +52,8 @@ const BlogList = ({ searchTerm, sortOrder }: BlogListProps) => {
   const filteredAndSortedBlogs = useMemo(() => {
     const term = searchTerm.toLowerCase();
 
-    const filtered = blogs.filter((blog) => {
-      return (
-        blog.titulo?.toLowerCase().includes(term) ||
-        blog.nombre_producto?.toLowerCase().includes(term)
-      );
-    });
+    const filtered = blogs.filter((blog) =>
+      matchesBlogSearch(blog, term));
 
     // copiar array antes de sort para evitar mutación
     const sorted = [...filtered].sort((a, b) => {
@@ -75,7 +72,7 @@ const BlogList = ({ searchTerm, sortOrder }: BlogListProps) => {
 
     return sorted;
   }, [blogs, searchTerm, sortOrder]);
-  
+
   // Paginación
   const totalPages = Math.ceil(filteredAndSortedBlogs.length / itemsPerPage);
 
