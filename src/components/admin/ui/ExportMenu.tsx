@@ -3,8 +3,7 @@ import { FaFilePdf, FaFileExcel, FaFileCsv, FaDownload, FaChevronDown } from "re
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import type Producto from "src/models/Product"; 
-
+import type Producto from "src/models/Product";
 
 interface ExportMenuProps {
   data: Producto[];
@@ -77,12 +76,12 @@ const ExportMenu = ({ data, fileName = "reporte-productos" }: ExportMenuProps) =
       // Encabezado
       doc.setFontSize(18);
       doc.text("Reporte de Productos - TAMI", 14, 20);
-      
+
       doc.setFontSize(10);
       doc.text(`Generado el: ${new Date().toLocaleDateString()}`, 14, 28);
 
       const tableColumn = ["ID", "Nombre", "Sección", "Precio", "Stock"];
-      
+
       const tableRows = data.map(item => [
         item.id,
         item.nombre,
@@ -114,7 +113,7 @@ const ExportMenu = ({ data, fileName = "reporte-productos" }: ExportMenuProps) =
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 bg-teal-50 text-teal-700 hover:bg-teal-100 transition-all duration-300 px-4 py-2 rounded-lg text-sm font-bold shadow-sm border border-teal-200 cursor-pointer cursor-pointer"
+        className="flex items-center gap-2 bg-teal-50 dark:bg-gray-700 text-teal-700 dark:text-teal-400 hover:bg-teal-100 dark:hover:bg-gray-600 transition-all duration-300 px-4 py-2 rounded-lg text-sm font-bold shadow-sm border border-teal-200 dark:border-gray-600 cursor-pointer"
       >
         <FaDownload className="h-4 w-4" />
         <span>Exportar</span>
@@ -122,25 +121,25 @@ const ExportMenu = ({ data, fileName = "reporte-productos" }: ExportMenuProps) =
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 origin-top-right bg-white divide-y divide-gray-100 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 animate-fade-in-down">
+        <div className="absolute right-0 mt-2 w-48 origin-top-right bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700 rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-white dark:ring-opacity-10 focus:outline-none z-50 animate-fade-in-down">
           <div className="py-1">
             <button
               onClick={exportToPDF}
-              className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 cursor-pointer"
+              className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-teal-50 dark:hover:bg-gray-700 hover:text-teal-700 dark:hover:text-teal-400 cursor-pointer"
             >
               <FaFilePdf className="mr-3 h-5 w-5 text-red-500" />
               PDF
             </button>
             <button
               onClick={exportToExcel}
-              className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 cursor-pointer"
+              className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-teal-50 dark:hover:bg-gray-700 hover:text-teal-700 dark:hover:text-teal-400 cursor-pointer"
             >
               <FaFileExcel className="mr-3 h-5 w-5 text-green-600" />
               Excel
             </button>
             <button
               onClick={exportToCSV}
-              className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 cursor-pointer"
+              className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-teal-50 dark:hover:bg-gray-700 hover:text-teal-700 dark:hover:text-teal-400 cursor-pointer"
             >
               <FaFileCsv className="mr-3 h-5 w-5 text-blue-500" />
               CSV
