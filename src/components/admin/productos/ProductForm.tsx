@@ -851,815 +851,817 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
         >
           <FaEdit size={18} />
         </button>
-      ) : (
-        <button onClick={openModal} className="relative flex items-center justify-center w-full bg-teal-600 text-white hover:bg-teal-700 px-12 transition-all duration-300 py-3 rounded-lg text-sm font-bold shadow-lg hover:shadow-xl cursor-pointer">
+      ) : (                                                                               
+        < button onClick={openModal} className="relative flex items-center justify-center w-full bg-white text-teal-600 hover:bg-teal-50 px-12 transition-all duration-300 py-3 rounded-full text-sm font-bold shadow-md hover:shadow-lg cursor-pointer">
           <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-5 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
           Agregar Producto
-        </button>
+        </button >
       )}
 
-      {showModal && (
-        <div className="dialog-overlay">
-          <div ref={formContainerRef} className="dialog w-full max-w-full md:max-w-4xl lg:max-w-5xl max-h-[90vh] flex flex-col !p-0 overflow-hidden">
+      {
+        showModal && (
+          <div className="dialog-overlay">
+            <div ref={formContainerRef} className="dialog w-full max-w-full md:max-w-4xl lg:max-w-5xl max-h-[90vh] flex flex-col !p-0 overflow-hidden">
 
-            {/* Cabecera del Diálogo */}
-            <div className="dialog-header sticky top-0 z-10 flex items-center justify-between !m-0 p-4 md:p-6 bg-teal-700 text-white flex-shrink-0">
-              <h4 className="dialog-title text-lg md:text-xl font-bold flex-1 text-center">{isEdit ? "Editar Producto" : "Agregar Producto"}</h4>
-              <button
-                type="button"
-                className="text-white hover:text-red-400 transition-all duration-300 cursor-pointer text-3xl"
-                onClick={closeModal}
-                aria-label="Cerrar"
-              >
-                <IoMdCloseCircle />
-              </button>
-            </div>
-
-            {/* Contenedor del Formulario con Barra Lateral */}
-            <form onSubmit={handleSubmit} className="flex-1 flex flex-col md:flex-row overflow-hidden bg-white dark:bg-gray-800">
-
-              {/* Barra Lateral de Pestañas */}
-              <div className="flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible gap-1 md:w-64 flex-shrink-0 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700 p-4 bg-gray-50/50 dark:bg-gray-900/10">
-                {TABS.map(tab => {
-                  const isActive = activeTab === tab.id;
-                  const hasError = tabHasError(tab.id);
-                  return (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-left whitespace-nowrap cursor-pointer w-full ${isActive
-                          ? "bg-teal-600 text-white shadow-md"
-                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700"
-                        }`}
-                    >
-                      <span className="text-base">{tab.icon}</span>
-                      <span className="flex-1">{tab.label}</span>
-                      {hasError && (
-                        <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse flex-shrink-0" />
-                      )}
-                    </button>
-                  );
-                })}
+              {/* Cabecera del Diálogo */}
+              <div className="dialog-header sticky top-0 z-10 flex items-center justify-between !m-0 p-4 md:p-6 bg-teal-700 text-white flex-shrink-0">
+                <h4 className="dialog-title text-lg md:text-xl font-bold flex-1 text-center">{isEdit ? "Editar Producto" : "Agregar Producto"}</h4>
+                <button
+                  type="button"
+                  className="text-white hover:text-red-400 transition-all duration-300 cursor-pointer text-3xl"
+                  onClick={closeModal}
+                  aria-label="Cerrar"
+                >
+                  <IoMdCloseCircle />
+                </button>
               </div>
 
-              {/* Panel de Contenido de la Pestaña */}
-              <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
+              {/* Contenedor del Formulario con Barra Lateral */}
+              <form onSubmit={handleSubmit} className="flex-1 flex flex-col md:flex-row overflow-hidden bg-white dark:bg-gray-800">
 
-                {/* 1. DATOS GENERALES */}
-                {activeTab === "general" && (
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">ℹ️ Información General</h3>
-
-                    <div className="form-input flex flex-col gap-1">
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Nombre:</label>
-                      <input
-                        ref={el => { fieldRefs.current.nombre = el; }}
-                        value={formData.nombre}
-                        onChange={handleChange}
-                        type="text"
-                        name="nombre"
-                        maxLength={LENGTHS.nombre}
-                        placeholder={isEdit ? "Nombre del producto..." : "Ej: Selladora de Chifles Continua con Inyección de Nitrógeno"}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.nombre ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                {/* Barra Lateral de Pestañas */}
+                <div className="flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible gap-1 md:w-64 flex-shrink-0 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700 p-4 bg-gray-50/50 dark:bg-gray-900/10">
+                  {TABS.map(tab => {
+                    const isActive = activeTab === tab.id;
+                    const hasError = tabHasError(tab.id);
+                    return (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-left whitespace-nowrap cursor-pointer w-full ${isActive
+                          ? "bg-teal-600 text-white shadow-md"
+                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700"
                           }`}
-                      />
-                      <div className="flex justify-between items-center">
-                        <p className="text-[10px] text-yellow-600 dark:text-yellow-400">
-                          ⚠️ Mínimo 40 caracteres • Recomendado máx. 80 para evitar cortes.
-                        </p>
-                        <span className="text-xs text-gray-400 dark:text-gray-500 text-right">
-                          {formData.nombre.length}/{LENGTHS.nombre}
-                        </span>
-                      </div>
-                      {errors.nombre && <p className="text-red-500 text-xs mt-1">⚠️ {errors.nombre}</p>}
-                    </div>
-
-                    <div className="form-input flex flex-col gap-1">
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Link Permanente:</label>
-                      <input
-                        ref={el => { fieldRefs.current.link = el; }}
-                        value={formData.link}
-                        onChange={handleChange}
-                        type="text"
-                        name="link"
-                        maxLength={LENGTHS.link}
-                        placeholder="ej-nombre-producto"
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.link ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                          }`}
-                      />
-                      <span className="text-xs text-gray-400 dark:text-gray-500 block text-right">
-                        {formData.link.length}/{LENGTHS.link}
-                      </span>
-                      {errors.link && <p className="text-red-500 text-xs mt-1">⚠️ {errors.link}</p>}
-                    </div>
-
-                    <div className="form-input flex flex-col gap-1">
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Subtítulo:</label>
-                      <input
-                        ref={el => { fieldRefs.current.subtitulo = el; }}
-                        value={formData.subtitulo}
-                        onChange={handleChange}
-                        type="text"
-                        name="subtitulo"
-                        maxLength={LENGTHS.subtitulo}
-                        placeholder={isEdit ? "Subtitulo del producto..." : "Ej: Aumente la vida útil de sus chifles"}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.subtitulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                          }`}
-                      />
-                      <span className="text-xs text-gray-400 dark:text-gray-500 block text-right">
-                        {formData.subtitulo.length}/{LENGTHS.subtitulo}
-                      </span>
-                      {errors.subtitulo && <p className="text-red-500 text-xs mt-1">⚠️ {errors.subtitulo}</p>}
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <div className="form-input flex flex-col gap-1">
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Sección:</label>
-                        <select
-                          ref={el => { fieldRefs.current.seccion = el; }}
-                          value={formData.seccion}
-                          onChange={handleChange}
-                          name="seccion"
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.seccion ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                            }`}
-                        >
-                          <option value="Decoración">Decoración</option>
-                          <option value="Maquinaria">Maquinaria</option>
-                          <option value="Negocio">Negocio</option>
-                        </select>
-                        {errors.seccion && <p className="text-red-500 text-xs mt-1">⚠️ {errors.seccion}</p>}
-                      </div>
-
-                      <div className="form-input flex flex-col gap-1">
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Precio ($):</label>
-                        <input
-                          value={formData.precio}
-                          onChange={handleChange}
-                          type="number"
-                          step="0.01"
-                          name="precio"
-                          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
-                        />
-                      </div>
-
-                      <div className="form-input flex flex-col gap-1">
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Stock:</label>
-                        <input
-                          value={formData.stock}
-                          onChange={handleChange}
-                          type="number"
-                          name="stock"
-                          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* 2. DESCRIPCIONES */}
-                {activeTab === "descripciones" && (
-                  <div className="space-y-6">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">📝 Descripciones</h3>
-
-                    <div className="form-input flex flex-col gap-2">
-                      <div className="flex justify-between items-center flex-wrap gap-2">
-                        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Descripción del Producto:</label>
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleInsertLinkClick("descripcion")}
-                            className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 px-2 py-1 rounded transition-colors font-medium cursor-pointer"
-                          >
-                            Insertar Link
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleProductLinkClick("descripcion")}
-                            disabled={!isEdit}
-                            title={!isEdit ? "Disponible al editar el producto" : undefined}
-                            className={`text-xs px-2 py-1 rounded transition-colors font-medium cursor-pointer ${isEdit
-                                ? "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50"
-                                : "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                              }`}
-                          >
-                            Link Producto
-                          </button>
-                        </div>
-                      </div>
-                      <div ref={el => { fieldRefs.current.descripcion = el; }}>
-                        <RichTextEditor
-                          ref={(el: RichTextEditorHandle | null) => {
-                            editorRefs.current.descripcion = el;
-                          }}
-                          value={formData.descripcion}
-                          onChange={(html) => setFormData(prev => ({ ...prev, descripcion: html }))}
-                        />
-                      </div>
-                      {errors.descripcion && <p className="text-red-500 text-xs mt-1">⚠️ {errors.descripcion}</p>}
-                    </div>
-
-                    <div className="form-input flex flex-col gap-2">
-                      <div className="flex justify-between items-center flex-wrap gap-2">
-                        <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Propuesta "¿Por qué elegirnos?":</label>
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleInsertLinkClick("porque_elegirnos")}
-                            className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 px-2 py-1 rounded transition-colors font-medium cursor-pointer"
-                          >
-                            Insertar Link
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleProductLinkClick("porque_elegirnos")}
-                            disabled={!isEdit}
-                            title={!isEdit ? "Disponible al editar el producto" : undefined}
-                            className={`text-xs px-2 py-1 rounded transition-colors font-medium cursor-pointer ${isEdit
-                                ? "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50"
-                                : "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                              }`}
-                          >
-                            Link Producto
-                          </button>
-                        </div>
-                      </div>
-                      <div ref={el => { fieldRefs.current.porque_elegirnos = el; }}>
-                        <RichTextEditor
-                          ref={(el: RichTextEditorHandle | null) => {
-                            editorRefs.current.porque_elegirnos = el;
-                          }}
-                          value={formData.porque_elegirnos}
-                          onChange={(html) => setFormData(prev => ({ ...prev, porque_elegirnos: html }))}
-                        />
-                      </div>
-                      {errors.porque_elegirnos && <p className="text-red-500 text-xs mt-1">⚠️ {errors.porque_elegirnos}</p>}
-                    </div>
-                  </div>
-                )}
-
-                {/* 3. FICHA TÉCNICA Y DIMENSIONES */}
-                {activeTab === "especificaciones" && (
-                  <div className="space-y-6">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">⚙️ Ficha Técnica</h3>
-
-                    {/* Dimensiones */}
-                    <div className="bg-gray-50 dark:bg-slate-900/60 p-4 rounded-xl border border-gray-150 dark:border-gray-700">
-                      <h4 className="font-bold text-sm text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-1">
-                        📦 Dimensiones (cm)
-                      </h4>
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="form-input flex flex-col">
-                          <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Alto:</label>
-                          <input
-                            ref={el => { fieldRefs.current.alto = el; }}
-                            value={formData.dimensiones.alto}
-                            onChange={handleDimensionChange}
-                            name="alto"
-                            type="number"
-                            placeholder="Ej: 80"
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.alto ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                              }`}
-                          />
-                          {errors.alto && <p className="text-red-500 text-[10px] mt-1">⚠️ {errors.alto}</p>}
-                        </div>
-
-                        <div className="form-input flex flex-col">
-                          <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Ancho:</label>
-                          <input
-                            ref={el => { fieldRefs.current.ancho = el; }}
-                            value={formData.dimensiones.ancho}
-                            onChange={handleDimensionChange}
-                            name="ancho"
-                            type="number"
-                            placeholder="Ej: 50"
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.ancho ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                              }`}
-                          />
-                          {errors.ancho && <p className="text-red-500 text-[10px] mt-1">⚠️ {errors.ancho}</p>}
-                        </div>
-
-                        <div className="form-input flex flex-col">
-                          <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Largo:</label>
-                          <input
-                            ref={el => { fieldRefs.current.largo = el; }}
-                            value={formData.dimensiones.largo}
-                            onChange={handleDimensionChange}
-                            name="largo"
-                            type="number"
-                            placeholder="Ej: 120"
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.largo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                              }`}
-                          />
-                          {errors.largo && <p className="text-red-500 text-[10px] mt-1">⚠️ {errors.largo}</p>}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Especificaciones */}
-                    <div ref={el => { fieldRefs.current.especificaciones = el; }} className={`card border p-4 ${errors.especificaciones ? "border-red-500" : ""}`}>
-                      <h4 className="font-bold text-sm text-gray-800 dark:text-gray-200 mb-3">🛠️ Especificaciones Técnicas</h4>
-
-                      {/* Entradas Clave-Valor */}
-                      <div className="flex flex-col sm:flex-row gap-3 mb-4 items-end bg-white dark:bg-slate-900 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
-                        <div className="flex-1 flex flex-col gap-1">
-                          <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Característica:</label>
-                          <input
-                            type="text"
-                            value={specKey}
-                            onChange={(e) => setSpecKey(e.target.value)}
-                            placeholder="Ej: Producción, Peso, Voltaje"
-                            className="w-full border border-gray-300 dark:border-gray-700 dark:bg-slate-900 dark:text-white rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-teal-500"
-                          />
-                        </div>
-                        <div className="flex-1 flex flex-col gap-1">
-                          <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Valor / Detalle:</label>
-                          <input
-                            type="text"
-                            value={specValue}
-                            onChange={(e) => setSpecValue(e.target.value)}
-                            placeholder="Ej: 50 bolsas/min, 220V AC"
-                            className="w-full border border-gray-300 dark:border-gray-700 dark:bg-slate-900 dark:text-white rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-teal-500"
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={addNewSpecification}
-                          className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition h-10 w-full sm:w-auto cursor-pointer"
-                        >
-                          + Añadir
-                        </button>
-                      </div>
-
-                      {/* Lista de Especificaciones */}
-                      <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
-                        {formData.especificaciones.map((espec, index) => {
-                          const separatorIndex = espec.indexOf(':');
-                          const k = separatorIndex !== -1 ? espec.substring(0, separatorIndex).trim() : espec;
-                          const v = separatorIndex !== -1 ? espec.substring(separatorIndex + 1).trim() : '';
-
-                          return (
-                            <div key={index} className="flex items-center gap-3 bg-white dark:bg-slate-800 p-2.5 rounded-lg border border-gray-150 dark:border-gray-700">
-                              <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 min-w-[120px]">{k}</span>
-                              <span className="text-sm text-gray-600 dark:text-gray-400 flex-1">{v}</span>
-                              <button
-                                type="button"
-                                onClick={() => eliminarEspecificacion(index)}
-                                className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                              </button>
-                            </div>
-                          );
-                        })}
-
-                        {formData.especificaciones.length === 0 && (
-                          <p className="text-sm text-gray-500 dark:text-gray-400 italic text-center py-4 bg-white dark:bg-slate-800/40 rounded-lg">
-                            Ninguna especificación añadida. Por favor, añada al menos una.
-                          </p>
+                      >
+                        <span className="text-base">{tab.icon}</span>
+                        <span className="flex-1">{tab.label}</span>
+                        {hasError && (
+                          <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse flex-shrink-0" />
                         )}
-                      </div>
-                      {errors.especificaciones && <p className="text-red-500 text-xs mt-3">⚠️ {errors.especificaciones}</p>}
-                    </div>
-                  </div>
-                )}
+                      </button>
+                    );
+                  })}
+                </div>
 
-                {/* 4. PERSONALIZACIÓN UI */}
-                {activeTab === "personalizacion" && (
-                  <div className="space-y-6">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">🎨 Personalización Visual</h3>
+                {/* Panel de Contenido de la Pestaña */}
+                <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
 
-                    <div className="form-input flex flex-col gap-1">
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Título Visual del Hero:</label>
-                      <input
-                        ref={el => { fieldRefs.current.titulo = el; }}
-                        value={formData.titulo}
-                        onChange={handleChange}
-                        type="text"
-                        name="titulo"
-                        maxLength={LENGTHS.titulo}
-                        placeholder="Ej: SELLADORA CONTINUA DE BOLSAS"
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.titulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                          }`}
-                      />
-                      <div className="flex justify-between items-center">
-                        <p className="text-[10px] text-yellow-600 dark:text-yellow-400">
-                          ⚠️ Nota: La segunda palabra en adelante se pintará con el color personalizado seleccionado.
-                        </p>
-                        <span className="text-xs text-gray-400 dark:text-gray-500 text-right">
-                          {formData.titulo.length}/{LENGTHS.titulo}
-                        </span>
-                      </div>
-                      {errors.titulo && <p className="text-red-500 text-xs mt-1">⚠️ {errors.titulo}</p>}
-                    </div>
+                  {/* 1. DATOS GENERALES */}
+                  {activeTab === "general" && (
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">ℹ️ Información General</h3>
 
-                    <div className="rounded-2xl border border-slate-700/30 bg-gradient-to-br from-slate-950 via-[#081829] to-[#003d56] p-5 shadow-xl text-white">
-                      <h4 className="text-sm font-bold text-cyan-400 mb-2">Editor de Estilo de Título</h4>
-
-                      {/* Vista Previa */}
-                      <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-[10px] uppercase font-bold tracking-wider text-cyan-300">Vista previa en tiempo real</span>
+                      <div className="form-input flex flex-col gap-1">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Nombre:</label>
+                        <input
+                          ref={el => { fieldRefs.current.nombre = el; }}
+                          value={formData.nombre}
+                          onChange={handleChange}
+                          type="text"
+                          name="nombre"
+                          maxLength={LENGTHS.nombre}
+                          placeholder={isEdit ? "Nombre del producto..." : "Ej: Selladora de Chifles Continua con Inyección de Nitrógeno"}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.nombre ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                            }`}
+                        />
+                        <div className="flex justify-between items-center">
+                          <p className="text-[10px] text-yellow-600 dark:text-yellow-400">
+                            ⚠️ Mínimo 40 caracteres • Recomendado máx. 80 para evitar cortes.
+                          </p>
+                          <span className="text-xs text-gray-400 dark:text-gray-500 text-right">
+                            {formData.nombre.length}/{LENGTHS.nombre}
+                          </span>
                         </div>
-                        <span
-                          className="block leading-tight uppercase font-montserrat"
-                          style={{
-                            fontSize: `${Number(formData.etiqueta.titulo_detalle_producto_size || 24)}px`,
-                            fontWeight: formData.etiqueta.titulo_detalle_producto_style === "negrita_cursiva" || formData.etiqueta.titulo_detalle_producto_style === "negrita" ? 800 : 600,
-                            fontStyle: formData.etiqueta.titulo_detalle_producto_style === "cursiva" || formData.etiqueta.titulo_detalle_producto_style === "negrita_cursiva" ? "italic" : "normal",
-                            textDecoration: formData.etiqueta.titulo_detalle_producto_style === "subrayado" ? "underline" : "none",
-                            textDecorationColor: formData.etiqueta.titulo_detalle_producto_style === "subrayado" ? "white" : "transparent",
-                            textDecorationThickness: "2px",
-                            textUnderlineOffset: "4px"
-                          }}
-                        >
-                          {(() => {
-                            const titleParts = (formData.titulo || "Título Producto").trim().split(/\s+/).filter(Boolean);
-                            const firstWord = titleParts[0] || "Título";
-                            const restWords = titleParts.slice(1).join(" ");
-                            return (
-                              <>
-                                <span className="block text-white">{firstWord}</span>
-                                {restWords && (
-                                  <span className="block" style={{ color: formData.etiqueta.titulo_detalle_producto_color || "#2DCCFF" }}>
-                                    {restWords}
-                                  </span>
-                                )}
-                              </>
-                            );
-                          })()}
-                        </span>
+                        {errors.nombre && <p className="text-red-500 text-xs mt-1">⚠️ {errors.nombre}</p>}
                       </div>
 
-                      {/* Controles de Configuración */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">Tamaño</label>
+                      <div className="form-input flex flex-col gap-1">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Link Permanente:</label>
+                        <input
+                          ref={el => { fieldRefs.current.link = el; }}
+                          value={formData.link}
+                          onChange={handleChange}
+                          type="text"
+                          name="link"
+                          maxLength={LENGTHS.link}
+                          placeholder="ej-nombre-producto"
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.link ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                            }`}
+                        />
+                        <span className="text-xs text-gray-400 dark:text-gray-500 block text-right">
+                          {formData.link.length}/{LENGTHS.link}
+                        </span>
+                        {errors.link && <p className="text-red-500 text-xs mt-1">⚠️ {errors.link}</p>}
+                      </div>
+
+                      <div className="form-input flex flex-col gap-1">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Subtítulo:</label>
+                        <input
+                          ref={el => { fieldRefs.current.subtitulo = el; }}
+                          value={formData.subtitulo}
+                          onChange={handleChange}
+                          type="text"
+                          name="subtitulo"
+                          maxLength={LENGTHS.subtitulo}
+                          placeholder={isEdit ? "Subtitulo del producto..." : "Ej: Aumente la vida útil de sus chifles"}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.subtitulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                            }`}
+                        />
+                        <span className="text-xs text-gray-400 dark:text-gray-500 block text-right">
+                          {formData.subtitulo.length}/{LENGTHS.subtitulo}
+                        </span>
+                        {errors.subtitulo && <p className="text-red-500 text-xs mt-1">⚠️ {errors.subtitulo}</p>}
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="form-input flex flex-col gap-1">
+                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Sección:</label>
                           <select
-                            value={formData.etiqueta.titulo_detalle_producto_size || "80"}
-                            onChange={(e) => setFormData(prev => ({
-                              ...prev,
-                              etiqueta: { ...prev.etiqueta, titulo_detalle_producto_size: e.target.value }
-                            }))}
-                            className="w-full rounded-lg border border-white/20 bg-slate-900 text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                            ref={el => { fieldRefs.current.seccion = el; }}
+                            value={formData.seccion}
+                            onChange={handleChange}
+                            name="seccion"
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.seccion ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                              }`}
                           >
-                            <option value="20">Pequeño</option>
-                            <option value="80">Mediano</option>
-                            <option value="130">Grande</option>
+                            <option value="Decoración">Decoración</option>
+                            <option value="Maquinaria">Maquinaria</option>
+                            <option value="Negocio">Negocio</option>
                           </select>
+                          {errors.seccion && <p className="text-red-500 text-xs mt-1">⚠️ {errors.seccion}</p>}
                         </div>
 
-                        <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">Color Destacado</label>
+                        <div className="form-input flex flex-col gap-1">
+                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Precio ($):</label>
                           <input
-                            type="color"
-                            value={formData.etiqueta.titulo_detalle_producto_color}
-                            onChange={(e) => setFormData(prev => ({
-                              ...prev,
-                              etiqueta: { ...prev.etiqueta, titulo_detalle_producto_color: e.target.value }
-                            }))}
-                            className="cursor-pointer h-10 w-full rounded-lg border border-white/20 bg-slate-900 p-1"
+                            value={formData.precio}
+                            onChange={handleChange}
+                            type="number"
+                            step="0.01"
+                            name="precio"
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
                           />
                         </div>
 
-                        <div>
-                          <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">Estilos</label>
-                          <div className="grid grid-cols-2 gap-1.5">
-                            {[
-                              { value: "normal", label: "Normal" },
-                              { value: "negrita", label: "Negrita" },
-                              { value: "cursiva", label: "Cursiva" },
-                              { value: "negrita_cursiva", label: "Negrita + Cursiva" },
-                              { value: "subrayado", label: "Subrayado" }
-                            ].map(opt => {
-                              const active = formData.etiqueta.titulo_detalle_producto_style === opt.value;
-                              return (
-                                <button
-                                  key={opt.value}
-                                  type="button"
-                                  onClick={() => setFormData(prev => ({
-                                    ...prev,
-                                    etiqueta: { ...prev.etiqueta, titulo_detalle_producto_style: opt.value }
-                                  }))}
-                                  className={`rounded px-2.5 py-1.5 text-xs font-semibold transition ${active
-                                      ? "bg-teal-500 text-white shadow-md"
-                                      : "bg-slate-800 text-gray-300 hover:bg-slate-700"
-                                    }`}
-                                >
-                                  {opt.label}
-                                </button>
-                              );
-                            })}
+                        <div className="form-input flex flex-col gap-1">
+                          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Stock:</label>
+                          <input
+                            value={formData.stock}
+                            onChange={handleChange}
+                            type="number"
+                            name="stock"
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-slate-900 dark:text-white rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 2. DESCRIPCIONES */}
+                  {activeTab === "descripciones" && (
+                    <div className="space-y-6">
+                      <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">📝 Descripciones</h3>
+
+                      <div className="form-input flex flex-col gap-2">
+                        <div className="flex justify-between items-center flex-wrap gap-2">
+                          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Descripción del Producto:</label>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleInsertLinkClick("descripcion")}
+                              className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 px-2 py-1 rounded transition-colors font-medium cursor-pointer"
+                            >
+                              Insertar Link
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleProductLinkClick("descripcion")}
+                              disabled={!isEdit}
+                              title={!isEdit ? "Disponible al editar el producto" : undefined}
+                              className={`text-xs px-2 py-1 rounded transition-colors font-medium cursor-pointer ${isEdit
+                                ? "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50"
+                                : "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                                }`}
+                            >
+                              Link Producto
+                            </button>
                           </div>
                         </div>
+                        <div ref={el => { fieldRefs.current.descripcion = el; }}>
+                          <RichTextEditor
+                            ref={(el: RichTextEditorHandle | null) => {
+                              editorRefs.current.descripcion = el;
+                            }}
+                            value={formData.descripcion}
+                            onChange={(html) => setFormData(prev => ({ ...prev, descripcion: html }))}
+                          />
+                        </div>
+                        {errors.descripcion && <p className="text-red-500 text-xs mt-1">⚠️ {errors.descripcion}</p>}
+                      </div>
+
+                      <div className="form-input flex flex-col gap-2">
+                        <div className="flex justify-between items-center flex-wrap gap-2">
+                          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Propuesta "¿Por qué elegirnos?":</label>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleInsertLinkClick("porque_elegirnos")}
+                              className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50 px-2 py-1 rounded transition-colors font-medium cursor-pointer"
+                            >
+                              Insertar Link
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleProductLinkClick("porque_elegirnos")}
+                              disabled={!isEdit}
+                              title={!isEdit ? "Disponible al editar el producto" : undefined}
+                              className={`text-xs px-2 py-1 rounded transition-colors font-medium cursor-pointer ${isEdit
+                                ? "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50"
+                                : "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                                }`}
+                            >
+                              Link Producto
+                            </button>
+                          </div>
+                        </div>
+                        <div ref={el => { fieldRefs.current.porque_elegirnos = el; }}>
+                          <RichTextEditor
+                            ref={(el: RichTextEditorHandle | null) => {
+                              editorRefs.current.porque_elegirnos = el;
+                            }}
+                            value={formData.porque_elegirnos}
+                            onChange={(html) => setFormData(prev => ({ ...prev, porque_elegirnos: html }))}
+                          />
+                        </div>
+                        {errors.porque_elegirnos && <p className="text-red-500 text-xs mt-1">⚠️ {errors.porque_elegirnos}</p>}
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* 5. GALERÍA DE IMÁGENES */}
-                {activeTab === "galeria" && (
-                  <div className="space-y-6">
-                    <div className="border-b pb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <h3 className="text-lg font-bold text-gray-800 dark:text-white">📸 Galería del Producto</h3>
-                      <span className="text-xs text-red-500 font-semibold">⚠️ Mínimo 4 imágenes obligatorias</span>
-                    </div>
+                  {/* 3. FICHA TÉCNICA Y DIMENSIONES */}
+                  {activeTab === "especificaciones" && (
+                    <div className="space-y-6">
+                      <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">⚙️ Ficha Técnica</h3>
 
-                    <div ref={el => { fieldRefs.current.gallery = el; }}>
-                      {errors.gallery && <p className="bg-red-50 text-red-600 dark:bg-red-950/20 dark:text-red-400 p-3 rounded-lg text-sm border border-red-200">⚠️ {errors.gallery}</p>}
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {formData.imagenes.map((img, index) => (
-                        <div key={index} className="bg-gray-50 dark:bg-slate-900/40 border border-gray-200 dark:border-gray-700 p-4 rounded-2xl flex flex-col gap-3">
-                          <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Imagen {index + 1} {index < 4 ? "*" : "(Opcional)"}</span>
-
-                          <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Titulo de la imagen:</label>
+                      {/* Dimensiones */}
+                      <div className="bg-gray-50 dark:bg-slate-900/60 p-4 rounded-xl border border-gray-150 dark:border-gray-700">
+                        <h4 className="font-bold text-sm text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-1">
+                          📦 Dimensiones (cm)
+                        </h4>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="form-input flex flex-col">
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Alto:</label>
                             <input
-                              ref={el => { fieldRefs.current[`titulo_${index}`] = el; }}
-                              type="text"
-                              value={img.imageTitle}
-                              onChange={(e) => handleImagesTituloChange(e, index)}
-                              maxLength={LENGTHS.imagenTitulo}
-                              placeholder="Ej: Selladora industrial de bolsas de café"
-                              className={`w-full px-3 py-1.5 border rounded-lg text-sm outline-none dark:bg-slate-950 dark:text-white dark:border-gray-700 ${errors[`titulo_${index}`] ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                              ref={el => { fieldRefs.current.alto = el; }}
+                              value={formData.dimensiones.alto}
+                              onChange={handleDimensionChange}
+                              name="alto"
+                              type="number"
+                              placeholder="Ej: 80"
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.alto ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
                                 }`}
                             />
-                            <span className="text-xs text-gray-400 dark:text-gray-500 block text-right">
-                              {img.imageTitle?.length || 0}/{LENGTHS.imagenTitulo}
-                            </span>
-                            {errors[`titulo_${index}`] && <p className="text-red-500 text-[10px]">⚠️ {errors[`titulo_${index}`]}</p>}
+                            {errors.alto && <p className="text-red-500 text-[10px] mt-1">⚠️ {errors.alto}</p>}
                           </div>
 
-                          <div className="border border-dashed border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-950 rounded-xl p-4 flex flex-col items-center justify-center min-h-[140px] relative overflow-hidden group">
-                            {img.url_imagen ? (
-                              <div className="w-full flex flex-col items-center gap-3">
-                                <img
-                                  src={getImagePreview(img.url_imagen)}
-                                  alt={`Previa ${index + 1}`}
-                                  className="h-28 object-contain rounded"
-                                />
-                                <label className="text-xs text-teal-600 hover:text-teal-800 underline font-bold cursor-pointer transition">
-                                  Reemplazar archivo
+                          <div className="form-input flex flex-col">
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Ancho:</label>
+                            <input
+                              ref={el => { fieldRefs.current.ancho = el; }}
+                              value={formData.dimensiones.ancho}
+                              onChange={handleDimensionChange}
+                              name="ancho"
+                              type="number"
+                              placeholder="Ej: 50"
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.ancho ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                                }`}
+                            />
+                            {errors.ancho && <p className="text-red-500 text-[10px] mt-1">⚠️ {errors.ancho}</p>}
+                          </div>
+
+                          <div className="form-input flex flex-col">
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Largo:</label>
+                            <input
+                              ref={el => { fieldRefs.current.largo = el; }}
+                              value={formData.dimensiones.largo}
+                              onChange={handleDimensionChange}
+                              name="largo"
+                              type="number"
+                              placeholder="Ej: 120"
+                              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.largo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                                }`}
+                            />
+                            {errors.largo && <p className="text-red-500 text-[10px] mt-1">⚠️ {errors.largo}</p>}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Especificaciones */}
+                      <div ref={el => { fieldRefs.current.especificaciones = el; }} className={`card border p-4 ${errors.especificaciones ? "border-red-500" : ""}`}>
+                        <h4 className="font-bold text-sm text-gray-800 dark:text-gray-200 mb-3">🛠️ Especificaciones Técnicas</h4>
+
+                        {/* Entradas Clave-Valor */}
+                        <div className="flex flex-col sm:flex-row gap-3 mb-4 items-end bg-white dark:bg-slate-900 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                          <div className="flex-1 flex flex-col gap-1">
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Característica:</label>
+                            <input
+                              type="text"
+                              value={specKey}
+                              onChange={(e) => setSpecKey(e.target.value)}
+                              placeholder="Ej: Producción, Peso, Voltaje"
+                              className="w-full border border-gray-300 dark:border-gray-700 dark:bg-slate-900 dark:text-white rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-teal-500"
+                            />
+                          </div>
+                          <div className="flex-1 flex flex-col gap-1">
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Valor / Detalle:</label>
+                            <input
+                              type="text"
+                              value={specValue}
+                              onChange={(e) => setSpecValue(e.target.value)}
+                              placeholder="Ej: 50 bolsas/min, 220V AC"
+                              className="w-full border border-gray-300 dark:border-gray-700 dark:bg-slate-900 dark:text-white rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-teal-500"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={addNewSpecification}
+                            className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition h-10 w-full sm:w-auto cursor-pointer"
+                          >
+                            + Añadir
+                          </button>
+                        </div>
+
+                        {/* Lista de Especificaciones */}
+                        <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                          {formData.especificaciones.map((espec, index) => {
+                            const separatorIndex = espec.indexOf(':');
+                            const k = separatorIndex !== -1 ? espec.substring(0, separatorIndex).trim() : espec;
+                            const v = separatorIndex !== -1 ? espec.substring(separatorIndex + 1).trim() : '';
+
+                            return (
+                              <div key={index} className="flex items-center gap-3 bg-white dark:bg-slate-800 p-2.5 rounded-lg border border-gray-150 dark:border-gray-700">
+                                <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 min-w-[120px]">{k}</span>
+                                <span className="text-sm text-gray-600 dark:text-gray-400 flex-1">{v}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => eliminarEspecificacion(index)}
+                                  className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                </button>
+                              </div>
+                            );
+                          })}
+
+                          {formData.especificaciones.length === 0 && (
+                            <p className="text-sm text-gray-500 dark:text-gray-400 italic text-center py-4 bg-white dark:bg-slate-800/40 rounded-lg">
+                              Ninguna especificación añadida. Por favor, añada al menos una.
+                            </p>
+                          )}
+                        </div>
+                        {errors.especificaciones && <p className="text-red-500 text-xs mt-3">⚠️ {errors.especificaciones}</p>}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 4. PERSONALIZACIÓN UI */}
+                  {activeTab === "personalizacion" && (
+                    <div className="space-y-6">
+                      <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">🎨 Personalización Visual</h3>
+
+                      <div className="form-input flex flex-col gap-1">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Título Visual del Hero:</label>
+                        <input
+                          ref={el => { fieldRefs.current.titulo = el; }}
+                          value={formData.titulo}
+                          onChange={handleChange}
+                          type="text"
+                          name="titulo"
+                          maxLength={LENGTHS.titulo}
+                          placeholder="Ej: SELLADORA CONTINUA DE BOLSAS"
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.titulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                            }`}
+                        />
+                        <div className="flex justify-between items-center">
+                          <p className="text-[10px] text-yellow-600 dark:text-yellow-400">
+                            ⚠️ Nota: La segunda palabra en adelante se pintará con el color personalizado seleccionado.
+                          </p>
+                          <span className="text-xs text-gray-400 dark:text-gray-500 text-right">
+                            {formData.titulo.length}/{LENGTHS.titulo}
+                          </span>
+                        </div>
+                        {errors.titulo && <p className="text-red-500 text-xs mt-1">⚠️ {errors.titulo}</p>}
+                      </div>
+
+                      <div className="rounded-2xl border border-slate-700/30 bg-gradient-to-br from-slate-950 via-[#081829] to-[#003d56] p-5 shadow-xl text-white">
+                        <h4 className="text-sm font-bold text-cyan-400 mb-2">Editor de Estilo de Título</h4>
+
+                        {/* Vista Previa */}
+                        <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-[10px] uppercase font-bold tracking-wider text-cyan-300">Vista previa en tiempo real</span>
+                          </div>
+                          <span
+                            className="block leading-tight uppercase font-montserrat"
+                            style={{
+                              fontSize: `${Number(formData.etiqueta.titulo_detalle_producto_size || 24)}px`,
+                              fontWeight: formData.etiqueta.titulo_detalle_producto_style === "negrita_cursiva" || formData.etiqueta.titulo_detalle_producto_style === "negrita" ? 800 : 600,
+                              fontStyle: formData.etiqueta.titulo_detalle_producto_style === "cursiva" || formData.etiqueta.titulo_detalle_producto_style === "negrita_cursiva" ? "italic" : "normal",
+                              textDecoration: formData.etiqueta.titulo_detalle_producto_style === "subrayado" ? "underline" : "none",
+                              textDecorationColor: formData.etiqueta.titulo_detalle_producto_style === "subrayado" ? "white" : "transparent",
+                              textDecorationThickness: "2px",
+                              textUnderlineOffset: "4px"
+                            }}
+                          >
+                            {(() => {
+                              const titleParts = (formData.titulo || "Título Producto").trim().split(/\s+/).filter(Boolean);
+                              const firstWord = titleParts[0] || "Título";
+                              const restWords = titleParts.slice(1).join(" ");
+                              return (
+                                <>
+                                  <span className="block text-white">{firstWord}</span>
+                                  {restWords && (
+                                    <span className="block" style={{ color: formData.etiqueta.titulo_detalle_producto_color || "#2DCCFF" }}>
+                                      {restWords}
+                                    </span>
+                                  )}
+                                </>
+                              );
+                            })()}
+                          </span>
+                        </div>
+
+                        {/* Controles de Configuración */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">Tamaño</label>
+                            <select
+                              value={formData.etiqueta.titulo_detalle_producto_size || "80"}
+                              onChange={(e) => setFormData(prev => ({
+                                ...prev,
+                                etiqueta: { ...prev.etiqueta, titulo_detalle_producto_size: e.target.value }
+                              }))}
+                              className="w-full rounded-lg border border-white/20 bg-slate-900 text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                            >
+                              <option value="20">Pequeño</option>
+                              <option value="80">Mediano</option>
+                              <option value="130">Grande</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">Color Destacado</label>
+                            <input
+                              type="color"
+                              value={formData.etiqueta.titulo_detalle_producto_color}
+                              onChange={(e) => setFormData(prev => ({
+                                ...prev,
+                                etiqueta: { ...prev.etiqueta, titulo_detalle_producto_color: e.target.value }
+                              }))}
+                              className="cursor-pointer h-10 w-full rounded-lg border border-white/20 bg-slate-900 p-1"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">Estilos</label>
+                            <div className="grid grid-cols-2 gap-1.5">
+                              {[
+                                { value: "normal", label: "Normal" },
+                                { value: "negrita", label: "Negrita" },
+                                { value: "cursiva", label: "Cursiva" },
+                                { value: "negrita_cursiva", label: "Negrita + Cursiva" },
+                                { value: "subrayado", label: "Subrayado" }
+                              ].map(opt => {
+                                const active = formData.etiqueta.titulo_detalle_producto_style === opt.value;
+                                return (
+                                  <button
+                                    key={opt.value}
+                                    type="button"
+                                    onClick={() => setFormData(prev => ({
+                                      ...prev,
+                                      etiqueta: { ...prev.etiqueta, titulo_detalle_producto_style: opt.value }
+                                    }))}
+                                    className={`rounded px-2.5 py-1.5 text-xs font-semibold transition ${active
+                                      ? "bg-teal-500 text-white shadow-md"
+                                      : "bg-slate-800 text-gray-300 hover:bg-slate-700"
+                                      }`}
+                                  >
+                                    {opt.label}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 5. GALERÍA DE IMÁGENES */}
+                  {activeTab === "galeria" && (
+                    <div className="space-y-6">
+                      <div className="border-b pb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-white">📸 Galería del Producto</h3>
+                        <span className="text-xs text-red-500 font-semibold">⚠️ Mínimo 4 imágenes obligatorias</span>
+                      </div>
+
+                      <div ref={el => { fieldRefs.current.gallery = el; }}>
+                        {errors.gallery && <p className="bg-red-50 text-red-600 dark:bg-red-950/20 dark:text-red-400 p-3 rounded-lg text-sm border border-red-200">⚠️ {errors.gallery}</p>}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {formData.imagenes.map((img, index) => (
+                          <div key={index} className="bg-gray-50 dark:bg-slate-900/40 border border-gray-200 dark:border-gray-700 p-4 rounded-2xl flex flex-col gap-3">
+                            <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Imagen {index + 1} {index < 4 ? "*" : "(Opcional)"}</span>
+
+                            <div className="flex flex-col gap-1">
+                              <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Titulo de la imagen:</label>
+                              <input
+                                ref={el => { fieldRefs.current[`titulo_${index}`] = el; }}
+                                type="text"
+                                value={img.imageTitle}
+                                onChange={(e) => handleImagesTituloChange(e, index)}
+                                maxLength={LENGTHS.imagenTitulo}
+                                placeholder="Ej: Selladora industrial de bolsas de café"
+                                className={`w-full px-3 py-1.5 border rounded-lg text-sm outline-none dark:bg-slate-950 dark:text-white dark:border-gray-700 ${errors[`titulo_${index}`] ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                                  }`}
+                              />
+                              <span className="text-xs text-gray-400 dark:text-gray-500 block text-right">
+                                {img.imageTitle?.length || 0}/{LENGTHS.imagenTitulo}
+                              </span>
+                              {errors[`titulo_${index}`] && <p className="text-red-500 text-[10px]">⚠️ {errors[`titulo_${index}`]}</p>}
+                            </div>
+
+                            <div className="border border-dashed border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-950 rounded-xl p-4 flex flex-col items-center justify-center min-h-[140px] relative overflow-hidden group">
+                              {img.url_imagen ? (
+                                <div className="w-full flex flex-col items-center gap-3">
+                                  <img
+                                    src={getImagePreview(img.url_imagen)}
+                                    alt={`Previa ${index + 1}`}
+                                    className="h-28 object-contain rounded"
+                                  />
+                                  <label className="text-xs text-teal-600 hover:text-teal-800 underline font-bold cursor-pointer transition">
+                                    Reemplazar archivo
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      onChange={(e) => handleImagesChange(e, index)}
+                                      className="hidden"
+                                    />
+                                  </label>
+                                </div>
+                              ) : (
+                                <div className="flex flex-col items-center gap-2 text-center">
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                  </svg>
+                                  <span className="text-xs text-gray-500 dark:text-gray-400">Subir archivo (WEBP recomendado)</span>
                                   <input
                                     type="file"
                                     accept="image/*"
                                     onChange={(e) => handleImagesChange(e, index)}
-                                    className="hidden"
+                                    className="absolute inset-0 opacity-0 cursor-pointer"
                                   />
-                                </label>
-                              </div>
-                            ) : (
-                              <div className="flex flex-col items-center gap-2 text-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                <span className="text-xs text-gray-500 dark:text-gray-400">Subir archivo (WEBP recomendado)</span>
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={(e) => handleImagesChange(e, index)}
-                                  className="absolute inset-0 opacity-0 cursor-pointer"
-                                />
-                              </div>
-                            )}
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="flex flex-col gap-1">
+                              <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Texto Alternativo de la Imagen:</label>
+                              <input
+                                ref={el => { fieldRefs.current[`seo_${index}`] = el; }}
+                                type="text"
+                                value={img.texto_alt_SEO}
+                                onChange={(e) => handleImagesTextoSEOChange(e, index)}
+                                maxLength={LENGTHS.imagenAlt}
+                                placeholder="Ej: Selladora industrial de bolsas de café"
+                                className={`w-full px-3 py-1.5 border rounded-lg text-sm outline-none dark:bg-slate-950 dark:text-white dark:border-gray-700 ${errors[`seo_${index}`] ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                                  }`}
+                              />
+                              <span className="text-xs text-gray-400 dark:text-gray-500 block text-right">
+                                {img.texto_alt_SEO?.length || 0}/{LENGTHS.imagenAlt}
+                              </span>
+                              {errors[`seo_${index}`] && <p className="text-red-500 text-[10px]">⚠️ {errors[`seo_${index}`]}</p>}
+                            </div>
                           </div>
-
-                          <div className="flex flex-col gap-1">
-                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Texto Alternativo de la Imagen:</label>
-                            <input
-                              ref={el => { fieldRefs.current[`seo_${index}`] = el; }}
-                              type="text"
-                              value={img.texto_alt_SEO}
-                              onChange={(e) => handleImagesTextoSEOChange(e, index)}
-                              maxLength={LENGTHS.imagenAlt}
-                              placeholder="Ej: Selladora industrial de bolsas de café"
-                              className={`w-full px-3 py-1.5 border rounded-lg text-sm outline-none dark:bg-slate-950 dark:text-white dark:border-gray-700 ${errors[`seo_${index}`] ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                                }`}
-                            />
-                            <span className="text-xs text-gray-400 dark:text-gray-500 block text-right">
-                              {img.texto_alt_SEO?.length || 0}/{LENGTHS.imagenAlt}
-                            </span>
-                            {errors[`seo_${index}`] && <p className="text-red-500 text-[10px]">⚠️ {errors[`seo_${index}`]}</p>}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* 6. SEO Y METADATOS */}
-                {activeTab === "seo" && (
-                  <div className="space-y-6">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">🔍 SEO y Metadatos de Búsqueda</h3>
-
-                    <div className="form-input flex flex-col gap-1">
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Meta Título (SEO):</label>
-                      <input
-                        ref={el => { fieldRefs.current.meta_titulo = el; }}
-                        type="text"
-                        name="meta_titulo"
-                        value={formData.etiqueta.meta_titulo}
-                        onChange={(e) => {
-                          setFormData(prev => ({
-                            ...prev,
-                            etiqueta: { ...prev.etiqueta, meta_titulo: e.target.value }
-                          }));
-                          if (errors.meta_titulo) {
-                            setErrors(prev => {
-                              const next = { ...prev };
-                              delete next.meta_titulo;
-                              return next;
-                            });
-                          }
-                        }}
-                        maxLength={70}
-                        placeholder="Ej: Selladoras de Bolsas al Vacío de Alta Calidad | Tami Maquinarias"
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.meta_titulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                          }`}
-                      />
-                      <div className="flex justify-between items-center text-[10px] text-gray-400">
-                        <span>Recomendado: 50-60 caracteres.</span>
-                        <span className={formData.etiqueta.meta_titulo.length >= 10 && formData.etiqueta.meta_titulo.length <= 60 ? "text-green-500 font-bold" : "text-yellow-500"}>
-                          {formData.etiqueta.meta_titulo.length} / 70 caracteres
-                        </span>
-                      </div>
-                      {errors.meta_titulo && <p className="text-red-500 text-xs mt-1">⚠️ {errors.meta_titulo}</p>}
-                    </div>
-
-                    <div className="form-input flex flex-col gap-1">
-                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Meta Descripción (SEO):</label>
-                      <textarea
-                        ref={el => { fieldRefs.current.meta_description = el; }}
-                        name="meta_description"
-                        rows={3}
-                        value={formData.etiqueta.meta_descripcion}
-                        onChange={(e) => {
-                          setFormData(prev => ({
-                            ...prev,
-                            etiqueta: { ...prev.etiqueta, meta_descripcion: e.target.value }
-                          }));
-                          if (errors.meta_descripcion) {
-                            setErrors(prev => {
-                              const next = { ...prev };
-                              delete next.meta_description;
-                              return next;
-                            });
-                          }
-                        }}
-                        maxLength={200}
-                        placeholder="Ej: Descubra nuestra línea de selladoras de bolsas industriales de alta calidad. Ideales para granos, snacks y productos secos. Cotizaciones rápidas online."
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.meta_descripcion ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                          }`}
-                      />
-                      <div className="flex justify-between items-center text-[10px] text-gray-400">
-                        <span>Recomendado: 120-160 caracteres.</span>
-                        <span className={formData.etiqueta.meta_descripcion.length >= 40 && formData.etiqueta.meta_descripcion.length <= 160 ? "text-green-500 font-bold" : "text-yellow-500"}>
-                          {formData.etiqueta.meta_descripcion.length} / 200 caracteres
-                        </span>
-                      </div>
-                      {errors.meta_descripcion && <p className="text-red-500 text-xs mt-1">⚠️ {errors.meta_descripcion}</p>}
-                    </div>
-
-                    {/* Keywords en Tags */}
-                    <div ref={el => { fieldRefs.current.keywords = el; }} className="bg-gray-50 dark:bg-slate-900/60 p-4 rounded-xl border border-gray-150 dark:border-gray-700">
-                      <h4 className="font-bold text-sm text-gray-800 dark:text-gray-200 mb-2">🏷️ Palabras Clave (Keywords):</h4>
-
-                      {/* Flex de etiquetas */}
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {formData.etiqueta.keywords.filter(k => k.trim() !== "").map((keyword, index) => (
-                          <span key={index} className="inline-flex items-center gap-1 bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300 px-3 py-1 rounded-full text-xs font-semibold border border-teal-100">
-                            {keyword}
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveKeyword(index)}
-                              className="text-teal-500 hover:text-teal-700 font-bold ml-1 transition cursor-pointer"
-                            >
-                              ×
-                            </button>
-                          </span>
                         ))}
                       </div>
-
-                      {/* Entrada de palabra clave */}
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          value={newKeyword}
-                          onChange={(e) => setNewKeyword(e.target.value)}
-                          placeholder="Ej: selladora, industrial, empaque"
-                          className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-slate-900 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-teal-500"
-                          onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddKeyword())}
-                        />
-                        <button
-                          type="button"
-                          onClick={handleAddKeyword}
-                          className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition cursor-pointer"
-                        >
-                          Añadir
-                        </button>
-                      </div>
-                      {errors.keywords && <p className="text-red-500 text-xs mt-2">⚠️ {errors.keywords}</p>}
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* 7. RELACIONADOS */}
-                {activeTab === "relacionados" && (
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">🔗 Productos Relacionados</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Seleccione otros productos relacionados para mostrarlos en el carrusel de la página de detalle.</p>
+                  {/* 6. SEO Y METADATOS */}
+                  {activeTab === "seo" && (
+                    <div className="space-y-6">
+                      <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">🔍 SEO y Metadatos de Búsqueda</h3>
 
-                    {productos.length > 0 ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[400px] overflow-y-auto pr-1">
-                        {productos.map(item => {
-                          const isSelected = formData.relacionados.includes(item.id);
-                          return (
-                            <label key={item.id} className="cursor-pointer group flex flex-col items-center">
-                              <input
-                                type="checkbox"
-                                className="peer absolute opacity-0"
-                                value={item.id}
-                                checked={isSelected}
-                                onChange={(e) => handleRelacionadosChange(e, item.id)}
-                              />
-                              <div className="relative flex items-center justify-center bg-white dark:bg-slate-900 border rounded-xl overflow-hidden shadow-sm group-hover:shadow-md border-gray-200 dark:border-gray-700 p-2 transition-all w-full aspect-square">
-                                {item.imagenes?.[0]?.url_imagen ? (
-                                  <img
-                                    src={getFullImageUrl(item.imagenes[0].url_imagen)}
-                                    alt={item.nombre}
-                                    className="w-full h-full object-contain"
-                                  />
-                                ) : (
-                                  <span className="text-xs text-gray-400 italic">Sin imagen</span>
-                                )}
-                                <div className={`absolute inset-0 bg-teal-600/10 flex items-center justify-center transition-all ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-30"
-                                  }`}>
-                                  <div className="bg-teal-600 text-white rounded-full p-1 shadow">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <polyline points="20 6 9 17 4 12"></polyline>
-                                    </svg>
+                      <div className="form-input flex flex-col gap-1">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Meta Título (SEO):</label>
+                        <input
+                          ref={el => { fieldRefs.current.meta_titulo = el; }}
+                          type="text"
+                          name="meta_titulo"
+                          value={formData.etiqueta.meta_titulo}
+                          onChange={(e) => {
+                            setFormData(prev => ({
+                              ...prev,
+                              etiqueta: { ...prev.etiqueta, meta_titulo: e.target.value }
+                            }));
+                            if (errors.meta_titulo) {
+                              setErrors(prev => {
+                                const next = { ...prev };
+                                delete next.meta_titulo;
+                                return next;
+                              });
+                            }
+                          }}
+                          maxLength={70}
+                          placeholder="Ej: Selladoras de Bolsas al Vacío de Alta Calidad | Tami Maquinarias"
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.meta_titulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                            }`}
+                        />
+                        <div className="flex justify-between items-center text-[10px] text-gray-400">
+                          <span>Recomendado: 50-60 caracteres.</span>
+                          <span className={formData.etiqueta.meta_titulo.length >= 10 && formData.etiqueta.meta_titulo.length <= 60 ? "text-green-500 font-bold" : "text-yellow-500"}>
+                            {formData.etiqueta.meta_titulo.length} / 70 caracteres
+                          </span>
+                        </div>
+                        {errors.meta_titulo && <p className="text-red-500 text-xs mt-1">⚠️ {errors.meta_titulo}</p>}
+                      </div>
+
+                      <div className="form-input flex flex-col gap-1">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Meta Descripción (SEO):</label>
+                        <textarea
+                          ref={el => { fieldRefs.current.meta_description = el; }}
+                          name="meta_description"
+                          rows={3}
+                          value={formData.etiqueta.meta_descripcion}
+                          onChange={(e) => {
+                            setFormData(prev => ({
+                              ...prev,
+                              etiqueta: { ...prev.etiqueta, meta_descripcion: e.target.value }
+                            }));
+                            if (errors.meta_descripcion) {
+                              setErrors(prev => {
+                                const next = { ...prev };
+                                delete next.meta_description;
+                                return next;
+                              });
+                            }
+                          }}
+                          maxLength={200}
+                          placeholder="Ej: Descubra nuestra línea de selladoras de bolsas industriales de alta calidad. Ideales para granos, snacks y productos secos. Cotizaciones rápidas online."
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.meta_descripcion ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                            }`}
+                        />
+                        <div className="flex justify-between items-center text-[10px] text-gray-400">
+                          <span>Recomendado: 120-160 caracteres.</span>
+                          <span className={formData.etiqueta.meta_descripcion.length >= 40 && formData.etiqueta.meta_descripcion.length <= 160 ? "text-green-500 font-bold" : "text-yellow-500"}>
+                            {formData.etiqueta.meta_descripcion.length} / 200 caracteres
+                          </span>
+                        </div>
+                        {errors.meta_descripcion && <p className="text-red-500 text-xs mt-1">⚠️ {errors.meta_descripcion}</p>}
+                      </div>
+
+                      {/* Keywords en Tags */}
+                      <div ref={el => { fieldRefs.current.keywords = el; }} className="bg-gray-50 dark:bg-slate-900/60 p-4 rounded-xl border border-gray-150 dark:border-gray-700">
+                        <h4 className="font-bold text-sm text-gray-800 dark:text-gray-200 mb-2">🏷️ Palabras Clave (Keywords):</h4>
+
+                        {/* Flex de etiquetas */}
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {formData.etiqueta.keywords.filter(k => k.trim() !== "").map((keyword, index) => (
+                            <span key={index} className="inline-flex items-center gap-1 bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300 px-3 py-1 rounded-full text-xs font-semibold border border-teal-100">
+                              {keyword}
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveKeyword(index)}
+                                className="text-teal-500 hover:text-teal-700 font-bold ml-1 transition cursor-pointer"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+
+                        {/* Entrada de palabra clave */}
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={newKeyword}
+                            onChange={(e) => setNewKeyword(e.target.value)}
+                            placeholder="Ej: selladora, industrial, empaque"
+                            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-slate-900 dark:text-white rounded-lg text-sm outline-none focus:ring-2 focus:ring-teal-500"
+                            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddKeyword())}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleAddKeyword}
+                            className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition cursor-pointer"
+                          >
+                            Añadir
+                          </button>
+                        </div>
+                        {errors.keywords && <p className="text-red-500 text-xs mt-2">⚠️ {errors.keywords}</p>}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 7. RELACIONADOS */}
+                  {activeTab === "relacionados" && (
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">🔗 Productos Relacionados</h3>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Seleccione otros productos relacionados para mostrarlos en el carrusel de la página de detalle.</p>
+
+                      {productos.length > 0 ? (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-h-[400px] overflow-y-auto pr-1">
+                          {productos.map(item => {
+                            const isSelected = formData.relacionados.includes(item.id);
+                            return (
+                              <label key={item.id} className="cursor-pointer group flex flex-col items-center">
+                                <input
+                                  type="checkbox"
+                                  className="peer absolute opacity-0"
+                                  value={item.id}
+                                  checked={isSelected}
+                                  onChange={(e) => handleRelacionadosChange(e, item.id)}
+                                />
+                                <div className="relative flex items-center justify-center bg-white dark:bg-slate-900 border rounded-xl overflow-hidden shadow-sm group-hover:shadow-md border-gray-200 dark:border-gray-700 p-2 transition-all w-full aspect-square">
+                                  {item.imagenes?.[0]?.url_imagen ? (
+                                    <img
+                                      src={getFullImageUrl(item.imagenes[0].url_imagen)}
+                                      alt={item.nombre}
+                                      className="w-full h-full object-contain"
+                                    />
+                                  ) : (
+                                    <span className="text-xs text-gray-400 italic">Sin imagen</span>
+                                  )}
+                                  <div className={`absolute inset-0 bg-teal-600/10 flex items-center justify-center transition-all ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-30"
+                                    }`}>
+                                    <div className="bg-teal-600 text-white rounded-full p-1 shadow">
+                                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                      </svg>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                              <p className="text-[10px] text-center mt-2 text-gray-600 dark:text-gray-400 truncate w-full px-1">{item.nombre}</p>
-                            </label>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-center h-48 bg-gray-50 dark:bg-slate-900 border rounded-xl">
-                        <span className="text-sm text-gray-500 animate-pulse">Cargando catálogo...</span>
-                      </div>
-                    )}
-                  </div>
-                )}
+                                <p className="text-[10px] text-center mt-2 text-gray-600 dark:text-gray-400 truncate w-full px-1">{item.nombre}</p>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center h-48 bg-gray-50 dark:bg-slate-900 border rounded-xl">
+                          <span className="text-sm text-gray-500 animate-pulse">Cargando catálogo...</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </form>
+
+              {/* Pie de Página del Diálogo */}
+              <div className="dialog-footer bg-gray-50 dark:bg-slate-900 border-t border-gray-200 dark:border-gray-700 p-4 flex justify-between gap-3 flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="px-6 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-300 text-sm font-semibold transition cursor-pointer"
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  onClick={handleSubmit}
+                  className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-2.5 rounded-lg text-sm font-semibold shadow-md flex items-center gap-2 transition disabled:opacity-75 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  {isLoading ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                      </svg>
+                      <span>Guardando...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Guardar Producto</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </>
+                  )}
+                </button>
               </div>
-            </form>
 
-            {/* Pie de Página del Diálogo */}
-            <div className="dialog-footer bg-gray-50 dark:bg-slate-900 border-t border-gray-200 dark:border-gray-700 p-4 flex justify-between gap-3 flex-shrink-0">
-              <button
-                type="button"
-                onClick={closeModal}
-                className="px-6 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-300 text-sm font-semibold transition cursor-pointer"
-              >
-                Cancelar
-              </button>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                onClick={handleSubmit}
-                className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-2.5 rounded-lg text-sm font-semibold shadow-md flex items-center gap-2 transition disabled:opacity-75 disabled:cursor-not-allowed cursor-pointer"
-              >
-                {isLoading ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                    </svg>
-                    <span>Guardando...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Guardar Producto</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </>
-                )}
-              </button>
             </div>
-
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Modal para insertar enlace manual */}
       <InsertLinkModal

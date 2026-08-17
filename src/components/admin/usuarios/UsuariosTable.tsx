@@ -96,15 +96,15 @@ const UsuariosTable = () => {
             <button
               onClick={handleRefetch}
               disabled={loading}
-              className="flex items-center gap-2 bg-white text-teal-600 border-2 border-teal-500 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
+              className="flex items-center gap-2 bg-white dark:bg-gray-700 text-teal-600 dark:text-teal-400 border-2 border-teal-500 hover:bg-teal-500 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
             >
               <FaSyncAlt className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
               {loading ? "Cargando..." : "Actualizar"}
             </button>
           </div>
 
-          <div className="flex items-center justify-between bg-teal-50 p-4 rounded-xl border border-teal-100 shadow-sm">
-            <div className="text-sm font-medium text-teal-700 flex items-center gap-2">
+          <div className="flex items-center justify-between bg-teal-50 dark:bg-gray-700 p-4 rounded-xl border border-teal-100 dark:border-gray-600 shadow-sm">
+            <div className="text-sm font-medium text-teal-700 dark:text-teal-400 flex items-center gap-2">
               <span className="bg-teal-500 text-white text-sm font-bold py-1 px-3 rounded-full">
                 {filteredUsuarios.length}
               </span>

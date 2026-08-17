@@ -11,6 +11,10 @@ import { TablePagination } from "src/components/admin/ui/TablePagination.tsx";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "src/components/admin/ui/Table";
 import GenericModal from "src/components/admin/ui/GenericModal";
 
+import WhatsappFormWithTabs from "src/components/admin/whatsapp/WhatsappFormWithTabs";
+import ExportMenu from "src/components/admin/ui/ExportMenu";
+import ProductForm from "./ProductForm";
+
 const EmptyState = ({ term }: { term: string }) => (
     <TableRow>
         <TableCell colSpan={5} className="text-center py-16 text-gray-500">
@@ -28,9 +32,6 @@ const EmptyState = ({ term }: { term: string }) => (
         </TableCell>
     </TableRow>
 );
-import WhatsappFormWithTabs from "src/components/admin/whatsapp/WhatsappFormWithTabs";
-import ExportMenu from "src/components/admin/ui/ExportMenu";
-import ProductForm from "./ProductForm";
 
 const getApiUrl = config.apiUrl;
 
@@ -198,15 +199,6 @@ const ProductosTabla = () => {
         return () => clearInterval(timer);
     }, [deployInProgress, deployRemaining]);
 
-
-
-
-
-
-
-
-
-
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredProductos.slice(indexOfFirstItem, indexOfLastItem);
@@ -218,6 +210,9 @@ const ProductosTabla = () => {
     if (isLoading) return <LoadingComponent message="cargando productos" />
 
     const handleDeploy = async () => {
+
+        const isDark = document.documentElement.classList.contains("dark");
+
         if (deployInProgress) {
             Swal.fire({
                 icon: "info",
@@ -226,6 +221,11 @@ const ProductosTabla = () => {
                 confirmButtonColor: "#14b8a6",
                 timer: 2000,
                 timerProgressBar: true,
+                customClass: isDark ? {
+                    popup: "swal-dark-popup",
+                    title: "swal-dark-title",
+                    htmlContainer: "swal-dark-text",
+                } : {},
             });
             return;
         }
@@ -239,12 +239,17 @@ const ProductosTabla = () => {
             cancelButtonColor: "#6b7280",
             confirmButtonText: "Sí, actualizar",
             cancelButtonText: "Cancelar",
+            customClass: isDark ? {
+                popup: "swal-dark-popup",
+                title: "swal-dark-title",
+                htmlContainer: "swal-dark-text",
+            } : {},
         });
 
         if (!result.isConfirmed) return;
 
         try {
-            // ✅ Verificar que el token exista
+            // Verificar que el token exista
             const token = localStorage.getItem("token");
 
             if (!token) {
@@ -253,6 +258,11 @@ const ProductosTabla = () => {
                     title: "❌ Error de autenticación",
                     text: "No se encontró el token de sesión. Por favor, inicia sesión nuevamente.",
                     confirmButtonColor: "#14b8a6",
+                    customClass: isDark ? {
+                        popup: "swal-dark-popup",
+                        title: "swal-dark-title",
+                        htmlContainer: "swal-dark-text",
+                    } : {},
                 });
                 return;
             }
@@ -275,6 +285,11 @@ const ProductosTabla = () => {
                 timer: 3000,
                 timerProgressBar: true,
                 showConfirmButton: false,
+                customClass: isDark ? {
+                    popup: "swal-dark-popup",
+                    title: "swal-dark-title",
+                    htmlContainer: "swal-dark-text",
+                } : {},
             });
 
             const res = await fetch(
@@ -289,7 +304,7 @@ const ProductosTabla = () => {
                 }
             );
 
-            // ✅ Manejar diferentes tipos de error
+            // Manejar diferentes tipos de error
             if (!res.ok) {
                 const errorData = await res.json().catch(() => ({ message: "Error desconocido" }));
 
@@ -320,19 +335,20 @@ const ProductosTabla = () => {
                 title: "❌ Error",
                 text: e instanceof Error ? e.message : "No se pudo iniciar el despliegue.",
                 confirmButtonColor: "#14b8a6",
+                customClass: isDark ? {
+                    popup: "swal-dark-popup",
+                    title: "swal-dark-title",
+                    htmlContainer: "swal-dark-text",
+                } : {},
             });
         }
     };
-
-
 
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
                 <div className="bg-gradient-to-r from-teal-500 to-emerald-600 px-8 py-6 rounded-t-2xl">
                     <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
-
-
                         <div>
                             <h2 className="text-2xl font-extrabold flex items-center gap-2 text-white">
                                 <FaTags />
@@ -344,19 +360,16 @@ const ProductosTabla = () => {
                         </div>
 
                         <div className="flex flex-col sm:flex-row sm:w-auto gap-3 w-full items-stretch sm:items-center">
-
                             <div className="w-full sm:w-auto flex flex-col [&_button]:flex [&_button]:items-center [&_button]:justify-between [&_button]:px-5">
                                 {/* Botón de Exportar */}
                                 <ExportMenu data={filteredProductos} fileName="Reporte_Productos_Tami" />
                             </div>
 
                             {/* Botón de Agregar */}
-                            <div className="flex-shrink-0 w-full sm:w-auto flex flex-col ">
+                            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 rounded-t-2xl ">
                                 <ProductForm mode="create" onSuccess={fetchData} />
                             </div>
-
                         </div>
-
                     </div>
                 </div>
 
@@ -368,12 +381,11 @@ const ProductosTabla = () => {
                             <button
                                 onClick={handleDeploy}
                                 disabled={deployInProgress}
-                                className={`flex cursor-pointer items-center gap-2 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-md transition-all
-    ${deployInProgress
+                                className={`flex cursor-pointer items-center gap-2 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-md transition-all 
+                                    ${deployInProgress
                                         ? "bg-gray-400 cursor-not-allowed text-white"
                                         : "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-                                    }`}
-                            >
+                                    }`}>
                                 <FaSyncAlt className={`h-4 w-4 ${deployInProgress ? "animate-spin" : ""}`} />
                                 {deployInProgress
                                     ? `Actualizando (${deployRemaining}s)`
@@ -382,7 +394,7 @@ const ProductosTabla = () => {
 
                             <button
                                 onClick={() => setIsWhatsappModalOpen(true)}
-                                className="flex cursor-pointer items-center gap-2 bg-white text-green-600 border-2 border-green-500 hover:bg-green-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
+                                className="flex cursor-pointer items-center gap-2 bg-white dark:bg-gray-700 text-green-600 dark:text-green-400 border-2 border-green-500 dark:border-green-600 hover:bg-green-50 dark:hover:bg-gray-600 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
                             >
                                 <FaWhatsapp className="h-5 w-5" />
                                 Conexión WhatsApp
@@ -391,7 +403,7 @@ const ProductosTabla = () => {
                             <button
                                 onClick={fetchData}
                                 disabled={isLoading}
-                                className="flex cursor-pointer items-center gap-2 bg-white text-teal-600 border-2 border-teal-500 hover:bg-teal-50 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
+                                className="flex cursor-pointer items-center gap-2 bg-white dark:bg-gray-700 text-teal-600 dark:text-teal-400 border-2 border-teal-500 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-gray-600 transition-all duration-300 px-5 py-3 rounded-full text-sm font-bold w-full sm:w-auto justify-center shadow-sm"
                             >
                                 <FaSyncAlt className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
                                 {isLoading ? "Cargando..." : "Actualizar Catálogo"}
@@ -409,8 +421,8 @@ const ProductosTabla = () => {
                         />
                     </GenericModal>
 
-                    <div className="flex items-center justify-between bg-teal-50 p-4 rounded-xl border border-teal-100 shadow-sm">
-                        <div className="text-sm font-medium text-teal-700 flex items-center gap-2">
+                    <div className="flex items-center justify-between bg-teal-50 dark:bg-gray-700 p-4 rounded-xl border border-teal-100 dark:border-gray-600 shadow-sm">
+                        <div className="text-sm font-medium text-teal-700 dark:text-teal-300 flex items-center gap-2">
                             <span className="bg-teal-500 text-white text-sm font-bold py-1 px-3 rounded-full">
                                 {filteredProductos.length}
                             </span>
