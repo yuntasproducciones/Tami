@@ -12,6 +12,7 @@ import RichTextEditor, { type RichTextEditorHandle } from "./RichTextEditor.tsx"
 import type { ImagenForm, ImagenEditada } from "../../../models/Product.ts";
 import InsertLinkModal from "../ui/insertLinkModal.tsx";
 import ProductLinkModal from "../ui/productLinkModal.tsx";
+import { set } from "astro:schema";
 
 
 // Función de validación de URL
@@ -28,14 +29,14 @@ const isValidUrl = (url: string): boolean => {
 // en modo "create" no existe producto y el callback es opcional.
 type ProductFormProps =
   | {
-      mode: "create";
-      onSuccess?: () => Promise<void> | void;
-    }
+    mode: "create";
+    onSuccess?: () => Promise<void> | void;
+  }
   | {
-      mode: "edit";
-      product: Product;
-      onSuccess: () => Promise<void> | void;
-    };
+    mode: "edit";
+    product: Product;
+    onSuccess: () => Promise<void> | void;
+  };
 
 const TABS = [
   { id: "general", label: "Datos Generales", icon: "ℹ️" },
@@ -70,6 +71,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState("general");
   const [productos, setProductos] = useState<Product[]>([]);
+  const [selectedLinkProductId, setSelectedLinkProductId] = useState<number | "">("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLinkEdited, setIsLinkEdited] = useState(false);
   const editorRefs = useRef<Record<string, RichTextEditorHandle | null>>({});
@@ -95,7 +97,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
 
   const handleInsertLinkClick = (editorKey: "descripcion" | "porque_elegirnos") => {
     const selected = editorRefs.current[editorKey]?.getSelectedText() ?? "";
-  
+
     if (!selected) {
       Swal.fire(
         "Selecciona texto",
@@ -104,7 +106,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       );
       return;
     }
-  
+
     setActiveEditorKey(editorKey);
     setSelectedText(selected);
     setIsModalOpen(true);
@@ -121,7 +123,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
     }
 
     const selected = editorRefs.current[editorKey]?.getSelectedText() ?? "";
-  
+
     if (!selected) {
       Swal.fire(
         "Selecciona texto",
@@ -130,7 +132,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       );
       return;
     }
-  
+
     setActiveEditorKey(editorKey);
     setSelectedText(selected);
     setIsProductLinkModalOpen(true);
@@ -139,16 +141,18 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
   const handleConfirmProductLink = () => {
     if (!activeEditorKey) return;
 
-    if (!isEdit || !product) {
+    if (!selectedLinkProductId) {
       Swal.fire(
-        "Disponible al editar el producto",
-        "El enlace al producto actual solo puede generarse al editar un producto existente.",
-        "info"
+        "Selecciona un producto",
+        "Debes elegir un productos de la lista",
+        "warning"
       );
       return;
     }
-  
-    if (!product.link) {
+
+    const productoSeleccionado = productos.find(p => p.id === selectedLinkProductId)
+
+    if (!productoSeleccionado?.link) {
       Swal.fire(
         "Producto sin enlace",
         "El producto no tiene un enlace permanente válido.",
@@ -156,19 +160,20 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       );
       return;
     }
-  
-    const productUrl = `/catalogo-maquinarias/detalle?link=${product.link}`;
-  
+
+    const productUrl = `/catalogo-maquinarias/detalle?link=${productoSeleccionado.link}`;
+
     editorRefs.current[activeEditorKey]?.insertLink(productUrl);
-  
+
     setIsProductLinkModalOpen(false);
     setSelectedText("");
     setActiveEditorKey(null);
+    setSelectedLinkProductId("");
   };
 
   const handleAddLink = () => {
     if (!activeEditorKey) return;
-  
+
     if (!link.trim() || !isValidUrl(link.trim())) {
       Swal.fire(
         "Enlace inválido",
@@ -177,16 +182,16 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       );
       return;
     }
-  
+
     editorRefs.current[activeEditorKey]?.insertLink(link.trim());
-  
+
     setIsModalOpen(false);
     setLink("");
     setSelectedText("");
     setActiveEditorKey(null);
   };
 
-  const getFullImageUrl = (url:string) => {
+  const getFullImageUrl = (url: string) => {
 
     if (!url) return "";
     if (url.startsWith("http")) return url;
@@ -206,7 +211,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
   useEffect(() => {
     if (isEdit && showModal && product) {
       const refreshCache = Date.now();
-      
+
       const imagenesTransformadas: ImagenForm[] = product.imagenes?.map((img) => ({
         id: img.id,
         url_imagen: `${getFullImageUrl(img.url_imagen)}?v=${refreshCache}`,
@@ -214,7 +219,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
         imageTitle: img.titulo || "",
         original_path: img.url_imagen
       })) || [];
-      
+
       while (imagenesTransformadas.length < 5) {
         imagenesTransformadas.push({
           url_imagen: "",
@@ -224,7 +229,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       }
 
       const relacionadosIds = product.productos_relacionados?.map((rel: any) => rel.id) || [];
-      const keywordsArray = product.etiqueta?.keywords 
+      const keywordsArray = product.etiqueta?.keywords
         ? product.etiqueta.keywords.split(",").map(kw => kw.trim()).filter(k => k !== "")
         : [];
 
@@ -290,7 +295,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
     >
   ) => {
     const { name, value } = e.target;
-    
+
     setFormData(prev => {
       const nuevoEstado = { ...prev };
       if (name === "nombre") {
@@ -462,7 +467,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
   };
 
 
-  
+
 
   const handleEspecificacionChange = (index: number, value: string) => {
     setFormData(prev => {
@@ -648,14 +653,14 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       formDataToSend.append("precio", formData.precio.toString());
       formDataToSend.append("seccion", formData.seccion);
       formDataToSend.append("especificaciones", JSON.stringify(formData.especificaciones));
-      
+
       formDataToSend.append("etiqueta[meta_titulo]", formData.etiqueta.meta_titulo);
       formDataToSend.append("etiqueta[meta_descripcion]", formData.etiqueta.meta_descripcion);
-      
+
       formDataToSend.append("detalle_titulo_tamano", formData.etiqueta.titulo_detalle_producto_size || "24");
       formDataToSend.append("detalle_titulo_color", formData.etiqueta.titulo_detalle_producto_color || "#015f86");
       formDataToSend.append("detalle_titulo_estilo", formData.etiqueta.titulo_detalle_producto_style || "negrita");
-      
+
       formDataToSend.append("etiqueta[popup_estilo]", formData.etiqueta.popup_estilo || "estilo1");
       formDataToSend.append("etiqueta[titulo_popup_1]", formData.etiqueta.titulo_popup_1 || "");
       formDataToSend.append("etiqueta[titulo_popup_2]", formData.etiqueta.titulo_popup_2 || "");
@@ -664,7 +669,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       formDataToSend.append("etiqueta[popup_button_color]", formData.etiqueta.popup_button_color || "#008B8B");
       formDataToSend.append("etiqueta[popup_text_color]", formData.etiqueta.popup_text_color || "#000000");
       formDataToSend.append("etiqueta[popup_button_text]", formData.etiqueta.popup_button_text || "¡COTIZA AHORA!");
-      
+
       const cleanKeywords = formData.etiqueta.keywords.filter(k => k.trim() !== "");
       formDataToSend.append("etiqueta[keywords]", JSON.stringify(cleanKeywords));
       formDataToSend.append("keywords", JSON.stringify(cleanKeywords));
@@ -858,7 +863,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       {showModal && (
         <div className="dialog-overlay">
           <div ref={formContainerRef} className="dialog w-full max-w-full md:max-w-4xl lg:max-w-5xl max-h-[90vh] flex flex-col !p-0 overflow-hidden">
-            
+
             {/* Cabecera del Diálogo */}
             <div className="dialog-header sticky top-0 z-10 flex items-center justify-between !m-0 p-4 md:p-6 bg-teal-700 text-white flex-shrink-0">
               <h4 className="dialog-title text-lg md:text-xl font-bold flex-1 text-center">{isEdit ? "Editar Producto" : "Agregar Producto"}</h4>
@@ -874,7 +879,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
 
             {/* Contenedor del Formulario con Barra Lateral */}
             <form onSubmit={handleSubmit} className="flex-1 flex flex-col md:flex-row overflow-hidden bg-white dark:bg-gray-800">
-              
+
               {/* Barra Lateral de Pestañas */}
               <div className="flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible gap-1 md:w-64 flex-shrink-0 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700 p-4 bg-gray-50/50 dark:bg-gray-900/10">
                 {TABS.map(tab => {
@@ -885,11 +890,10 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                       key={tab.id}
                       type="button"
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-left whitespace-nowrap cursor-pointer w-full ${
-                        isActive
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-left whitespace-nowrap cursor-pointer w-full ${isActive
                           ? "bg-teal-600 text-white shadow-md"
                           : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700"
-                      }`}
+                        }`}
                     >
                       <span className="text-base">{tab.icon}</span>
                       <span className="flex-1">{tab.label}</span>
@@ -903,12 +907,12 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
 
               {/* Panel de Contenido de la Pestaña */}
               <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6">
-                
+
                 {/* 1. DATOS GENERALES */}
                 {activeTab === "general" && (
                   <div className="space-y-4">
                     <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">ℹ️ Información General</h3>
-                    
+
                     <div className="form-input flex flex-col gap-1">
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Nombre:</label>
                       <input
@@ -919,9 +923,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                         name="nombre"
                         maxLength={LENGTHS.nombre}
                         placeholder={isEdit ? "Nombre del producto..." : "Ej: Selladora de Chifles Continua con Inyección de Nitrógeno"}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
-                          errors.nombre ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                        }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.nombre ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                          }`}
                       />
                       <div className="flex justify-between items-center">
                         <p className="text-[10px] text-yellow-600 dark:text-yellow-400">
@@ -944,9 +947,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                         name="link"
                         maxLength={LENGTHS.link}
                         placeholder="ej-nombre-producto"
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
-                          errors.link ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                        }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.link ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                          }`}
                       />
                       <span className="text-xs text-gray-400 dark:text-gray-500 block text-right">
                         {formData.link.length}/{LENGTHS.link}
@@ -964,9 +966,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                         name="subtitulo"
                         maxLength={LENGTHS.subtitulo}
                         placeholder={isEdit ? "Subtitulo del producto..." : "Ej: Aumente la vida útil de sus chifles"}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
-                          errors.subtitulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                        }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.subtitulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                          }`}
                       />
                       <span className="text-xs text-gray-400 dark:text-gray-500 block text-right">
                         {formData.subtitulo.length}/{LENGTHS.subtitulo}
@@ -982,9 +983,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                           value={formData.seccion}
                           onChange={handleChange}
                           name="seccion"
-                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
-                            errors.seccion ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                          }`}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.seccion ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                            }`}
                         >
                           <option value="Decoración">Decoración</option>
                           <option value="Maquinaria">Maquinaria</option>
@@ -1023,7 +1023,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                 {activeTab === "descripciones" && (
                   <div className="space-y-6">
                     <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">📝 Descripciones</h3>
-                    
+
                     <div className="form-input flex flex-col gap-2">
                       <div className="flex justify-between items-center flex-wrap gap-2">
                         <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">Descripción del Producto:</label>
@@ -1040,11 +1040,10 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                             onClick={() => handleProductLinkClick("descripcion")}
                             disabled={!isEdit}
                             title={!isEdit ? "Disponible al editar el producto" : undefined}
-                            className={`text-xs px-2 py-1 rounded transition-colors font-medium cursor-pointer ${
-                              isEdit
+                            className={`text-xs px-2 py-1 rounded transition-colors font-medium cursor-pointer ${isEdit
                                 ? "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50"
                                 : "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                            }`}
+                              }`}
                           >
                             Link Producto
                           </button>
@@ -1078,11 +1077,10 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                             onClick={() => handleProductLinkClick("porque_elegirnos")}
                             disabled={!isEdit}
                             title={!isEdit ? "Disponible al editar el producto" : undefined}
-                            className={`text-xs px-2 py-1 rounded transition-colors font-medium cursor-pointer ${
-                              isEdit
+                            className={`text-xs px-2 py-1 rounded transition-colors font-medium cursor-pointer ${isEdit
                                 ? "bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-900/50"
                                 : "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                            }`}
+                              }`}
                           >
                             Link Producto
                           </button>
@@ -1101,12 +1099,12 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                     </div>
                   </div>
                 )}
-                
+
                 {/* 3. FICHA TÉCNICA Y DIMENSIONES */}
                 {activeTab === "especificaciones" && (
                   <div className="space-y-6">
                     <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">⚙️ Ficha Técnica</h3>
-                    
+
                     {/* Dimensiones */}
                     <div className="bg-gray-50 dark:bg-slate-900/60 p-4 rounded-xl border border-gray-150 dark:border-gray-700">
                       <h4 className="font-bold text-sm text-gray-800 dark:text-gray-200 mb-3 flex items-center gap-1">
@@ -1122,9 +1120,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                             name="alto"
                             type="number"
                             placeholder="Ej: 80"
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
-                              errors.alto ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                            }`}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.alto ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                              }`}
                           />
                           {errors.alto && <p className="text-red-500 text-[10px] mt-1">⚠️ {errors.alto}</p>}
                         </div>
@@ -1138,9 +1135,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                             name="ancho"
                             type="number"
                             placeholder="Ej: 50"
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
-                              errors.ancho ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                            }`}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.ancho ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                              }`}
                           />
                           {errors.ancho && <p className="text-red-500 text-[10px] mt-1">⚠️ {errors.ancho}</p>}
                         </div>
@@ -1154,9 +1150,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                             name="largo"
                             type="number"
                             placeholder="Ej: 120"
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
-                              errors.largo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                            }`}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.largo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                              }`}
                           />
                           {errors.largo && <p className="text-red-500 text-[10px] mt-1">⚠️ {errors.largo}</p>}
                         </div>
@@ -1166,7 +1161,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                     {/* Especificaciones */}
                     <div ref={el => { fieldRefs.current.especificaciones = el; }} className={`card border p-4 ${errors.especificaciones ? "border-red-500" : ""}`}>
                       <h4 className="font-bold text-sm text-gray-800 dark:text-gray-200 mb-3">🛠️ Especificaciones Técnicas</h4>
-                      
+
                       {/* Entradas Clave-Valor */}
                       <div className="flex flex-col sm:flex-row gap-3 mb-4 items-end bg-white dark:bg-slate-900 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
                         <div className="flex-1 flex flex-col gap-1">
@@ -1237,7 +1232,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                 {activeTab === "personalizacion" && (
                   <div className="space-y-6">
                     <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">🎨 Personalización Visual</h3>
-                    
+
                     <div className="form-input flex flex-col gap-1">
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Título Visual del Hero:</label>
                       <input
@@ -1248,9 +1243,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                         name="titulo"
                         maxLength={LENGTHS.titulo}
                         placeholder="Ej: SELLADORA CONTINUA DE BOLSAS"
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
-                          errors.titulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                        }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.titulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                          }`}
                       />
                       <div className="flex justify-between items-center">
                         <p className="text-[10px] text-yellow-600 dark:text-yellow-400">
@@ -1265,7 +1259,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
 
                     <div className="rounded-2xl border border-slate-700/30 bg-gradient-to-br from-slate-950 via-[#081829] to-[#003d56] p-5 shadow-xl text-white">
                       <h4 className="text-sm font-bold text-cyan-400 mb-2">Editor de Estilo de Título</h4>
-                      
+
                       {/* Vista Previa */}
                       <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-4">
                         <div className="flex items-center justify-between mb-2">
@@ -1351,11 +1345,10 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                                     ...prev,
                                     etiqueta: { ...prev.etiqueta, titulo_detalle_producto_style: opt.value }
                                   }))}
-                                  className={`rounded px-2.5 py-1.5 text-xs font-semibold transition ${
-                                    active
+                                  className={`rounded px-2.5 py-1.5 text-xs font-semibold transition ${active
                                       ? "bg-teal-500 text-white shadow-md"
                                       : "bg-slate-800 text-gray-300 hover:bg-slate-700"
-                                  }`}
+                                    }`}
                                 >
                                   {opt.label}
                                 </button>
@@ -1384,7 +1377,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                       {formData.imagenes.map((img, index) => (
                         <div key={index} className="bg-gray-50 dark:bg-slate-900/40 border border-gray-200 dark:border-gray-700 p-4 rounded-2xl flex flex-col gap-3">
                           <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Imagen {index + 1} {index < 4 ? "*" : "(Opcional)"}</span>
-                          
+
                           <div className="flex flex-col gap-1">
                             <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">Titulo de la imagen:</label>
                             <input
@@ -1394,9 +1387,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                               onChange={(e) => handleImagesTituloChange(e, index)}
                               maxLength={LENGTHS.imagenTitulo}
                               placeholder="Ej: Selladora industrial de bolsas de café"
-                              className={`w-full px-3 py-1.5 border rounded-lg text-sm outline-none dark:bg-slate-950 dark:text-white dark:border-gray-700 ${
-                                errors[`titulo_${index}`] ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                              }`}
+                              className={`w-full px-3 py-1.5 border rounded-lg text-sm outline-none dark:bg-slate-950 dark:text-white dark:border-gray-700 ${errors[`titulo_${index}`] ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                                }`}
                             />
                             <span className="text-xs text-gray-400 dark:text-gray-500 block text-right">
                               {img.imageTitle?.length || 0}/{LENGTHS.imagenTitulo}
@@ -1447,9 +1439,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                               onChange={(e) => handleImagesTextoSEOChange(e, index)}
                               maxLength={LENGTHS.imagenAlt}
                               placeholder="Ej: Selladora industrial de bolsas de café"
-                              className={`w-full px-3 py-1.5 border rounded-lg text-sm outline-none dark:bg-slate-950 dark:text-white dark:border-gray-700 ${
-                                errors[`seo_${index}`] ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                              }`}
+                              className={`w-full px-3 py-1.5 border rounded-lg text-sm outline-none dark:bg-slate-950 dark:text-white dark:border-gray-700 ${errors[`seo_${index}`] ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                                }`}
                             />
                             <span className="text-xs text-gray-400 dark:text-gray-500 block text-right">
                               {img.texto_alt_SEO?.length || 0}/{LENGTHS.imagenAlt}
@@ -1466,7 +1457,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                 {activeTab === "seo" && (
                   <div className="space-y-6">
                     <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b pb-2">🔍 SEO y Metadatos de Búsqueda</h3>
-                    
+
                     <div className="form-input flex flex-col gap-1">
                       <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Meta Título (SEO):</label>
                       <input
@@ -1489,9 +1480,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                         }}
                         maxLength={70}
                         placeholder="Ej: Selladoras de Bolsas al Vacío de Alta Calidad | Tami Maquinarias"
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
-                          errors.meta_titulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                        }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.meta_titulo ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                          }`}
                       />
                       <div className="flex justify-between items-center text-[10px] text-gray-400">
                         <span>Recomendado: 50-60 caracteres.</span>
@@ -1524,9 +1514,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                         }}
                         maxLength={200}
                         placeholder="Ej: Descubra nuestra línea de selladoras de bolsas industriales de alta calidad. Ideales para granos, snacks y productos secos. Cotizaciones rápidas online."
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${
-                          errors.meta_descripcion ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
-                        }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none dark:bg-slate-900 dark:text-white dark:border-gray-700 ${errors.meta_descripcion ? "border-red-500 focus:ring-red-400" : "border-gray-300 focus:ring-teal-500"
+                          }`}
                       />
                       <div className="flex justify-between items-center text-[10px] text-gray-400">
                         <span>Recomendado: 120-160 caracteres.</span>
@@ -1540,7 +1529,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                     {/* Keywords en Tags */}
                     <div ref={el => { fieldRefs.current.keywords = el; }} className="bg-gray-50 dark:bg-slate-900/60 p-4 rounded-xl border border-gray-150 dark:border-gray-700">
                       <h4 className="font-bold text-sm text-gray-800 dark:text-gray-200 mb-2">🏷️ Palabras Clave (Keywords):</h4>
-                      
+
                       {/* Flex de etiquetas */}
                       <div className="flex flex-wrap gap-2 mb-3">
                         {formData.etiqueta.keywords.filter(k => k.trim() !== "").map((keyword, index) => (
@@ -1609,9 +1598,8 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
                                 ) : (
                                   <span className="text-xs text-gray-400 italic">Sin imagen</span>
                                 )}
-                                <div className={`absolute inset-0 bg-teal-600/10 flex items-center justify-center transition-all ${
-                                  isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-30"
-                                }`}>
+                                <div className={`absolute inset-0 bg-teal-600/10 flex items-center justify-center transition-all ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-30"
+                                  }`}>
                                   <div className="bg-teal-600 text-white rounded-full p-1 shadow">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                       <polyline points="20 6 9 17 4 12"></polyline>
@@ -1643,7 +1631,7 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
               >
                 Cancelar
               </button>
-              
+
               <button
                 type="submit"
                 disabled={isLoading}
@@ -1690,7 +1678,13 @@ const ProductForm: React.FC<ProductFormProps> = (props) => {
       <ProductLinkModal
         isOpen={isProductLinkModalOpen}
         selectedText={selectedText}
-        onClose={() => setIsProductLinkModalOpen(false)}
+        products={productos}
+        selectedProductId={selectedLinkProductId}
+        setSelectedProductId={setSelectedLinkProductId}
+        onClose={() => {
+          setIsProductLinkModalOpen(false);
+          setSelectedLinkProductId("");
+        }}
         onConfirm={handleConfirmProductLink}
       />
     </>
