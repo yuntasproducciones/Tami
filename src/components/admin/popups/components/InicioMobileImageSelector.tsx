@@ -158,7 +158,6 @@ export const InicioMobileImageSelector: React.FC = () => {
             <input type="file" id="popupImageMobile2" className="hidden" accept=".webp" />
             <input type="hidden" id="delete_popupImageMobile" name="delete_popupImageMobile" value={firstImageDeleted ? '1' : '0'} />
             <input type="hidden" id="delete_popupImageMobile2" name="delete_popupImageMobile2" value={secondImageDeleted ? '1' : '0'} />
-            <input type="hidden" id="popupMobileImageCountValue" name="popup_mobile_image_count" value="2" />
 
             <MobileImageSelector
                 firstImageLabel="Imagen Móvil Principal"
