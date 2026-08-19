@@ -261,6 +261,7 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
                     <stop offset="100%" stopColor="#006888" />
                 </linearGradient>
             </defs>
+
             <path 
                 fill="url(#waveGradient)" 
                 fillOpacity="1" 
@@ -268,6 +269,8 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
             ></path>
         </svg>            
     </div>
+   
+
 
 </div>
 

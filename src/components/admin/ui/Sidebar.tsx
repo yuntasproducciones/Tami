@@ -93,7 +93,7 @@ const Sidebar = () => {
 
   return (
     <aside
-      className={`h-full w-full p-4 flex flex-col overflow-y-auto space-y-4 ${darkMode ? "bg-[#1e1e2f] text-white" : "bg-white text-gray-800"
+      className={`scroll-verde h-full w-full p-4 flex flex-col overflow-y-auto space-y-4 ${darkMode ? "bg-[#1e1e2f] text-white" : "bg-white text-gray-800"
         }`}
     >
       <nav className="mt-1 flex-1">
@@ -182,7 +182,11 @@ const Sidebar = () => {
         </div>
       </div>
     </aside>
+
+
   );
 };
 
 export default Sidebar;
+
+
