@@ -187,7 +187,10 @@ const optimizedHero = await getImage({ src: aboutHero, format: 'webp', width: 80
     >
       {
         valoresArray.map((valor: any) => (
-          <div class="flex flex-col items-center w-full">
+        <div class="flex flex-col items-center 
+                      w-full transition-all duration-300 
+                      ease-in-out hover:-translate-y-2 
+                      hover:shadow-xl hover:scale-[1.02] rounded-xl">
             <Card
               image={valor.image}
               title={valor.title}
