@@ -11,7 +11,6 @@ export interface PopupSettings {
   popup_image2_url?: string;
   popup_mobile_image_url?: string;
   popup_mobile_image2_url?: string;
-  popup_mobile_image_count?: number;
   button_bg_color?: string;
   button_text_color?: string;
   button_text?: string;
@@ -133,7 +132,6 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
           popup_image2_url: globalData.image2 || globalData.popup_image2_url,
           popup_mobile_image_url: globalData.imageMobile || globalData.popup_mobile_image_url,
           popup_mobile_image2_url: globalData.imageMobile2 || globalData.popup_mobile_image2_url,
-          popup_mobile_image_count: 2,
           button_text: globalData.button_text || globalData.btnText || "CONOCER MAS",
           popup_start_delay_minutes: globalData.popup_start_delay_minutes || globalData.popupInicioDelay || 60,
         };
@@ -166,7 +164,6 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
                 popup_mobile_image2_url: imagenPopupMobile2
                   ? `${config.apiUrl}${imagenPopupMobile2.url_imagen}`
                   : (imagenPopup2 ? `${config.apiUrl}${imagenPopup2.url_imagen}` : finalSettings.popup_mobile_image2_url),
-                popup_mobile_image_count: 2,
                 button_bg_color: product.etiqueta?.popup_button_color || finalSettings.button_bg_color,
                 button_text_color: product.etiqueta?.popup_text_color || finalSettings.button_text_color,
                 button_text: product.etiqueta?.popup_button_text || "¡COTIZA AHORA!",
@@ -216,8 +213,6 @@ export const usePopupLogic = ({ isPreview = false, initialSettings }: UsePopupLo
 
     const handlePreviewUpdate = (e: any) => {
       const { settings: newSettings, mode } = e.detail;
-      console.log("📋 [usePopupLogic] Event received! mode:", mode);
-      console.log("📋 [usePopupLogic] mobile_image_url:", newSettings?.popup_mobile_image_url?.substring(0, 50));
       if (newSettings) {
         setSettings((prev) => ({ ...prev, ...newSettings }));
       }
