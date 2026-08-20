@@ -220,17 +220,8 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
 
             {/* -------------------- HERO Section (H1) -------------------- */}
     <div className="relative pt-32 md:pt-40 pb-32 text-slate-800 overflow-hidden bg-white">
-
-    <div className="absolute top-0 left-0 right-0 h-25 sm:h-37 bg-gradient-to-r from-[#004b6e] via-[#005d82] to-[#006888] z-0">
-        <svg 
-            className="hidden sm:block absolute bottom-0 left-0 w-full h-6 text-white fill-current transform translate-y-full" 
-            viewBox="0 0 1440 48" 
-            preserveAspectRatio="none"
-        >
-            <path d="M0,0 C288,32 576,48 864,32 C1152,16 1440,32 1440,32 L1440,0 L0,0 Z"></path>
-        </svg>
-    </div>
-
+    {/* Barra azul */}
+    <div className="absolute top-0 left-0 right-0  w-full h-25 sm:h-37 bg-gradient-to-r from-[#004b6e] via-[#005d82] to-[#006888] z-0 "></div>
 
     <div className="w-full max-w-7xl mx-auto px-6 md:px-12 z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center relative">
         
