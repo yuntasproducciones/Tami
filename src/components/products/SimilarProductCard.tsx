@@ -28,36 +28,40 @@ const SimilarProductCard: React.FC<Props> = ({ product }) => {
   }
 
   return (
+
     <a
       href={`/catalogo-maquinarias/detalle?link=${product.link}`}
   
       className="
-        group/card relative block w-full 
-        rounded-xl shadow-lg border border-gray-100 overflow-hidden 
-        transition-all duration-500 ease-out
+        group relative block w-full 
+
+        hover:scale-105
+        overflow-hidden
+
+        rounded-2xl shadow-lg border border-gray-100
+        transition-all duration-300 ease-out
         focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-opacity-75
-        hover:shadow-[0_20px_45px_-12px_rgba(0,182,255,0.25)] hover:-translate-y-2 hover:border-cyan-300/50
-        select-none
+        hover:shadow-2xl hover:shadow-cyan-500/20 hover:border-cyan-400/60
       "
       title={`Ver detalles de ${product.titulo}`}
     >
-      <div className="relative w-full aspect-square bg-white">
-        <img
-          src={finalImageSrc}
-          alt={product.nombre}
-          title={product.nombre}
-          draggable={false}
-          className="
-            w-full h-full object-contain p-4 
-            transition-transform duration-700 ease-out
-            group-hover/card:scale-110
-          "
-          loading="lazy"
-          onError={(e) => {
-            e.currentTarget.src = '/placeholder.png';
-          }}
-        />
-      </div>
+
+  <div className="relative w-full  aspect-square bg-white min-h-[320px] sm:min-h-[360px]">
+  <img
+    src={finalImageSrc}
+    alt={product.nombre}
+    title={product.nombre}
+   className="
+              w-full h-full object-contain p-4 
+              transition-transform duration-500 ease-out
+              group-hover:scale-105
+            "
+    loading="lazy"
+    onError={(e) => {
+      e.currentTarget.src = '/placeholder.png';
+    }}
+  />
+</div>
 
       <div
         className="
@@ -65,7 +69,7 @@ const SimilarProductCard: React.FC<Props> = ({ product }) => {
           flex items-center justify-between gap-4
           bg-gradient-to-t from-white via-white/95 to-white/80
           backdrop-blur-[4px] border-t border-gray-100/50
-          transition-colors duration-500 group-hover/card:from-cyan-50 group-hover/card:via-cyan-50/95
+          transition-all duration-300 group-hover:from-cyan-50 group-hover:via-cyan-50/95 group-hover:via-white/95
         "
       >
         <p className="font-bold text-base text-[#0374a2] leading-tight flex-1 line-clamp-2 transition-colors duration-300 group-hover/card:text-[#005f86]">
