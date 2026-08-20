@@ -21,7 +21,7 @@ const ChatbotIcon: React.FC<ChatbotIconProps> = ({ className = "w-12 h-12" }) =>
       <img
         className={`object-cover rounded-full shadow-sm ${className}`}
         alt="Chatbot Icon"
-        src={defaultIcon}
+        src={iconUrl || defaultIcon}
         width={128}   // cercano al tamaño real de visualización, para retina 2x
         height={128}
         decoding="async"
@@ -37,10 +37,6 @@ const ChatbotIcon: React.FC<ChatbotIconProps> = ({ className = "w-12 h-12" }) =>
       height={128}
       decoding="async"
       className={`object-cover rounded-full shadow-sm ${className}`}
-      // Si la URL falla al cargar en el navegador, cae en el icono por defecto
-      onError={(e) => {
-        e.currentTarget.src = defaultIcon;
-      }}
     />
   );
 };

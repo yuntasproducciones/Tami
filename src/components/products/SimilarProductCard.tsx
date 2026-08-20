@@ -15,8 +15,7 @@ const SimilarProductCard: React.FC<Props> = ({ product }) => {
     setCacheBuster(`?t=${Date.now()}`);
   }, []);
 
-  const imgUrl = product.imagenes.filter((img) => img.tipo === "galeria")[0]
-    ?.url_imagen;
+  const imgUrl = product.imagenes?.filter((img) => img.tipo === "galeria")[0]?.url_imagen;
 
   let finalImageSrc = "/placeholder.png";
 
@@ -32,6 +31,7 @@ const SimilarProductCard: React.FC<Props> = ({ product }) => {
 
     <a
       href={`/catalogo-maquinarias/detalle?link=${product.link}`}
+  
       className="
         group relative block w-full 
 
@@ -72,7 +72,7 @@ const SimilarProductCard: React.FC<Props> = ({ product }) => {
           transition-all duration-300 group-hover:from-cyan-50 group-hover:via-cyan-50/95 group-hover:via-white/95
         "
       >
-        <p className="font-bold text-base text-[#0374a2] leading-tight flex-1 line-clamp-2 transition-colors duration-300 group-hover:text-[#005f86]">
+        <p className="font-bold text-base text-[#0374a2] leading-tight flex-1 line-clamp-2 transition-colors duration-300 group-hover/card:text-[#005f86]">
           {product.nombre}
         </p>
         <span
@@ -80,7 +80,7 @@ const SimilarProductCard: React.FC<Props> = ({ product }) => {
             flex-shrink-0 bg-gray-100 text-[#003e56] 
             px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wide
             transition-all duration-300 
-            group-hover:bg-[#00b6ff] group-hover:text-white group-hover:shadow-md group-hover:scale-105 active:scale-95
+            group-hover/card:bg-[#00b6ff] group-hover/card:text-white group-hover/card:shadow-md group-hover/card:scale-105 active:scale-95
           "
         >
           Comprar

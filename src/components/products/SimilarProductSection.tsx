@@ -1,6 +1,6 @@
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Autoplay } from 'swiper/modules';
+import { Pagination, Autoplay , Navigation , Mousewheel} from 'swiper/modules';
 import SimilarProductCard from './SimilarProductCard';
 import type Producto from '../../models/Product';
 
@@ -12,6 +12,8 @@ interface Props {
 }
 
 const SimilarProductsSection: React.FC<Props> = ({ products }) => {
+
+    
     const carouselThreshold = 3;
 
     if (!products || products.length === 0) return null;
@@ -30,7 +32,8 @@ const SimilarProductsSection: React.FC<Props> = ({ products }) => {
 
                     {products.length > carouselThreshold ? (
                         <Swiper
-                            modules={[Pagination, Autoplay]}
+                            
+                            modules={[Pagination, Autoplay,Navigation, Mousewheel]}
                             spaceBetween={24}
                             slidesPerView={1}
                             pagination={{
@@ -46,8 +49,10 @@ const SimilarProductsSection: React.FC<Props> = ({ products }) => {
                                 640: { slidesPerView: 2 },
                                 1024: { slidesPerView: 3 },
                             }}
-                            autoplay={{ delay: 2000, disableOnInteraction: false }}
-                            className="w-full pt-8 pb-16 px-2 "
+                            autoplay={{ delay: 2000, disableOnInteraction: false ,pauseOnMouseEnter: true }}
+                            className="w-full pb-10"
+                            grabCursor={true}
+                        
                         >
                             {products.map((related) => (
                                 <SwiperSlide key={related.id} className="!h-auto py-3 pl-4 pr-4">

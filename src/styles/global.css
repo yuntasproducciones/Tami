@@ -391,6 +391,18 @@ a.relative.group:hover::after {
   padding: 0 15px;
 }
 
+.swal-dark-popup {
+    background-color: #1f2937 !important;
+}
+
+.swal-dark-title {
+    color: #f9fafb !important;
+}
+
+.swal-dark-text {
+    color: #d1d5db !important;
+}
+
 /* Versión responsive para pantallas pequeñas */
 @media (max-width: 768px) {
   .scrollmodal-title {

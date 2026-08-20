@@ -3,6 +3,7 @@
 import React from "react";
 import type Blog from "src/models/Blog";
 import { config } from "config";
+import { getBlogImageUrl } from "src/utils/blog";
 
 interface CardBlogProps {
   blog: Blog;
@@ -10,11 +11,7 @@ interface CardBlogProps {
 
 const CardBlog: React.FC<CardBlogProps> = React.memo(({ blog }) => {
 
-  const imageUrl = blog.miniatura
-    ? blog.miniatura.startsWith("http")
-      ? blog.miniatura
-      : `${config.apiUrl}${blog.miniatura}`
-    : "/images/default-blog.webp";
+  const imageUrl = getBlogImageUrl(blog.miniatura);
 
   const altText = blog.titulo || "Imagen del blog";
 
