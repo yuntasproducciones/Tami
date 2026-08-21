@@ -116,7 +116,17 @@ const finalCanonical = canonicalUrl || `${Astro.url.origin}${Astro.url.pathname}
       name="google-site-verification"
       content="fMYl61WKoofkx6daixXAZuFbR-zw9NlYGrf22iA1r0w"
     />
-    <slot name="head" />
+        <slot name="head" />
+
+    <script is:inline>
+      (function () {
+        const saved = localStorage.getItem("darkMode");
+        if (saved === "true") {
+          document.documentElement.classList.add("dark");
+        }
+      })();
+    </script>
+
   </head>
 
   <body class="font-montserrat w-full">
