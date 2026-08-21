@@ -583,3 +583,16 @@ a.relative.group:hover::after {
 .swiper-pagination-bullet-active-custom {
   @apply bg-[#015f86] scale-125;
 }
+
+/* ScrollBar verde en el archivo Sidebar.tsx */
+
+ .scroll-verde::-webkit-scrollbar {
+    width: 8px;
+  }
+  .scroll-verde::-webkit-scrollbar-track {
+    background: rgb(45, 46, 46);
+  }
+  .scroll-verde::-webkit-scrollbar-thumb{
+    background: #01a775;
+  
+  }
