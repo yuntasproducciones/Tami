@@ -11,7 +11,7 @@ export default interface Blog {
   video_url: string;
   video_titulo: string;
   miniatura: string;
-  created_at: EpochTimeStamp;
+  created_at: EpochTimeStamp | null;
   imagenes: {
     ruta_imagen: string;
     texto_alt: string | null;

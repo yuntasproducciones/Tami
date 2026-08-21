@@ -8,7 +8,6 @@ import RichTextEditor, { type RichTextEditorHandle } from "../productos/RichText
 import InsertLinkModal from "../ui/insertLinkModal.tsx";
 import ProductLinkModal from "../ui/productLinkModal.tsx";
 
-
 interface ImagenAdicional {
   imagen: File | null;
   parrafo: string;
@@ -129,6 +128,7 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
   const [isProductLinkModalOpen, setIsProductLinkModalOpen] = useState(false);
   const [previewMiniatura, setPreviewMiniatura] = useState<string>("");
   const [previewHero, setPreviewHero] = useState<string | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<number | "">("");
 
   const editorRefs = useRef<(RichTextEditorHandle | null)[]>([]);
 
@@ -446,99 +446,99 @@ const AddBlogModal: React.FC<AddBlogModalProps> = ({
     setFormData({ ...formData, imagenes: nuevoArray });
   };
 
-const handleInsertLinkClick = (index: number) => {
-  const selected = editorRefs.current[index]?.getSelectedText() ?? "";
+  const handleInsertLinkClick = (index: number) => {
+    const selected = editorRefs.current[index]?.getSelectedText() ?? "";
 
-  if (!selected) {
-    Swal.fire(
-      "Selecciona texto",
-      "Selecciona texto para enlazar.",
-      "warning",
+    if (!selected) {
+      Swal.fire(
+        "Selecciona texto",
+        "Selecciona texto para enlazar.",
+        "warning",
+      );
+      return;
+    }
+
+    setActiveIndex(index);
+    setSelectedText(selected);
+    setIsModalOpen(true);
+  };
+  const handleProductLinkClick = (index: number) => {
+    const selected = editorRefs.current[index]?.getSelectedText() ?? "";
+
+    if (!selected) {
+      Swal.fire(
+        "Selecciona texto",
+        "Selecciona texto para enlazar.",
+        "warning",
+      );
+      return;
+    }
+
+    setActiveIndex(index);
+    setSelectedText(selected);
+    setIsProductLinkModalOpen(true);
+  };
+  const handleAddProduct = () => {
+    if (activeIndex === null) return;
+
+    if (!selectedProductId) {
+      Swal.fire(
+        "ID de producto vacío",
+        "Selecciona un producto.",
+        "error"
+      );
+      return;
+    }
+
+    const productoSeleccionado = productos.find(
+      (p) => String(p.id) === String(formData.producto_id)
     );
-    return;
-  }
 
-  setActiveIndex(index);
-  setSelectedText(selected);
-  setIsModalOpen(true);
-};
-const handleProductLinkClick = (index: number) => {
-  const selected = editorRefs.current[index]?.getSelectedText() ?? "";
+    if (!productoSeleccionado) {
+      Swal.fire(
+        "Producto no encontrado",
+        "No se encontró el producto.",
+        "error"
+      );
+      return;
+    }
 
-  if (!selected) {
-    Swal.fire(
-      "Selecciona texto",
-      "Selecciona texto para enlazar.",
-      "warning",
-    );
-    return;
-  }
+    if (!productoSeleccionado.link) {
+      Swal.fire(
+        "Producto sin enlace",
+        "El producto seleccionado no tiene un enlace válido.",
+        "error"
+      );
+      return;
+    }
 
-  setActiveIndex(index);
-  setSelectedText(selected);
-  setIsProductLinkModalOpen(true);
-};
-const handleAddProduct = () => {
-  if (activeIndex === null) return;
+    const productUrl = `/catalogo-maquinarias/detalle?link=${productoSeleccionado.link}`;
+    editorRefs.current[activeIndex]?.insertLink(productUrl);
 
-  if (!formData.producto_id) {
-    Swal.fire(
-      "ID de producto vacío",
-      "Selecciona un producto.",
-      "error"
-    );
-    return;
-  }
+    setIsProductLinkModalOpen(false);
+    setSelectedText("");
+    setSelectedProductId("");
+    setActiveIndex(null);
+  };
+  const handleAddLink = () => {
+    if (activeIndex === null) return;
 
-  const productoSeleccionado = productos.find(
-    (p) => String(p.id) === String(formData.producto_id)
-  );
+    if (!link.trim() || !isValidUrl(link.trim())) {
+      Swal.fire(
+        "Enlace inválido",
+        "Ingresa una URL válida.",
+        "error"
+      );
+      return;
+    }
 
-  if (!productoSeleccionado) {
-    Swal.fire(
-      "Producto no encontrado",
-      "No se encontró el producto.",
-      "error"
-    );
-    return;
-  }
+    editorRefs.current[activeIndex]?.insertLink(link.trim());
 
-  if (!productoSeleccionado.link) {
-    Swal.fire(
-      "Producto sin enlace",
-      "El producto seleccionado no tiene un enlace válido.",
-      "error"
-    );
-    return;
-  }
-
-  const productUrl = `/catalogo-maquinarias/detalle?link=${productoSeleccionado.link}`;
-
-  editorRefs.current[activeIndex]?.insertLink(productUrl);
-
-  setIsProductLinkModalOpen(false);
-  setSelectedText("");
-  setActiveIndex(null);
-};
-const handleAddLink = () => {
-  if (activeIndex === null) return;
-
-  if (!link.trim() || !isValidUrl(link.trim())) {
-    Swal.fire(
-      "Enlace inválido",
-      "Ingresa una URL válida.",
-      "error"
-    );
-    return;
-  }
-
-  editorRefs.current[activeIndex]?.insertLink(link.trim());
-
-  setIsModalOpen(false);
-  setLink("");
-  setSelectedText("");
-  setActiveIndex(null);
-};
+    setIsModalOpen(false);
+    setLink("");
+    setSelectedText("");
+    setActiveIndex(null);
+  };
   const closeModal = () => {
     setIsOpen(false);
     setFormData({
@@ -676,7 +676,7 @@ const handleAddLink = () => {
       return;
     }
 
- 
+
 
     // Validación imágenes adicionales y párrafos
     if (
@@ -771,17 +771,17 @@ const handleAddLink = () => {
           "imagen_tipo[]",
           item.imagen instanceof File ? "file" : "existing",
         );
-      
+
         formDataToSend.append("img_alt[]", item.img_alt || "");
         formDataToSend.append("img_nombre[]", item.img_nombre || "");
         formDataToSend.append("img_tittle[]", item.img_tittle || "");
-      
+
         if (item.imagen instanceof File) {
           formDataToSend.append("imagenes[]", item.imagen);
         } else if (item.id) {
           formDataToSend.append("imagen_ids[]", item.id.toString());
         }
-      
+
         // SIEMPRE enviar párrafo
         formDataToSend.append("parrafos[]", item.parrafo || "");
       });
@@ -806,9 +806,8 @@ const handleAddLink = () => {
             title: blogToEdit
               ? "Blog actualizado con éxito"
               : "Blog creado con éxito",
-            text: `El blog "${data.data.titulo}" ha sido ${
-              blogToEdit ? "actualizado" : "creado"
-            } correctamente.`,
+            text: `El blog "${data.data.titulo}" ha sido ${blogToEdit ? "actualizado" : "creado"
+              } correctamente.`,
             confirmButtonColor: "#3085d6",
           });
           closeModal();
@@ -828,7 +827,7 @@ const handleAddLink = () => {
         throw error;
       }
 
-      
+
     } catch (error: any) {
       console.error("Error al enviar el blog:", error);
 
@@ -1175,11 +1174,11 @@ const handleAddLink = () => {
                     </div>
                   </div>
                   <div className="form-input">
-                    
+
                     <label className="font-medium text-gray-700 dark:text-gray-300">
                       Nombre de la Imagen (miniatura)
                     </label>
-                    
+
                     <input
                       type="text"
                       name="miniatura_nombre"
@@ -1193,37 +1192,37 @@ const handleAddLink = () => {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="form-input">
-                    
-                    <label className="font-medium text-gray-700 dark:text-gray-300">
-                      Alt de la Imagen (miniatura)
-                    </label>
-                    <input
-                      type="text"
-                      name="miniatura_alt"
-                      value={formData.miniatura_alt}
-                      onChange={handleChange}
-                      maxLength={LENGTHS.titulo}
-                    />
-                    <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
-                      {formData.miniatura_alt.length}/{LENGTHS.titulo}
-                    </span>
-                  </div>
-                  <div className="form-input">
-                    
-                    <label className="font-medium text-gray-700 dark:text-gray-300">
-                      Titulo de la Imagen (miniatura)
-                    </label>
-                    <input
-                      type="text"
-                      name="miniatura_tittle"
-                      value={formData.miniatura_tittle}
-                      onChange={handleChange}
-                      maxLength={LENGTHS.titulo}
-                    />
-                    <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
-                      {formData.miniatura_tittle.length}/{LENGTHS.titulo}
-                    </span>
-                  </div>
+
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        Alt de la Imagen (miniatura)
+                      </label>
+                      <input
+                        type="text"
+                        name="miniatura_alt"
+                        value={formData.miniatura_alt}
+                        onChange={handleChange}
+                        maxLength={LENGTHS.titulo}
+                      />
+                      <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                        {formData.miniatura_alt.length}/{LENGTHS.titulo}
+                      </span>
+                    </div>
+                    <div className="form-input">
+
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        Titulo de la Imagen (miniatura)
+                      </label>
+                      <input
+                        type="text"
+                        name="miniatura_tittle"
+                        value={formData.miniatura_tittle}
+                        onChange={handleChange}
+                        maxLength={LENGTHS.titulo}
+                      />
+                      <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                        {formData.miniatura_tittle.length}/{LENGTHS.titulo}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -1271,16 +1270,16 @@ const handleAddLink = () => {
                       />
                       <div className="flex justify-between ">
                         <small className="text-gray-500 mt-1 block">
-                        Sugerido {LENGTHS.metaTitulo} caracteres
+                          Sugerido {LENGTHS.metaTitulo} caracteres
                         </small>
                         <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
-                        {formData.etiqueta.meta_titulo.length}/{LENGTHS.metaTitulo}
+                          {formData.etiqueta.meta_titulo.length}/{LENGTHS.metaTitulo}
                         </span>
                       </div>
-                      
+
                     </div>
                     <div className="form-input">
-                      
+
                       <label className="font-medium text-gray-700 dark:text-gray-300">
                         Meta descripción
                       </label>
@@ -1303,12 +1302,12 @@ const handleAddLink = () => {
                         maxLength={LENGTHS.metaDescripcion}
                       />
                       <div className="flex justify-between">
-                      <small className="text-gray-500 mt-1 block">
-                        Sugerido {LENGTHS.metaDescripcion} caracteres
-                      </small>
-                      <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
-                        {formData.etiqueta.meta_descripcion.length}/{LENGTHS.metaDescripcion}
-                      </span>
+                        <small className="text-gray-500 mt-1 block">
+                          Sugerido {LENGTHS.metaDescripcion} caracteres
+                        </small>
+                        <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                          {formData.etiqueta.meta_descripcion.length}/{LENGTHS.metaDescripcion}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -1443,25 +1442,25 @@ const handleAddLink = () => {
                       </label>
                     </div>
                     <div className="form-input">
-                        
-                        <label className="font-medium text-gray-700 dark:text-gray-300">
-                          Nombre de la Imagen
-                        </label>
-                        <input
-                          type="text"
-                          name="hero_image_nombre"
-                          value={formData.hero_image_nombre}
-                          onChange={handleChange}
-                          maxLength={LENGTHS.titulo}
-                        />
-                        <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
-                          {formData.hero_image_nombre.length}/{LENGTHS.titulo}
-                        </span>
-                      </div>
+
+                      <label className="font-medium text-gray-700 dark:text-gray-300">
+                        Nombre de la Imagen
+                      </label>
+                      <input
+                        type="text"
+                        name="hero_image_nombre"
+                        value={formData.hero_image_nombre}
+                        onChange={handleChange}
+                        maxLength={LENGTHS.titulo}
+                      />
+                      <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                        {formData.hero_image_nombre.length}/{LENGTHS.titulo}
+                      </span>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                      
+
                       <div className="form-input">
-                        
+
                         <label className="font-medium text-gray-700 dark:text-gray-300">
                           Alt de la Imagen
                         </label>
@@ -1645,7 +1644,7 @@ const handleAddLink = () => {
                           </div>
                         )}
                         {/* Campos SEO */}
-                        
+
                         {/* Nombre */}
                         <div>
                           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -1666,45 +1665,45 @@ const handleAddLink = () => {
                         {/* Titulo*/}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
-                          
-                          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                            Titulo de la imagen*
-                          </label>
-                          <input
-                            type="text"
-                            value={imagen.img_tittle}
-                            onChange={(e) => handleImgTittleChange(e, index)}
-                            placeholder="Título de la imagen"
-                            maxLength={LENGTHS.titulo}
-                            className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
-                          />
-                          <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
-                            {imagen.img_tittle.length}/{LENGTHS.titulo}
-                          </span>
-                        </div>
-                        {/* Alt */}
-                        <div>
-                          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                            Alt de la imagen*
-                          </label>
-                          <input
-                            type="text"
-                            value={imagen.img_alt}
-                            onChange={(e) => handleImgAltChange(e, index)}
-                            placeholder="Describe brevemente el contenido de la imagen"
-                            maxLength={LENGTHS.titulo}
-                            className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
-                          />
-                          <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
-                            {imagen.img_alt.length}/{LENGTHS.titulo}
-                          </span>
-                        </div>
+
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                              Titulo de la imagen*
+                            </label>
+                            <input
+                              type="text"
+                              value={imagen.img_tittle}
+                              onChange={(e) => handleImgTittleChange(e, index)}
+                              placeholder="Título de la imagen"
+                              maxLength={LENGTHS.titulo}
+                              className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
+                            />
+                            <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                              {imagen.img_tittle.length}/{LENGTHS.titulo}
+                            </span>
+                          </div>
+                          {/* Alt */}
+                          <div>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                              Alt de la imagen*
+                            </label>
+                            <input
+                              type="text"
+                              value={imagen.img_alt}
+                              onChange={(e) => handleImgAltChange(e, index)}
+                              placeholder="Describe brevemente el contenido de la imagen"
+                              maxLength={LENGTHS.titulo}
+                              className="w-full border-2 border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors"
+                            />
+                            <span className="text-xs text-gray-400 dark:text-gray-500 block text-right mt-1">
+                              {imagen.img_alt.length}/{LENGTHS.titulo}
+                            </span>
+                          </div>
 
                         </div>
-                        
+
 
                         {/* COLUMNA DERECHA - PÁRRAFO */}
-                        
+
                         <div className="flex flex-col space-y-3">
                           <div className="flex justify-between items-start gap-2">
                             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
@@ -1732,7 +1731,7 @@ const handleAddLink = () => {
                             <RichTextEditor
                               ref={(el: RichTextEditorHandle | null) => {
                                 editorRefs.current[index] = el;
-                              }}                              
+                              }}
                               value={imagen.parrafo}
                               onChange={(html) => {
                                 setFormData((prev) => {
@@ -1750,7 +1749,7 @@ const handleAddLink = () => {
                                 });
                               }}
                             />
-                          </div>                    
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1955,19 +1954,22 @@ const handleAddLink = () => {
       )}
 
       {/* Modal para insertar enlace manual */}
-        <InsertLinkModal
-          isOpen={isModalOpen}
-          selectedText={selectedText}
-          link={link}
-          setLink={setLink}
-          onClose={() => setIsModalOpen(false)}
-          onConfirm={handleAddLink}
-        />
+      <InsertLinkModal
+        isOpen={isModalOpen}
+        selectedText={selectedText}
+        link={link}
+        setLink={setLink}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleAddLink}
+      />
 
       {/*  MODAL  Para insertar enlace de producto */}
       <ProductLinkModal
         isOpen={isProductLinkModalOpen}
         selectedText={selectedText}
+        products={productos}
+        selectedProductId={selectedProductId}
+        setSelectedProductId={setSelectedProductId}
         onClose={() => setIsProductLinkModalOpen(false)}
         onConfirm={handleAddProduct}
       />
