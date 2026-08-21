@@ -114,6 +114,7 @@ const Sidebar = () => {
   ];
 
   return (
+
     <aside className="h-full w-full p-4 flex flex-col overflow-y-auto space-y-4 bg-white text-gray-800 dark:bg-[#1e1e2f] dark:text-white">
       <nav className="mt-1 flex-1">
         <ul className="space-y-3">
@@ -201,7 +202,11 @@ const Sidebar = () => {
         </div>
       </div>
     </aside>
+
+
   );
 };
 
 export default Sidebar;
+
+

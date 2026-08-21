@@ -25,10 +25,8 @@ const { title } = Astro.props;
     </script>
 
   </head>
-
-  <!-- Usamos var(--background-color) y var(--text-color) para todo -->
   <body
-    class="h-screen overflow-hidden pt-16 bg-[var(--background-color)] text-[var(--text-color)]"
+    class=" h-screen overflow-hidden pt-16 bg-[var(--background-color)] text-[var(--text-color)]"
   >
     <ProtectedRoute client:only>
       <Header title={title} client:load />
@@ -63,6 +61,7 @@ const { title } = Astro.props;
       </div>
 
       <div class="flex h-[calc(100vh-4rem)]">
+      
         <aside
           class="fixed top-16 left-0 h-[calc(100vh-4rem)] bg-[var(--background-color)] shadow-lg z-40 lg:w-72 w-full lg:block hidden"
         >
