@@ -118,15 +118,6 @@ const finalCanonical = canonicalUrl || `${Astro.url.origin}${Astro.url.pathname}
     />
         <slot name="head" />
 
-    <script is:inline>
-      (function () {
-        const saved = localStorage.getItem("darkMode");
-        if (saved === "true") {
-          document.documentElement.classList.add("dark");
-        }
-      })();
-    </script>
-
   </head>
 
   <body class="font-montserrat w-full">
