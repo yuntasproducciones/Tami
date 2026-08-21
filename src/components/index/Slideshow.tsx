@@ -60,6 +60,7 @@ const Testimonials: React.FC = () => {
     return (
       <div
         className="relative w-full flex flex-col items-center mb-16"
+        
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -81,6 +82,7 @@ const Testimonials: React.FC = () => {
                 key={i}
                  target="_blank" rel="noopener noreferrer" href={t.url}
                 className="flex-shrink-0 w-full px-6 flex justify-center py-4"
+               
               >
               
                     <div
@@ -135,11 +137,21 @@ const Testimonials: React.FC = () => {
   return (
     <div className="flex justify-evenly gap-6 flex-wrap px-10 mb-20">
       {testimonials.map((t, i) => (
+      
         <a
           key={i}
+
           target="_blank" rel="noopener noreferrer" href={t.url}
-          className="bg-white p-6 rounded-3xl shadow-lg border border-teal-400 w-full sm:w-[340px] md:w-[380px] transition-all hover:shadow-xl"
+          className="bg-white p-6 shadow-lg border
+          border-teal-400  sm:w-[340px] md:w-[380px]
+          w-full transition-all duration-300 
+          ease-in-out hover:-translate-y-2 
+          hover:shadow-xl hover:scale-[1.02] rounded-xl
+           
+           "
         >
+
+          
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-lg font-bold text-teal-700 tracking-wide">
