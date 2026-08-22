@@ -39,13 +39,13 @@
 }
 
 /* --- Variables y transiciones globales para Dark Mode --- */
-* {
+/* * {
   transition: background-color 0.4s ease-in-out,
     color 0.4s ease-in-out,
     border-color 0.3s ease-in-out,
     box-shadow 0.3s ease-in-out !important;
 }
-
+*/
 
 :root {
   --text-color: #1f2937;
