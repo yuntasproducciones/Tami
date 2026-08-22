@@ -17,6 +17,16 @@ import { ClientRouter } from 'astro:transitions';
     <link rel="icon" type="image/webp+xml" href="/logo.webp" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+
+    <script is:inline>
+      (function () {
+        const saved = localStorage.getItem("darkMode");
+        if (saved === "true") {
+          document.documentElement.classList.add("dark");
+        }
+      })();
+    </script>
+
   </head>
   <body
     class=" h-screen overflow-hidden pt-16 bg-[var(--background-color)] text-[var(--text-color)]"

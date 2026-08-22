@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Users, Package, FileText, TrendingUp } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { getProducts } from 'src/hooks/admin/productos/productos';
-import useClientes from 'src/hooks/admin/seguimiento/useClientes';
+import { getClientes } from 'src/hooks/admin/seguimiento/useClientes';
 import { config, getApiUrl } from '../../../../config';
+import type Cliente from 'src/models/Clients';
 
 const data = [
   { name: 'Inicio', visitas: 1200 },
@@ -24,10 +25,9 @@ const AVATAR_COLORS = [
 const DashboardInicio: React.FC = () => {
   const [totalProductos, setTotalProductos] = useState<number>(0);
   const [totalBlogs, setTotalBlogs] = useState<number>(0);
-  const [loadingProductos, setLoadingProductos] = useState(true);
-  const [loadingBlogs, setLoadingBlogs] = useState(true);
-  const { clientes, loading: loadingClientes } = useClientes(false);
 
+  const [loadingDashboard, setLoadingDashboard] = useState(true);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
 
   const recentClientes = [...clientes]
     .sort((a, b) =>
@@ -41,23 +41,20 @@ const DashboardInicio: React.FC = () => {
   };
 
   useEffect(() => {
-    getProducts()
-      .then((data) => {
-        if (data) setTotalProductos(data.length);
+    Promise.all([
+      getProducts(),
+      fetch(getApiUrl(config.endpoints.blogs.list)).then(res => res.json()),
+      getClientes(),
+    ])
+      .then(([productosData, blogsResult, clientesData]) => {
+        if (productosData) setTotalProductos(productosData.length);
+        if (Array.isArray(blogsResult?.data)) setTotalBlogs(blogsResult.data.length);
+        setClientes(clientesData);
       })
-      .finally(() => setLoadingProductos(false));
+      .catch((error) => console.error("Error cargando dashboard:", error))
+      .finally(() => setLoadingDashboard(false));
   }, []);
 
-  useEffect(() => {
-    fetch(getApiUrl(config.endpoints.blogs.list))
-      .then((res) => res.json())
-      .then((result) => {
-        if (Array.isArray(result?.data)) {
-          setTotalBlogs(result.data.length);
-        }
-      })
-      .finally(() => setLoadingBlogs(false));
-  }, []);
 
   return (
     <div className="w-full">
@@ -78,7 +75,7 @@ const DashboardInicio: React.FC = () => {
           <div>
             <p className="text-gray-400 text-sm font-medium mb-1">Total de clientes</p>
             <p className="text-3xl font-bold text-[#1e293b] dark:text-white">
-              {loadingClientes ? '...' : clientes.length}
+              {loadingDashboard  ? '...' : clientes.length}
             </p>
           </div>
         </div>
@@ -90,7 +87,7 @@ const DashboardInicio: React.FC = () => {
           <div>
             <p className="text-gray-400 text-sm font-medium mb-1">Total de productos</p>
             <p className="text-3xl font-bold text-[#1e293b] dark:text-white">
-              {loadingProductos ? '...' : totalProductos}
+              {loadingDashboard  ? '...' : totalProductos}
             </p>
           </div>
         </div>
@@ -102,7 +99,7 @@ const DashboardInicio: React.FC = () => {
           <div>
             <p className="text-gray-400 text-sm font-medium mb-1">Total de blogs</p>
             <p className="text-3xl font-bold text-[#1e293b] dark:text-white">
-              {loadingBlogs ? '...' : totalBlogs}
+              {loadingDashboard  ? '...' : totalBlogs}
             </p>
           </div>
         </div>
@@ -146,7 +143,7 @@ const DashboardInicio: React.FC = () => {
               <Users className="w-5 h-5 text-gray-500" />
               <h2 className="text-[17px] font-semibold text-[#1e293b] dark:text-white">Clientes recientes</h2>
             </div>
-            
+
             <button
               onClick={handleVerTodos}
               className="bg-teal-600 hover:bg-teal-700 text-white text-[13px] font-medium py-1.5 px-4 rounded-lg transition-colors"
@@ -156,7 +153,7 @@ const DashboardInicio: React.FC = () => {
           </div>
 
           <div className="flex flex-col gap-5">
-            {loadingClientes ? (
+            {loadingDashboard  ? (
 
               Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="flex items-center gap-3 animate-pulse">

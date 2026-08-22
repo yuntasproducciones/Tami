@@ -4,7 +4,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import AddBlogModal from "./AddBlogModel";
 import { config, getApiUrl } from "config";
 import Swal from "sweetalert2";
-
+import { sanitizaHtml } from "src/utils/blog";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -317,7 +317,10 @@ const BlogsTable = () => {
                       <div className={`flex flex-col md:flex-row ${i % 2 === 1 ? "md:flex-row-reverse" : ""} gap-4 md:gap-8 items-center`}>
                         <div className="w-full md:w-1/2 flex flex-col justify-center">
                           <article className="prose prose-sm md:prose-base lg:prose-lg text-gray-700 text-justify leading-relaxed break-words">
-                            <p className="text-sm md:text-base whitespace-pre-line break-words">{p.parrafo}</p>
+                            <div
+                              className="text-sm md:text-base whitespace-pre-line break-words"
+                              dangerouslySetInnerHTML={{ __html: sanitizaHtml(p.parrafo) }}
+                            />
                           </article>
                         </div>
 

@@ -131,6 +131,35 @@ const productsUrl = config.endpoints.productos.list;
         removeLoaderString,
       }}
     >
+      function sanitizeHtml(html) {
+        if (!html) return "";
+        const allowedTags = new Set(["P", "STRONG", "EM", "U", "A", "UL", "OL", "LI", "BR", "SPAN", "DIV"]);
+        const allowedAttrs = { A: ["href", "target", "rel", "title"] };
+        const doc = new DOMParser().parseFromString(html, "text/html");
+
+        function walk(node) {
+          [...node.children].forEach((child) => {
+          if (!allowedTags.has(child.tagName)) {
+            child.replaceWith(...child.childNodes);
+            return;
+          }
+          const allowed = allowedAttrs[child.tagName] || [];
+          [...child.attributes].forEach((attr) => {
+            if (!allowed.includes(attr.name)) child.removeAttribute(attr.name);
+          });
+            if (child.tagName === "A") {
+              const href = child.getAttribute("href") || "";
+              if (href.trim().toLowerCase().startsWith("javascript:")) {
+                child.removeAttribute("href");
+              }
+            }
+            walk(child);
+          });
+        }
+        walk(doc.body);
+        return doc.body.innerHTML;
+      }
+
       eval(showLoaderString);
       eval(removeLoaderString);
       function getBlogImageUrl(imagePath) {
@@ -387,12 +416,9 @@ const productsUrl = config.endpoints.productos.list;
               section.innerHTML = `
               <!-- Texto primero en mobile, layout lateral en desktop -->
             <div class="flex flex-col min-[930px]:flex-row ${index % 2 === 1 ? "min-[930px]:flex-row-reverse" : ""} gap-6 min-[930px]:gap-12 items-start">
-              
               <div class="w-full min-[930px]:w-1/2 px-2 min-[930px]:px-4 flex flex-col justify-start items-start">
                 <article class="prose prose-sm md:prose-base lg:prose-lg text-gray-700 text-left leading-relaxed break-words">
-                  <p class="text-sm md:text-base whitespace-pre-line break-words">${blog.parrafos?.[index]?.parrafo || "Texto no disponible"}</p>
-                </article>
-              </div>
+                <p class="text-sm md:text-base whitespace-pre-line break-words">${sanitizeHtml(blog.parrafos?.[index]?.parrafo || "Texto no disponible")}</p>              </div>
               
               <div class="relative w-full min-[930px]:w-1/2 h-auto max-w-xl min-[930px]:max-w-none mx-auto overflow-hidden rounded-lg md:rounded-xl shadow-md bg-gray-50">
                 <img 

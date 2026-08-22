@@ -2,7 +2,7 @@ import { config } from "../../../../config.ts";
 import apiClient from "../../../services/apiClient";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
-import { useDarkMode } from "../../../hooks/darkMode/useDarkMode.ts";
+import { isDarkMode, toggleDarkMode } from "../../../hooks/darkMode/useDarkMode.ts";
 import useInactivityLogout from "src/hooks/admin/actividad/useInactivityLogout.ts";
 
 async function logout() {
@@ -40,7 +40,7 @@ async function logout() {
           title: "¡Sesión cerrada!",
           text: "Has cerrado sesión exitosamente.",
           icon: "success",
-          customClass: swalDarkClasses() 
+          customClass: swalDarkClasses()
         });
         if (!result.isConfirmed) return;
         window.location.href = "/";
@@ -60,14 +60,19 @@ async function logout() {
 }
 
 const Sidebar = () => {
-  const { darkMode, toggleDarkMode } = useDarkMode();
+  const [darkMode, setDarkMode] = useState(false);
   const [currentPath, setCurrentPath] = useState("");
 
   useInactivityLogout();
 
   useEffect(() => {
-    setCurrentPath(window.location.pathname);
+    setDarkMode(isDarkMode());
   }, []);
+
+  const handleToggle = () => {
+    const newValue = toggleDarkMode();
+    setDarkMode(newValue);
+  }
 
   const items = [
     {
@@ -109,10 +114,8 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside
-      className={`scroll-verde h-full w-full p-4 flex flex-col overflow-y-auto space-y-4 ${darkMode ? "bg-[#1e1e2f] text-white" : "bg-white text-gray-800"
-        }`}
-    >
+
+    <aside className="h-full w-full p-4 flex flex-col overflow-y-auto space-y-4 bg-white text-gray-800 dark:bg-[#1e1e2f] dark:text-white">
       <nav className="mt-1 flex-1">
         <ul className="space-y-3">
           {items.map((item, index) => {
@@ -151,7 +154,7 @@ const Sidebar = () => {
             type="checkbox"
             className="sr-only peer"
             checked={darkMode}
-            onChange={toggleDarkMode}
+            onChange={handleToggle}
           />
           <div
             className={`w-10 h-5 rounded-full transition-colors duration-300 ${darkMode ? "bg-gray-700" : "bg-gray-400"
