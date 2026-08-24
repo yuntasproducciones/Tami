@@ -1,10 +1,10 @@
 ---
 import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
-import ReclamacionesTable from "../../components/admin/reclamaciones/ReclamacionesTable";
+import ReclamacionesTable from "../../components/admin/reclamaciones/ReclamacionesTable.jsx";
 ---
 
 <LayoutAdmin title="RECLAMACIONES">
-  <ReclamacionesTable client:only="react" />
+  <ReclamacionesTable client:load/>
 </LayoutAdmin>
 
 

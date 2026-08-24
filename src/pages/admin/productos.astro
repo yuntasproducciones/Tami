@@ -1,8 +1,8 @@
 ---
 import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
-import ProductosTabla from "../../components/admin/productos/ProductosTabla";
+import ProductosTabla from "../../components/admin/productos/ProductosTabla.jsx";
 ---
 
 <LayoutAdmin title="VENTAS">
-  <ProductosTabla client:only="react" />
+  <ProductosTabla client:load />
 </LayoutAdmin>
