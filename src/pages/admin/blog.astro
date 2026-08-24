@@ -1,8 +1,8 @@
 ---
 import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
-import BlogTabla from "../../components/admin/blogs/BlogsTable"
+import BlogTabla from "../../components/admin/blogs/BlogsTable.jsx"
 ---
 
 <LayoutAdmin title="VENTAS">
-  <BlogTabla client:only="react" />
+  <BlogTabla client:load />
 </LayoutAdmin>

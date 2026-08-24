@@ -1,8 +1,8 @@
 ---
 import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
-import UsuariosTable from "../../components/admin/chatbot/chatbotTable";
+import ChatbotTable from "../../components/admin/chatbot/chatbotTable.jsx";
 ---
 <LayoutAdmin title="CHATBOT">
-    <chatbotTable/>
-    <UsuariosTable client:only="react"/>
+    <!-- <chatbotTable/> NO SE USA SE EQUIVOCO ALGUIEN-->
+    <ChatbotTable client:load />
 </LayoutAdmin>
