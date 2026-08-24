@@ -55,6 +55,20 @@ const DashboardInicio: React.FC = () => {
       .finally(() => setLoadingDashboard(false));
   }, []);
 
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (!active || !payload?.length) return null;
+
+    return (
+      <div className="rounded-xl border-none shadow-lg bg-white dark:bg-gray-800 px-4 py-3">
+        <p className="text-sm font-semibold text-[#1e293b] dark:text-white mb-1">
+          {label}
+        </p>
+        <p className="text-sm text-purple-600 dark:text-purple-400">
+          Vistas: <span className="font-bold">{payload[0].value}</span>
+        </p>
+      </div>
+    );
+  };
 
   return (
     <div className="w-full">
@@ -75,7 +89,7 @@ const DashboardInicio: React.FC = () => {
           <div>
             <p className="text-gray-400 text-sm font-medium mb-1">Total de clientes</p>
             <p className="text-3xl font-bold text-[#1e293b] dark:text-white">
-              {loadingDashboard  ? '...' : clientes.length}
+              {loadingDashboard ? '...' : clientes.length}
             </p>
           </div>
         </div>
@@ -87,7 +101,7 @@ const DashboardInicio: React.FC = () => {
           <div>
             <p className="text-gray-400 text-sm font-medium mb-1">Total de productos</p>
             <p className="text-3xl font-bold text-[#1e293b] dark:text-white">
-              {loadingDashboard  ? '...' : totalProductos}
+              {loadingDashboard ? '...' : totalProductos}
             </p>
           </div>
         </div>
@@ -99,7 +113,7 @@ const DashboardInicio: React.FC = () => {
           <div>
             <p className="text-gray-400 text-sm font-medium mb-1">Total de blogs</p>
             <p className="text-3xl font-bold text-[#1e293b] dark:text-white">
-              {loadingDashboard  ? '...' : totalBlogs}
+              {loadingDashboard ? '...' : totalBlogs}
             </p>
           </div>
         </div>
@@ -113,26 +127,26 @@ const DashboardInicio: React.FC = () => {
             <TrendingUp className="w-5 h-5 text-gray-500" />
             <h2 className="text-[17px] font-semibold text-[#1e293b] dark:text-white">Páginas más vistas</h2>
           </div>
-          <div className="h-[320px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data} margin={{ top: 5, right: 20, left: -20, bottom: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 13 }} dy={15} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 13 }} ticks={[0, 300, 600, 900, 1200]} />
-                <Tooltip
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
-                  cursor={{ stroke: '#f1f5f9', strokeWidth: 2 }}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="visitas"
-                  stroke="#a855f7"
-                  strokeWidth={3}
-                  dot={{ r: 4, fill: '#a855f7', strokeWidth: 2, stroke: '#fff' }}
-                  activeDot={{ r: 6, strokeWidth: 0, fill: '#a855f7' }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+          <div className="w-full overflow-x-auto" >
+            <div className="h-[320px] min-w-[600px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={data} margin={{ top: 5, right: 20, left: -20, bottom: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#bababa" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 13 }} dy={15} interval={0} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 13 }} ticks={[0, 300, 600, 900, 1200]} />
+                  <Tooltip
+                    content={<CustomTooltip />}
+                    cursor={{ stroke: '#f1f5f9', strokeWidth: 2 }}
+                  />
+                  <Line
+                    type="monotone" dataKey="visitas"
+                    stroke="#a855f7" strokeWidth={3}
+                    dot={{ r: 4, fill: '#a855f7', strokeWidth: 2, stroke: '#fff' }}
+                    activeDot={{ r: 6, strokeWidth: 0, fill: '#a855f7' }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
 
@@ -153,7 +167,7 @@ const DashboardInicio: React.FC = () => {
           </div>
 
           <div className="flex flex-col gap-5">
-            {loadingDashboard  ? (
+            {loadingDashboard ? (
 
               Array.from({ length: 5 }).map((_, i) => (
                 <div key={i} className="flex items-center gap-3 animate-pulse">
