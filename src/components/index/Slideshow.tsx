@@ -1,40 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
+import { testimonials } from "src/data/testimonials";
 
-interface Testimonial {
-  avatar: string;
-  name: string;
-  alt: string;
-  title: string;
-  rating: number;
-  text: string;
-}
 
-const testimonials: Testimonial[] = [
-  {
-    avatar: "/images/persona-sonriente-feliz.webp",
-    name: "Carlos Pérez",
-    alt: "testimonio de Carlos Pérez",
-    rating: 5,
-    text: "Compré mi selladora de vasos con TAMI y la experiencia fue excelente. Me asesoraron bien desde el comienzo y resolvieron mis dudas. ¡Satisfecho con mi compra!",
-    title: "Testimonio de Carlos Pérez",
-  },
-  {
-    avatar: "/images/chica-guiño-ojo.webp",
-    name: "María López",
-    alt: "testimonio de María López",
-    rating: 4,
-    text: "Compré la mesa LED alta para mi discoteca y fue la sensación desde el primer día. Los colores se adaptan al ambiente y crean una experiencia única para los clientes. ¡Totalmente recomendada!",
-    title: "Testimonio de María López",
-  },
-  {
-    avatar: "/images/persona-camisa-risa.webp",
-    name: "Javier Gómez",
-    alt: "testimonio de Javier Gómez",
-    rating: 5,
-    text: "La selladora de bolsas para salsas me ha salvado en el restaurante. Antes se nos regaban las cremas en los pedidos, ahora todo llega perfecto.",
-    title: "Testimonio de Javier Gómez",
-  },
-];
 
 const Testimonials: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -93,6 +60,7 @@ const Testimonials: React.FC = () => {
     return (
       <div
         className="relative w-full flex flex-col items-center mb-16"
+        
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -110,11 +78,15 @@ const Testimonials: React.FC = () => {
             }}
           >
             {testimonials.map((t, i) => (
-              <div
+              <a
                 key={i}
+                 target="_blank" rel="noopener noreferrer" href={t.url}
                 className="flex-shrink-0 w-full px-6 flex justify-center py-4"
+               
               >
-                <div className="bg-white rounded-3xl shadow-xl border border-teal-400 p-6 w-[90%] max-w-[360px] text-center">
+              
+                    <div
+                    className="bg-white rounded-3xl shadow-xl border border-teal-400 p-6 w-[90%] max-w-[360px] text-center">
                   <img
                     src={t.avatar}
                     alt={t.alt}
@@ -134,8 +106,9 @@ const Testimonials: React.FC = () => {
                   <p className="text-gray-700 text-sm leading-relaxed">
                     {t.text}
                   </p>
+                
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </div>
@@ -164,10 +137,21 @@ const Testimonials: React.FC = () => {
   return (
     <div className="flex justify-evenly gap-6 flex-wrap px-10 mb-20">
       {testimonials.map((t, i) => (
-        <div
+      
+        <a
           key={i}
-          className="bg-white p-6 rounded-3xl shadow-lg border border-teal-400 w-full sm:w-[340px] md:w-[380px] transition-all hover:shadow-xl"
+
+          target="_blank" rel="noopener noreferrer" href={t.url}
+          className="bg-white p-6 shadow-lg border
+          border-teal-400  sm:w-[340px] md:w-[380px]
+          w-full transition-all duration-300 
+          ease-in-out hover:-translate-y-2 
+          hover:shadow-xl hover:scale-[1.02] rounded-xl
+           
+           "
         >
+
+          
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-lg font-bold text-teal-700 tracking-wide">
@@ -189,7 +173,7 @@ const Testimonials: React.FC = () => {
             />
           </div>
           <p className="text-gray-700 leading-relaxed">{t.text}</p>
-        </div>
+        </a>
       ))}
     </div>
   );

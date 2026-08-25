@@ -1,7 +1,7 @@
 ---
 import LayoutAdmin from "../../layouts/LayoutAdmin.astro";
-import UsuariosTable from "../../components/admin/usuarios/UsuariosTable";
+import UsuariosTable from "../../components/admin/usuarios/UsuariosTable.jsx";
 ---
 <LayoutAdmin title="VENTAS">
-    <UsuariosTable client:only="react"/>
+    <UsuariosTable client:load/>
 </LayoutAdmin>

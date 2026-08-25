@@ -10,7 +10,6 @@ export interface PopupSettings {
   popup_image: string;
   popup_mobile_image_url?: string;
   popup_mobile_image2_url?: string;
-  popup_mobile_image_count?: number;
   button_text?: string;
   popup_start_delay_seconds: number;
   product_popup_delay_seconds: number;

@@ -1,55 +1,23 @@
-// hooks/useDarkMode.ts
 import { useEffect, useState } from "react";
 
-export const useDarkMode = () => {
-  const [darkMode, setDarkMode] = useState<boolean>(false);
-
-  const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    localStorage.setItem("darkMode", JSON.stringify(newMode));
-
-    // Aplica la clase dark en el elemento raíz <html>
-    if (newMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-
-    // Notificar a otros componentes
-    window.dispatchEvent(
-      new CustomEvent("darkModeToggle", {
-        detail: { darkMode: newMode },
-      })
-    );
-  };
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    // Leer estado inicial desde localStorage
-    const savedMode = JSON.parse(localStorage.getItem("darkMode") || "false");
-    setDarkMode(savedMode);
-
-    if (savedMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-
-    // Escuchar cambios
-    const handleDarkModeChange = (event: Event) => {
-      const customEvent = event as CustomEvent<{ darkMode: boolean }>;
-      const newMode = customEvent.detail.darkMode;
-      setDarkMode(newMode);
-    };
-
-    window.addEventListener("darkModeToggle", handleDarkModeChange);
-
-    return () => {
-      window.removeEventListener("darkModeToggle", handleDarkModeChange);
-    };
-  }, []);
-
-  return { darkMode, toggleDarkMode };
+export const isDarkMode = (): boolean => {
+  if (typeof window === "undefined") return false;
+  return document.documentElement.classList.contains("dark");
 };
+
+export const toggleDarkMode = (): boolean => {
+  const isDark = document.documentElement.classList.contains("dark");
+  console.log("Ya tenía DARK ANTES", isDark);
+
+  if (isDark) {
+    document.documentElement.classList.remove("dark");
+    localStorage.setItem("darkMode", "false");
+    console.log("Clases DESPUÉS de quitar:", document.documentElement.className);
+    return false;
+  } else {
+    document.documentElement.classList.add("dark");
+    localStorage.setItem("darkMode", "true");
+    console.log("Clases DESPUÉS de agregar:", document.documentElement.className);
+    return true;
+  }
+}

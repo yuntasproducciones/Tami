@@ -39,13 +39,13 @@
 }
 
 /* --- Variables y transiciones globales para Dark Mode --- */
-* {
+/* * {
   transition: background-color 0.4s ease-in-out,
     color 0.4s ease-in-out,
     border-color 0.3s ease-in-out,
     box-shadow 0.3s ease-in-out !important;
 }
-
+*/
 
 :root {
   --text-color: #1f2937;
@@ -391,6 +391,18 @@ a.relative.group:hover::after {
   padding: 0 15px;
 }
 
+.swal-dark-popup {
+    background-color: #1f2937 !important;
+}
+
+.swal-dark-title {
+    color: #f9fafb !important;
+}
+
+.swal-dark-text {
+    color: #d1d5db !important;
+}
+
 /* Versión responsive para pantallas pequeñas */
 @media (max-width: 768px) {
   .scrollmodal-title {
@@ -571,3 +583,16 @@ a.relative.group:hover::after {
 .swiper-pagination-bullet-active-custom {
   @apply bg-[#015f86] scale-125;
 }
+
+/* ScrollBar verde en el archivo Sidebar.tsx */
+
+ .scroll-verde::-webkit-scrollbar {
+    width: 8px;
+  }
+  .scroll-verde::-webkit-scrollbar-track {
+    background: rgb(45, 46, 46);
+  }
+  .scroll-verde::-webkit-scrollbar-thumb{
+    background: #01a775;
+  
+  }

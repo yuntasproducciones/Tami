@@ -122,8 +122,7 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
                 window.dispatchEvent(new CustomEvent('inicio-mobile-settings-loaded', {
                     detail: {
                         imageMobile: settings.imageMobile || settings.popup_mobile_image_url || null,
-                        imageMobile2: settings.imageMobile2 || settings.popup_mobile_image2_url || null,
-                        count: 2
+                        imageMobile2: settings.imageMobile2 || settings.popup_mobile_image2_url || null
                     }
                 }));
 
@@ -139,7 +138,6 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
                     button_text_color: settings.button_text_color,
                     button_text: settings.button_text || "CONOCER MAS",
                     popup_start_delay_minutes: settings.popup_start_delay_minutes,
-                    popup_mobile_image_count: 2,
                 }, hasMobileImages ? "mobile" : null);
             }
 
@@ -166,9 +164,7 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
             const sectionProducto = document.getElementById("sectionProducto");
             // Detectar qué pestaña está activa
             const isProductoTab = sectionProducto && !sectionProducto.classList.contains("hidden");
-            const currentPopupType = isProductoTab ? "producto" : "inicio";
             const formData = new FormData();
-            formData.append("popup_type", currentPopupType);
 
             const btnBgColorInput = document.getElementById("btnBgColor") as HTMLInputElement | null;
             const btnTextColorInput = document.getElementById("btnTextColor") as HTMLInputElement | null;
@@ -189,8 +185,6 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
                 formData.append("button_text", btnTextInput.value);
             }
             formData.append("popup_start_delay_minutes", delay.toString());
-
-            formData.append("popup_mobile_image_count", "2");
 
             if (isProductoTab) {
                 window.dispatchEvent(new CustomEvent("request-save-product-popup"));
@@ -247,7 +241,6 @@ export function initSettings(updatePreview: (settings?: any, mode?: string | nul
             addFileToForm(formData, "whatsappImage", "whatsappImage");
             addFileToForm(formData, "whatsappImage2", "whatsappImage2");
             addFileToForm(formData, "whatsappImage3", "whatsappImage3");
-            console.log("FormData to be sent:", formData);
 
             await updatePopupSettingsFormData(formData);
 

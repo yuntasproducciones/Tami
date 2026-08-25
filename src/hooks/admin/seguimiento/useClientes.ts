@@ -9,6 +9,12 @@ import apiClient from "../../../services/apiClient";
 import type Cliente from "../../../models/Clients";
 import type { GlobalTotals } from "../../../models/Clients";
 
+export const getClientes = async (): Promise<Cliente[]> => {
+  const response = await apiClient.get(config.endpoints.clientes.list);
+  const data = response.data;
+  return data.data?.data?.data || [];
+};
+
 const useClientes = (trigger: boolean) => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [globalTotals, setGlobalTotals] = useState<GlobalTotals | null>(null);

@@ -133,14 +133,15 @@ const whatsappLink = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${
 
   <section class="w-full px-4 lg:px-8 py-8">
     <div class="rounded-3xl overflow-hidden flex flex-col md:relative">
-      <Image
-        src={bg_card4}
-        width={600} 
-        alt="Por qué elegir Tami"
-        loading="lazy"
-        decoding="async"
-        class="w-full h-auto object-contain md:object-cover md:min-h-[650px] lg:min-h-[800px] blur-[1px]"
-      />
+   <Image
+      src={bg_card4}
+      width={1200}
+      densities={[1, 2]}
+      quality="mid"
+      format="webp"
+      alt="Por qué elegir Tami"
+      class="w-full h-auto object-contain md:object-cover md:min-h-[650px] lg:min-h-[800px]"
+    />
 
 
       <!-- Overlay oscuro para legibilidad del texto - Solo visible en desktop -->

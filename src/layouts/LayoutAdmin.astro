@@ -3,7 +3,9 @@ import Sidebar from "../components/admin/ui/Sidebar";
 import Header from "../components/admin/ui/Header";
 import "../styles/global.css";
 import ProtectedRoute from "src/components/ProtectedRoute";
+// import Sidebar2 from "src/components/admin/ui/Sidebar2.astro";
 const { title } = Astro.props;
+// import { ClientRouter } from 'astro:transitions';
 ---
 
 <!doctype html>
@@ -11,14 +13,23 @@ const { title } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
     <link rel="icon" type="image/webp+xml" href="/logo.webp" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
-  </head>
 
-  <!-- Usamos var(--background-color) y var(--text-color) para todo -->
+    <script is:inline>
+      (function () {
+        const saved = localStorage.getItem("darkMode");
+        if (saved === "true") {
+          document.documentElement.classList.add("dark");
+        }
+      })();
+    </script>
+
+  </head>
   <body
-    class="h-screen overflow-hidden pt-16 bg-[var(--background-color)] text-[var(--text-color)]"
+    class=" h-screen overflow-hidden pt-16 bg-[var(--background-color)] text-[var(--text-color)]"
   >
     <ProtectedRoute client:only>
       <Header title={title} client:load />
@@ -53,10 +64,11 @@ const { title } = Astro.props;
       </div>
 
       <div class="flex h-[calc(100vh-4rem)]">
+      
         <aside
           class="fixed top-16 left-0 h-[calc(100vh-4rem)] bg-[var(--background-color)] shadow-lg z-40 lg:w-72 w-full lg:block hidden"
         >
-          <Sidebar client:load />
+          <Sidebar client:load/>
         </aside>
 
         <main

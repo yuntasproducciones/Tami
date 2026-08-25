@@ -89,7 +89,7 @@ const PopupForm = ({
             style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "640px" }}
           >
             {(() => {
-              const showTwoImages = settings?.popup_mobile_image_count === 2 && !!settings?.popup_mobile_image_url && !!settings?.popup_mobile_image2_url;
+              const showTwoImages = !!settings?.popup_mobile_image_url && !!settings?.popup_mobile_image2_url;
               if (showTwoImages) {
                 return (
                   <>

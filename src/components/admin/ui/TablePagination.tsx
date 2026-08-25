@@ -1,4 +1,5 @@
 import React from "react";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 interface TablePaginationProps {
   currentPage: number;
@@ -13,53 +14,51 @@ export const TablePagination: React.FC<TablePaginationProps> = ({
 }) => {
   if (totalPages <= 0) return null;
 
+  
+  const maxVisible = 2;
+  const visibleCount = Math.min(totalPages, maxVisible);
+
+  const startPage = currentPage >= totalPages && totalPages > 1 
+    ? totalPages - 1 
+    : currentPage;
+
+  const pagesToShow = totalPages === 1 ? [1] : [startPage, startPage + 1];
+
+
   return (
-    <div className="flex justify-center gap-2 mt-8 px-4 pb-6">
+    <div className="flex items-center justify-center gap-1.5 sm:gap-2 mt-6 px-2 pb-6">
       <button
         onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
         disabled={currentPage === 1}
-        className={`${
-          currentPage === 1 ? "" : "cursor-pointer"
-        } px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 text-sm text-gray-700 dark:text-gray-200`}
+        aria-label="Página anterior"
+        className="w-9 h-9 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed text-xs text-gray-700 dark:text-gray-200 transition-colors shrink-0"
+      
       >
-        Anterior
+       <FaChevronLeft />
       </button>
 
-      {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-        let pageToShow: number;
-        if (totalPages <= 5) {
-          pageToShow = i + 1;
-        } else if (currentPage <= 3) {
-          pageToShow = i + 1;
-        } else if (currentPage >= totalPages - 2) {
-          pageToShow = totalPages - 4 + i;
-        } else {
-          pageToShow = currentPage - 2 + i;
-        }
-
-        return (
-          <button
-            key={i}
-            onClick={() => setCurrentPage(pageToShow)}
-            className={`px-3 py-1 border rounded-md text-sm cursor-pointer ${
-              currentPage === pageToShow
-                ? "bg-teal-500 text-white border-teal-500"
-                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
-            }`}
-          >
-            {pageToShow}
-          </button>
-        );
-      })}
+{pagesToShow.map((page) => (
+        <button
+          key={page}
+          onClick={() => setCurrentPage(page)}
+          className={`w-9 h-9 flex items-center justify-center rounded-lg text-xs font-bold transition-all shrink-0 ${
+            currentPage === page
+              ? "bg-teal-500 text-white border border-teal-500 shadow-sm"
+              : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+          }`}
+        >
+          {page}
+        </button>
+      ))}
 
       <button
         onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
         disabled={currentPage === totalPages}
-        className={`${
-          currentPage === totalPages ? "" : "cursor-pointer"
-        } px-3 py-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 text-sm text-gray-700 dark:text-gray-200`}
+        aria-label="Página siguiente"
+        className="w-9 h-9 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed text-xs text-gray-700 dark:text-gray-200 transition-colors shrink-0"
+      
       >
-        Siguiente
+        <FaChevronRight />
       </button>
     </div>
   );
