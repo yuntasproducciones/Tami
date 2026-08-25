@@ -168,15 +168,21 @@ const ReclamacionesTable = () => {
       )}
 
       {/* --- VISTA PRINCIPAL (TABLA) --- */}
-      <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
-        <div className="bg-gradient-to-r from-red-600 to-red-700 px-8 py-8 flex flex-col md:flex-row justify-between items-center gap-4 text-white">
-          <div>
-            <h2 className="text-3xl font-black flex items-center gap-3 tracking-tighter uppercase">
+     
+      <div className="bg-white dark:bg-gray-900 rounded-2xl sm:rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+     
+        <div className=" p-4 sm:p-8 bg-gradient-to-r from-red-600 to-red-700 flex flex-col md:flex-row justify-between items-center gap-4 text-white">
+          <div className="w-full sm:w-auto text-left">
+    
+            <h2 className="text-xl sm:text-3xl font-black flex items-center gap-3 tracking-tighter uppercase">
               <FaExclamationTriangle size={28} /> Reclamaciones
             </h2>
             <p className="text-red-100 text-sm font-medium opacity-80 mt-1">Panel Administrativo de Atención al Cliente</p>
           </div>
-          <button onClick={handleRefetch} className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/30 px-6 py-2.5 rounded-2xl text-sm font-black transition-all backdrop-blur-md">
+          <button 
+            onClick={handleRefetch} 
+            className="w-full sm:w-auto justify-center flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/30 px-4 sm:px-6 py-2.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-black transition-all backdrop-blur-md"
+          >
             <FaSyncAlt className={loading ? "animate-spin" : ""} /> ACTUALIZAR
           </button>
         </div>
