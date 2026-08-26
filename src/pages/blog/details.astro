@@ -15,7 +15,7 @@ const productsUrl = config.endpoints.productos.list;
 <Layout
   title="Blog Details"
   description="Descripcion por defecto"
-  canonicalUrl="https://tamimaquinarias.com/blog"
+  canonicalUrl="https://tamimaquinarias.com/blog/details/"
 >
   <header
     id="blog-header"
@@ -218,12 +218,9 @@ const productsUrl = config.endpoints.productos.list;
             metaDescription.content =
               blog.etiqueta?.meta_descripcion || "Descripción por defecto";
             let canonicalLink = document.querySelector('link[rel="canonical"]');
-            if (!canonicalLink) {
-              canonicalLink = document.createElement("link");
-              canonicalLink.rel = "canonical";
-              document.head.appendChild(canonicalLink);
+            if (canonicalLink) {
+              canonicalLink.href = window.location.href;
             }
-            canonicalLink.href = window.location.href;
           }
 
           function generateBlogJsonLd(blog) {

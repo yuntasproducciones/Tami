@@ -101,21 +101,21 @@ const Hero = () => {
             transition-all duration-300 hover:shadow-[0_15px_50px_-10px_rgba(0,0,0,0.2),0_8px_25px_-5px_rgba(0,120,111,0.15)]"
         >
           <a
-            href="/productos?categoria=Negocio"
+            href="/catalogo-maquinarias?categoria=Negocio"
             className="relative hover:text-teal-700 transition-all duration-300 after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:h-[2px] after:w-0 after:bg-teal-600 after:transition-all after:duration-300 hover:after:w-full"
           >
             Negocio
           </a>
           <span className="hidden sm:inline-block w-px h-4 sm:h-6 bg-gray-400"></span>
           <a
-            href="/productos?categoria=Maquinaria"
+            href="/catalogo-maquinarias?categoria=Maquinaria"
             className="relative hover:text-teal-700 transition-all duration-300 after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:h-[2px] after:w-0 after:bg-teal-600 after:transition-all after:duration-300 hover:after:w-full"
           >
             Maquinarias
           </a>
           <span className="hidden sm:inline-block w-px h-4 sm:h-6 bg-gray-400"></span>
           <a
-            href="/productos?categoria=Decoración"
+            href="/catalogo-maquinarias?categoria=Decoración"
             className="relative hover:text-teal-700 transition-all duration-300 after:content-[''] after:absolute after:left-0 after:bottom-[-2px] after:h-[2px] after:w-0 after:bg-teal-600 after:transition-all after:duration-300 hover:after:w-full"
           >
             Decoración
