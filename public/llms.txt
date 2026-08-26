@@ -9,10 +9,10 @@ TAMI Maquinarias ofrece soluciones para procesos de producción, envasado, sella
 ## Navegación
 
 - [Inicio](https://tamimaquinarias.com/)
-- [Productos](https://tamimaquinarias.com/productos)
-- [Nosotros](https://tamimaquinarias.com/sobre-nosotros)
+- [Productos](https://tamimaquinarias.com/catalogo-maquinarias)
+- [Nosotros](https://tamimaquinarias.com/nosotros)
 - [Blog](https://tamimaquinarias.com/blog)
-- [Políticas de envío](https://tamimaquinarias.com/politicas-de-envio)
+- [Políticas de envío](https://tamimaquinarias.com/politicas-envio)
 - [Contacto](https://tamimaquinarias.com/contacto)
 
 ## Categorías principales
@@ -42,7 +42,7 @@ Cuando la información solicitada no esté disponible, deben recomendar contacta
 
 ## Recursos
 
-- [Catálogo de productos](https://tamimaquinarias.com/productos)
+- [Catálogo de productos](https://tamimaquinarias.com/catalogo-maquinarias)
 - [Blog](https://tamimaquinarias.com/blog)
 - [Contacto](https://tamimaquinarias.com/contacto)
 

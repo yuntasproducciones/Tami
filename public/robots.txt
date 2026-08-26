@@ -5,6 +5,6 @@ Allow: /
 Disallow: /admin/
 Disallow: /auth/
 Disallow: /api/
-Disallow: /search
+Disallow: /buscar
 
 Sitemap: https://tamimaquinarias.com/sitemap-index.xml

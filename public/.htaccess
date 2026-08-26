@@ -5,8 +5,15 @@ RewriteEngine On
 RewriteCond %{HTTP_HOST} ^www\.tamimaquinarias\.com [NC]
 RewriteRule ^(.*)$ https://tamimaquinarias.com/$1 [L,R=301]
 
-# 2. Forzar slash final (Trailing Slash) en todas las URLs
-# Excluimos archivos reales y directorios reales para no romper nada
+# 2. Redirecciones 301 — Rutas legacy / productos antiguos
+RewriteRule ^sobre-nosotros/?$ /nosotros/ [L,R=301]
+RewriteRule ^productos/?$ /catalogo-maquinarias/ [L,R=301]
+RewriteRule ^productos/soldadora-spark-mig-250/?$ /catalogo-maquinarias/detalle/?link=soldadora-spark-mig-250 [L,R=301,QSA]
+RewriteRule ^productos/maquina-de-embalaje-de-te/?$ /catalogo-maquinarias/detalle/?link=maquina-de-embalaje-de-te [L,R=301,QSA]
+RewriteRule ^productos/soldadora-lingba/?$ /catalogo-maquinarias/detalle/?link=soldadora-lingba [L,R=301,QSA]
+RewriteRule ^productos/(.+)/?$ /catalogo-maquinarias/detalle/?link=$1 [L,R=301,QSA]
+
+# 3. Forzar slash final (Trailing Slash) en todas las URLs
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} !(.*)/$
@@ -15,12 +22,9 @@ RewriteRule ^(.*)$ https://tamimaquinarias.com/$1/ [L,R=301]
 # --- Habilitar rewrite para Astro ---
 RewriteBase /
 
-# No redirigir si el archivo existe
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-
-# Manejar rutas de Astro
-RewriteRule ^(.*)$ /index.html [L]
+# 4. Manejar rutas de Astro — servir 404.html si el archivo no existe
+# (El enrutado SPA se maneja en el cliente; en el servidor devolvemos 404 real)
+ErrorDocument 404 /404.html
 
 # --- Compresión GZIP para mejorar rendimiento en Hostinger ---
 <IfModule mod_deflate.c>
