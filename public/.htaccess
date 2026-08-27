@@ -5,8 +5,15 @@ RewriteEngine On
 RewriteCond %{HTTP_HOST} ^www\.tamimaquinarias\.com [NC]
 RewriteRule ^(.*)$ https://tamimaquinarias.com/$1 [L,R=301]
 
-# 2. Forzar slash final (Trailing Slash) en todas las URLs
-# Excluimos archivos reales y directorios reales para no romper nada
+# 2. Redirecciones 301 — Rutas legacy / productos antiguos
+RewriteRule ^sobre-nosotros/?$ /nosotros/ [L,R=301]
+RewriteRule ^productos/?$ /catalogo-maquinarias/ [L,R=301]
+RewriteRule ^productos/soldadora-spark-mig-250/?$ /catalogo-maquinarias/detalle/?link=soldadora-spark-mig-250 [L,R=301,QSA]
+RewriteRule ^productos/maquina-de-embalaje-de-te/?$ /catalogo-maquinarias/detalle/?link=maquina-de-embalaje-de-te [L,R=301,QSA]
+RewriteRule ^productos/soldadora-lingba/?$ /catalogo-maquinarias/detalle/?link=soldadora-lingba [L,R=301,QSA]
+RewriteRule ^productos/(.+)/?$ /catalogo-maquinarias/detalle/?link=$1 [L,R=301,QSA]
+
+# 3. Forzar slash final (Trailing Slash) en todas las URLs
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} !(.*)/$
@@ -15,39 +22,5 @@ RewriteRule ^(.*)$ https://tamimaquinarias.com/$1/ [L,R=301]
 # --- Habilitar rewrite para Astro ---
 RewriteBase /
 
-# No redirigir si el archivo existe
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-
-# Manejar rutas de Astro
-RewriteRule ^(.*)$ /index.html [L]
-
-# --- Compresión GZIP para mejorar rendimiento en Hostinger ---
-<IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/x-javascript application/json
-</IfModule>
-
-# --- Caché del navegador para mejorar rendimiento ---
-<IfModule mod_expires.c>
-  ExpiresActive On
-  ExpiresByType image/jpg "access plus 1 year"
-  ExpiresByType image/jpeg "access plus 1 year"
-  ExpiresByType image/png "access plus 1 year"
-  ExpiresByType image/gif "access plus 1 year"
-  ExpiresByType image/webp "access plus 1 year"
-  ExpiresByType image/svg+xml "access plus 1 year"
-  ExpiresByType image/x-icon "access plus 1 year"
-  ExpiresByType video/mp4 "access plus 1 year"
-  ExpiresByType audio/mp3 "access plus 1 year"
-  ExpiresByType application/pdf "access plus 1 month"
-  ExpiresByType text/css "access plus 1 month"
-  ExpiresByType text/javascript "access plus 1 month"
-  ExpiresByType application/javascript "access plus 1 month"
-  ExpiresByType application/x-javascript "access plus 1 month"
-  ExpiresByType application/x-font-ttf "access plus 1 month"
-  ExpiresByType application/x-font-woff "access plus 1 month"
-  ExpiresByType application/x-font-woff2 "access plus 1 month"
-  ExpiresByType font/woff "access plus 1 month"
-  ExpiresByType font/woff2 "access plus 1 month"
-  ExpiresDefault "access plus 2 days"
-</IfModule>
+# 4. ErrorDocument 404
+ErrorDocument 404 /404.html

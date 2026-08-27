@@ -62,7 +62,7 @@ const SectionCardsContainer = () => {
           {sectionCards.map((item) => (
             <a
               key={item.id}
-              href={`/productos#${item.id}`}
+              href={`/catalogo-maquinarias#${item.id}`}
               className="group relative w-[30%] min-w-[280px] aspect-[3/4] rounded-2xl overflow-hidden border border-teal-200/60 shadow-md
                          transition-all duration-500 ease-out
                          hover:scale-[1.03] hover:-translate-y-2 hover:shadow-[0_20px_40px_-12px_rgba(0,120,111,0.35)] hover:border-teal-400"
@@ -104,7 +104,7 @@ const SectionCardsContainer = () => {
         {sectionCards.map((item, i) => (
           <a
             key={item.id}
-            href={`/productos#${item.id}`}
+            href={`/catalogo-maquinarias#${item.id}`}
             className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-700 ease-in-out ${i === index
                 ? "opacity-100 scale-100 z-10"
                 : "opacity-0 scale-95 z-0 pointer-events-none"
