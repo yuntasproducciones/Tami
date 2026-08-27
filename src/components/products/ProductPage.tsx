@@ -193,15 +193,26 @@ const ProductPage: React.FC<Props> = ({ producto: initialProducto }) => {
         const whatsappConfig = producto.producto_imagenes?.find(img => img.tipo === 'whatsapp');
 
         let message = "";
+            message += `Hola,`;
+            message += `\nLLego de la Pagina TAMI MAQUINARIAS. \n`;
+            message += `\nEstoy interesado en el producto: ${productName}.\n`;
         if (whatsappConfig?.whatsapp_mensaje) {
-            message = whatsappConfig.whatsapp_mensaje;
+                
+                
+            message += whatsappConfig.whatsapp_mensaje;
         } else {
-            message += `Hola 👋, estoy interesado en el producto: *${productName}* ⚡.`;
-            message += `\nDescripción: ${producto.descripcion}`;
-            message += `\n👉 ¿Podrían enviarme la ficha técnica completa y una cotización personalizada?`;
+                message += `\n\nDescripción: ${producto.descripcion}`;
+                message += `\n\nMe gustaría recibir:`;
+                message += `\n- Ficha técnica completa`;
+                message += `\n- Cotización personalizada`;
+                message += `\n- Tiempos de entrega`;
+                message += `\n- Opciones de pago`;
+                message += `\n\nQuedo atento a su respuesta.`;
         }
 
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+        const mensajeCodificado = encodeURIComponent(message);
+
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${mensajeCodificado}`;
         window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
     };
 

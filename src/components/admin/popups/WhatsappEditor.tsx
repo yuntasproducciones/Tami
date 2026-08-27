@@ -8,10 +8,6 @@ interface WhatsappEditorProps {
   previewEventName?: string;
 }
 
-const COMMON_EMOJIS = [
-  "😀", "😃", "😄", "😁", "😅", "😂", "🤣", "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "😚", "😋", "😛", "😝", "😜", "🤪", "🤨", "🧐", "🤓", "😎", "🤩", "🥳", "😏", "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣", "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠", "😡", "🤬", "🤯", "😳", "🥵", "🥶", "😱", "😨", "😰", "😥", "😓", "🤗", "🤔", "🤭", "🤫", "🤥", "😶", "😐", "😑", "😬", "🙄", "😯", "😦", "😧", "😮", "😲", "🥱", "😴", "🤤", "😪", "😵", "🤐", "🥴", "🤢", "🤮", "🤧", "😷", "🤒", "🤕",
-  "👍", "👎", "✌️", "🤞", "🤟", "🤘", "👌", "🤌", "🤏", "👈", "👉", "👆", "👇", "☝️", "✋", "🤚", "🖐", "🖖", "👋", "🤙", "💪", "🤖", "🔥", "✨", "🎉", "💯", "✅", "❌", "❤️", "💔"
-];
 
 const WhatsappEditor = ({
   defaultValue = "¡Hola! Me gustaría obtener más información sobre la promoción.",
@@ -434,37 +430,7 @@ const WhatsappEditor = ({
           <List size={18} />
         </button>
 
-        <div className="w-px h-5 bg-gray-200 dark:bg-gray-700 mx-1.5"></div>
-
-        <div className="relative">
-          <button
-            type="button"
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={() => setShowEmojis(!showEmojis)}
-            className="p-1.5 text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 dark:text-gray-400 dark:hover:text-emerald-400 dark:hover:bg-gray-700 rounded-lg transition-all active:scale-90"
-            title="Insertar Emoji"
-          >
-            <Smile size={18} />
-          </button>
-
-          {showEmojis && (
-            <div className="absolute top-10 left-0 z-50 p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl w-64 max-h-64 overflow-y-auto">
-              <div className="grid grid-cols-6 gap-1">
-                {COMMON_EMOJIS.map((emoji, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => insertEmoji(emoji)}
-                    className="p-1.5 text-lg hover:bg-emerald-50 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center justify-center"
-                  >
-                    {emoji}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+       
       </div>
 
       {/* Editor Area */}
