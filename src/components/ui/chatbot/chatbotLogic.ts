@@ -30,6 +30,7 @@ export interface MessageMinimal {
   respuesta: string;
   link_producto?: string;
   link_whatsapp?: string;
+  whatsapp_message?: string;
 }
 
 const SEARCH_STOPWORDS = new Set([
@@ -149,7 +150,7 @@ export const getLocalReply = async (
  * Envía el mensaje al servidor Laravel para ser procesado por la IA de Groq (Llama 3)
  */export const fetchIaReply = async (mensajeUsuario: string): Promise<MessageMinimal> => {
   try {
-    const baseUrl = import.meta.env.PUBLIC_API_URL || import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+    const baseUrl = (import.meta.env.PUBLIC_API_URL || import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000').replace(/\/+$/, '');
     const url = `${baseUrl}/api/v1/chat/responder`;
 
     const sessionId = localStorage.getItem('chatSessionId') || crypto.randomUUID();
@@ -169,18 +170,30 @@ export const getLocalReply = async (
     });
 
     const data = await response.json();
-    console.log('Respuesta Laravel:', data);
 
     if (!response.ok) {
       throw new Error(`Error en servidor: ${response.status}`);
     }
 
-   return {
-    role: 'bot',
-    tipo: data.link_whatsapp ? 'fin_flujo' : 'texto',
-    respuesta: data.response || data.output || data.respuesta,
-    link_whatsapp: data.link_whatsapp,
-   };
+
+    let finalWhatsappLink: string | undefined = undefined;
+
+    if (data.whatsapp_message) {
+      finalWhatsappLink = `https://wa.me/51978883199?text=${encodeURIComponent(data.whatsapp_message)}`;
+    } else if (data.link_whatsapp) {
+      if (data.link_whatsapp.startsWith('http://') || data.link_whatsapp.startsWith('https://')) {
+        finalWhatsappLink = data.link_whatsapp;
+      } else {
+        finalWhatsappLink = `https://wa.me/51978883199?text=${encodeURIComponent(data.link_whatsapp)}`;
+      }
+    }
+
+    return {
+      role: 'bot',
+      tipo: finalWhatsappLink ? 'fin_flujo' : 'texto',
+      respuesta: data.response || data.output || data.respuesta,
+      link_whatsapp: finalWhatsappLink,
+    };
   } catch (error) {
     console.error('Error frontend chatbot:', error);
     return {
@@ -189,5 +202,4 @@ export const getLocalReply = async (
       respuesta: 'No pude conectar con el servidor del chatbot.',
     };
   }
-
 };
