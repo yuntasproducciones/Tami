@@ -431,75 +431,134 @@ const ProductosTabla = () => {
                     </div>
                 </div>
 
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            {["ID", "NOMBRE", "SECCIÓN", "IMAGEN", "ACCIÓN"].map((head, i) => (
-                                <TableHead key={i} className="font-bold tracking-wide uppercase text-xs">
-                                    {head}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {currentItems.length > 0 ? (
-                            currentItems.map((item) => (
-                                <TableRow key={item.id}>
-                                    <TableCell className="whitespace-nowrap text-teal-700">
-                                        #{item.id}
-                                    </TableCell>
-                                    <TableCell className="px-6 py-4 font-medium">{item.nombre}</TableCell>
-                                    <TableCell className="px-6 py-4">
-                                        <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-xs capitalize font-medium">
-                                            {item.seccion ? item.seccion.toLowerCase() : 'sin sección'}
-                                        </span>
-                                    </TableCell>
-                                    <TableCell className="px-6 py-4">
-                                        <div className="flex items-center">
-                                            {item.imagenes?.[0]?.url_imagen ? (
-                                                <img
-                                                    src={item.imagenes[0].url_imagen.startsWith("http")
-                                                        ? item.imagenes[0].url_imagen
-                                                        : `${getApiUrl}${item.imagenes[0].url_imagen}`}
-                                                    alt={item.nombre}
-                                                    className="w-14 h-14 object-cover rounded-lg shadow-md border border-gray-200"
-                                                // onError={(e) => {
-                                                //     (e.target as HTMLImageElement).src = 'https://via.placeholder.com/50';
-                                                // }}
-                                                />
-                                            ) : (
-                                                <span className="text-sm text-gray-400 italic">Sin imagen</span>
-                                            )}
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex gap-3 items-center">
-                                            <ProductForm
-                                                mode="edit"
-                                                product={item}
-                                                onSuccess={fetchData}
-                                            />
-                                            <button
-                                                className="p-2 rounded-full hover:bg-red-100 text-red-500 transition-colors duration-200 border border-transparent hover:border-red-200"
-                                                title="Eliminar"
-                                                onClick={() => deleteProductHandler(item.id)}
-                                                disabled={loadingDeleteId === item.id}
-                                            >
-                                                {loadingDeleteId === item.id ? (
-                                                    <AiOutlineLoading3Quarters className="animate-spin" size={18} />
-                                                ) : (
-                                                    <FaTrash size={18} />
-                                                )}
-                                            </button>
-                                        </div>
-                                    </TableCell>
+                {/* Vista desktop */}
+                <div className="hidden md:block px-8 pb-6">
+                    <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-700">
+
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    {["ID", "NOMBRE", "SECCIÓN", "IMAGEN", "ACCIÓN"].map((head, i) => (
+                                        <TableHead key={i} className="font-bold tracking-wide uppercase text-xs">
+                                            {head}
+                                        </TableHead>
+                                    ))}
                                 </TableRow>
-                            ))
-                        ) : (
-                            <EmptyState term={searchTerm} />
-                        )}
-                    </TableBody>
-                </Table>
+                            </TableHeader>
+                            <TableBody>
+                                {currentItems.length > 0 ? (
+                                    currentItems.map((item) => (
+                                        <TableRow key={item.id}>
+                                            <TableCell className="whitespace-nowrap text-teal-700">
+                                                #{item.id}
+                                            </TableCell>
+                                            <TableCell className="px-6 py-4 font-medium">{item.nombre}</TableCell>
+                                            <TableCell className="px-6 py-4">
+                                                <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-xs capitalize font-medium">
+                                                    {item.seccion ? item.seccion.toLowerCase() : 'sin sección'}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell className="px-6 py-4">
+                                                <div className="flex items-center">
+                                                    {item.imagenes?.[0]?.url_imagen ? (
+                                                        <img
+                                                            src={item.imagenes[0].url_imagen.startsWith("http")
+                                                                ? item.imagenes[0].url_imagen
+                                                                : `${getApiUrl}${item.imagenes[0].url_imagen}`}
+                                                            alt={item.nombre}
+                                                            className="w-14 h-14 object-cover rounded-lg shadow-md border border-gray-200"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-sm text-gray-400 italic">Sin imagen</span>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex gap-3 items-center">
+                                                    <ProductForm mode="edit" product={item} onSuccess={fetchData} />
+                                                    <button
+                                                        className="p-2 rounded-full hover:bg-red-100 text-red-500 transition-colors duration-200 border border-transparent hover:border-red-200"
+                                                        title="Eliminar"
+                                                        onClick={() => deleteProductHandler(item.id)}
+                                                        disabled={loadingDeleteId === item.id}
+                                                    >
+                                                        {loadingDeleteId === item.id ? (
+                                                            <AiOutlineLoading3Quarters className="animate-spin" size={18} />
+                                                        ) : (
+                                                            <FaTrash size={18} />
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <EmptyState term={searchTerm} />
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
+                </div>
+
+                {/* Vista tarjetas (mobile) */}
+                <div className="md:hidden p-4 space-y-4">
+                    {currentItems.length > 0 ? (
+                        currentItems.map((item) => (
+                            <div
+                                key={item.id}
+                                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-4 flex gap-4 transition-all duration-200 hover:shadow-lg hover:-translate-y-1 hover:border-teal-200 dark:hover:border-teal-700"
+                            >
+                                <div className="flex-shrink-0">
+                                    {item.imagenes?.[0]?.url_imagen ? (
+                                        <img
+                                            src={item.imagenes[0].url_imagen.startsWith("http")
+                                                ? item.imagenes[0].url_imagen
+                                                : `${getApiUrl}${item.imagenes[0].url_imagen}`}
+                                            alt={item.nombre}
+                                            className="w-20 h-20 object-cover rounded-lg shadow-md border border-gray-200"
+                                        />
+                                    ) : (
+                                        <div className="w-20 h-20 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg text-xs text-gray-400 italic text-center px-1">
+                                            Sin imagen
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="flex-1 min-w-0 flex flex-col justify-between">
+                                    <div>
+                                        <div className="flex items-center justify-between gap-2">
+                                            <span className="text-xs text-teal-700 font-semibold">#{item.id}</span>
+                                            <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-[11px] capitalize font-medium">
+                                                {item.seccion ? item.seccion.toLowerCase() : 'sin sección'}
+                                            </span>
+                                        </div>
+                                        <p className="font-medium text-gray-800 dark:text-gray-100 mt-1 truncate">
+                                            {item.nombre}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex gap-3 items-center mt-3">
+                                        <ProductForm mode="edit" product={item} onSuccess={fetchData} />
+                                        <button
+                                            className="p-2 rounded-full hover:bg-red-100 text-red-500 transition-colors duration-200 border border-transparent hover:border-red-200"
+                                            title="Eliminar"
+                                            onClick={() => deleteProductHandler(item.id)}
+                                            disabled={loadingDeleteId === item.id}
+                                        >
+                                            {loadingDeleteId === item.id ? (
+                                                <AiOutlineLoading3Quarters className="animate-spin" size={18} />
+                                            ) : (
+                                                <FaTrash size={18} />
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <EmptyState term={searchTerm} />
+                    )}
+                </div>
 
                 {/* Paginación */}
                 {filteredProductos.length > 0 && (
