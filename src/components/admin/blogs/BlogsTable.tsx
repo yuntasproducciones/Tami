@@ -479,99 +479,187 @@ const BlogsTable = () => {
           </div>
         </div>
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {["ID", "TÍTULO", "SUBTÍTULO", "IMAGEN", "ACCIÓN"].map((head, i) => (
-                <TableHead key={i} className="font-bold tracking-wide uppercase text-xs">
-                  {head}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {currentItems.length > 0 ? (
-              currentItems.map((blog) => (
-                <TableRow key={blog.id}>
-                  <TableCell className="whitespace-nowrap text-teal-700">
-                    #{blog.id}
-                  </TableCell>
-                  <TableCell className="px-6 py-4 font-medium max-w-[250px] truncate">
-                    <span title={blog.titulo}>{blog.titulo}</span>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 max-w-[250px] truncate">
-                    <div title={blog.subtitulo1}>
-                      <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-xs font-medium">
+        {/* Vista tabla (desktop / tablet) */}
+        <div className="hidden md:block px-8 pb-6">
+          <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-700">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  {["ID", "TÍTULO", "SUBTÍTULO", "IMAGEN", "ACCIÓN"].map((head, i) => (
+                    <TableHead key={i} className="font-bold tracking-wide uppercase text-xs">
+                      {head}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentItems.length > 0 ? (
+                  currentItems.map((blog) => (
+                    <TableRow key={blog.id} className="hover:bg-teal-50/50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+                      <TableCell className="whitespace-nowrap text-teal-700">
+                        #{blog.id}
+                      </TableCell>
+                      <TableCell className="px-6 py-4 font-medium max-w-[250px] truncate">
+                        <span title={blog.titulo}>{blog.titulo}</span>
+                      </TableCell>
+                      <TableCell className="px-6 py-4 max-w-[250px] truncate">
+                        <div title={blog.subtitulo1}>
+                          <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-xs font-medium">
+                            {blog.subtitulo1 ? blog.subtitulo1 : 'Sin subtítulo'}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-6 py-4">
+                        <div className="flex items-center">
+                          {blog.imagenes?.[0]?.ruta_imagen ? (
+                            <img
+                              src={blog.imagenes[0].ruta_imagen.startsWith("http")
+                                ? blog.imagenes[0].ruta_imagen
+                                : `${String(getApiUrl("")).replace(/\/+$/, '')}/${blog.imagenes[0].ruta_imagen.replace(/^\/+/, '')}`}
+                              alt={blog.titulo}
+                              className="w-14 h-14 object-cover rounded-lg shadow-md border border-gray-200"
+                            />
+                          ) : (
+                            <span className="text-sm text-gray-400 italic">Sin imagen</span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex gap-3 items-center">
+                          <button
+                            className="p-2 rounded-full hover:bg-teal-100 text-teal-500 transition-colors duration-200 border border-transparent hover:border-teal-200 cursor-pointer"
+                            title="Ver Detalles"
+                            onClick={() => handlePreview(blog)}
+                          >
+                            <FaEye size={18} />
+                          </button>
+                          <button
+                            className="p-2 rounded-full hover:bg-yellow-100 text-yellow-500 transition-colors duration-200 border border-transparent hover:border-yellow-200 cursor-pointer"
+                            title="Editar"
+                            onClick={() => openEditModal(blog)}
+                          >
+                            <FaEdit size={18} />
+                          </button>
+                          <button
+                            className="p-2 rounded-full hover:bg-red-100 text-red-500 transition-colors duration-200 border border-transparent hover:border-red-200 cursor-pointer"
+                            title="Eliminar"
+                            onClick={() => handleDelete(blog.id)}
+                            disabled={loadingDeleteId === blog.id}
+                          >
+                            {loadingDeleteId === blog.id ? (
+                              <AiOutlineLoading3Quarters className="animate-spin" size={18} />
+                            ) : (
+                              <FaTrash size={18} />
+                            )}
+                          </button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-16 text-gray-500">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <div className="bg-teal-50 p-6 rounded-full">
+                          <FaBookOpen className="h-10 w-10 text-teal-300" />
+                        </div>
+                        <p className="text-xl font-medium text-gray-600 mt-4">
+                          {searchTerm ? "No se encontraron blogs que coincidan con tu búsqueda" : "No hay blogs registrados"}
+                        </p>
+                        <p className="text-gray-400 max-w-md mx-auto">
+                          {searchTerm ? "Intenta con otros términos de búsqueda" : "Comienza agregando publicaciones a tu blog con el botón 'Añadir Blog'"}
+                        </p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+
+        {/* Vista mobile */}
+        <div className="md:hidden px-4 sm:px-6 pb-4 space-y-4">
+          {currentItems.length > 0 ? (
+            currentItems.map((blog) => (
+              <div
+                key={blog.id}
+                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-4 flex gap-4 transition-all duration-200 hover:shadow-lg hover:-translate-y-1 hover:border-teal-200 dark:hover:border-teal-700 min-w-0"
+              >
+                <div className="flex-shrink-0">
+                  {blog.imagenes?.[0]?.ruta_imagen ? (
+                    <img
+                      src={blog.imagenes[0].ruta_imagen.startsWith("http")
+                        ? blog.imagenes[0].ruta_imagen
+                        : `${String(getApiUrl("")).replace(/\/+$/, '')}/${blog.imagenes[0].ruta_imagen.replace(/^\/+/, '')}`}
+                      alt={blog.titulo}
+                      className="w-20 h-20 object-cover rounded-lg shadow-md border border-gray-200"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-lg text-xs text-gray-400 italic text-center px-1">
+                      Sin imagen
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 min-w-0 flex flex-col justify-between">
+                  <div className="min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs text-teal-700 font-semibold">#{blog.id}</span>
+                      <span className="bg-teal-100 text-teal-800 py-1 px-3 rounded-full text-[11px] font-medium truncate max-w-[140px]">
                         {blog.subtitulo1 ? blog.subtitulo1 : 'Sin subtítulo'}
                       </span>
                     </div>
-                  </TableCell>
-                  <TableCell className="px-6 py-4">
-                    <div className="flex items-center">
-                      {blog.imagenes?.[0]?.ruta_imagen ? (
-                        <img
-                          src={blog.imagenes[0].ruta_imagen.startsWith("http")
-                            ? blog.imagenes[0].ruta_imagen
-                            : `${String(getApiUrl("")).replace(/\/+$/, '')}/${blog.imagenes[0].ruta_imagen.replace(/^\/+/, '')}`}
-                          alt={blog.titulo}
-                          className="w-14 h-14 object-cover rounded-lg shadow-md border border-gray-200"
-                        />
-                      ) : (
-                        <span className="text-sm text-gray-400 italic">Sin imagen</span>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex gap-3 items-center">
-                      <button
-                        className="p-2 rounded-full hover:bg-teal-100 text-teal-500 transition-colors duration-200 border border-transparent hover:border-teal-200 cursor-pointer"
-                        title="Ver Detalles"
-                        onClick={() => handlePreview(blog)}
-                      >
-                        <FaEye size={18} />
-                      </button>
-                      <button
-                        className="p-2 rounded-full hover:bg-yellow-100 text-yellow-500 transition-colors duration-200 border border-transparent hover:border-yellow-200 cursor-pointer"
-                        title="Editar"
-                        onClick={() => openEditModal(blog)}
-                      >
-                        <FaEdit size={18} />
-                      </button>
-                      <button
-                        className="p-2 rounded-full hover:bg-red-100 text-red-500 transition-colors duration-200 border border-transparent hover:border-red-200 cursor-pointer"
-                        title="Eliminar"
-                        onClick={() => handleDelete(blog.id)}
-                        disabled={loadingDeleteId === blog.id}
-                      >
-                        {loadingDeleteId === blog.id ? (
-                          <AiOutlineLoading3Quarters className="animate-spin" size={18} />
-                        ) : (
-                          <FaTrash size={18} />
-                        )}
-                      </button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-16 text-gray-500">
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <div className="bg-teal-50 p-6 rounded-full">
-                      <FaBookOpen className="h-10 w-10 text-teal-300" />
-                    </div>
-                    <p className="text-xl font-medium text-gray-600 mt-4">
-                      {searchTerm ? "No se encontraron blogs que coincidan con tu búsqueda" : "No hay blogs registrados"}
-                    </p>
-                    <p className="text-gray-400 max-w-md mx-auto">
-                      {searchTerm ? "Intenta con otros términos de búsqueda" : "Comienza agregando publicaciones a tu blog con el botón 'Añadir Blog'"}
+                    <p className="font-medium text-gray-800 dark:text-gray-100 mt-1 break-words">
+                      {blog.titulo}
                     </p>
                   </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+
+                  <div className="flex gap-3 items-center mt-3">
+                    <button
+                      className="p-2 rounded-full hover:bg-teal-100 text-teal-500 transition-colors duration-200 border border-transparent hover:border-teal-200 cursor-pointer"
+                      title="Ver Detalles"
+                      onClick={() => handlePreview(blog)}
+                    >
+                      <FaEye size={18} />
+                    </button>
+                    <button
+                      className="p-2 rounded-full hover:bg-yellow-100 text-yellow-500 transition-colors duration-200 border border-transparent hover:border-yellow-200 cursor-pointer"
+                      title="Editar"
+                      onClick={() => openEditModal(blog)}
+                    >
+                      <FaEdit size={18} />
+                    </button>
+                    <button
+                      className="p-2 rounded-full hover:bg-red-100 text-red-500 transition-colors duration-200 border border-transparent hover:border-red-200 cursor-pointer"
+                      title="Eliminar"
+                      onClick={() => handleDelete(blog.id)}
+                      disabled={loadingDeleteId === blog.id}
+                    >
+                      {loadingDeleteId === blog.id ? (
+                        <AiOutlineLoading3Quarters className="animate-spin" size={18} />
+                      ) : (
+                        <FaTrash size={18} />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-2 py-8">
+              <div className="bg-teal-50 p-6 rounded-full">
+                <FaBookOpen className="h-10 w-10 text-teal-300" />
+              </div>
+              <p className="text-lg font-medium text-gray-600 mt-2 text-center">
+                {searchTerm ? "No se encontraron blogs que coincidan con tu búsqueda" : "No hay blogs registrados"}
+              </p>
+              <p className="text-gray-400 text-sm text-center max-w-xs">
+                {searchTerm ? "Intenta con otros términos de búsqueda" : "Comienza agregando publicaciones a tu blog con el botón 'Añadir Blog'"}
+              </p>
+            </div>
+          )}
+        </div>
 
         {/* Paginación */}
         {filteredData.length > 0 && (

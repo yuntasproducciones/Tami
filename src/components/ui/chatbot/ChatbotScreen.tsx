@@ -58,6 +58,19 @@ const defaultMessages: Message[] = [
 
 const noop = () => {};
 
+const getSafeWhatsappUrl = (rawLink?: string): string => {
+  if (!rawLink) return '#';
+  
+  if (rawLink.startsWith('http://') || rawLink.startsWith('https://')) {
+    return rawLink;
+  }
+  
+  const isEncoded = /%[0-[#9A-Fa-f]{2}/.test(rawLink);
+  const textQuery = isEncoded ? rawLink : encodeURIComponent(rawLink);
+  return `https://wa.me/51978883199?text=${textQuery}`;
+};
+
+
 const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
   messages = defaultMessages,
   context = null,
@@ -74,8 +87,6 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
 }) => {
   const { colorInicial, colorFinal } = useChatbotConfig();
 
-  // Si messagesEndRef está presente, el componente es interactivo (widget real)
-  // Si no, es una previsualización estática (ej: panel de administración)
   const isInteractive = !!messagesEndRef;
 
   return (
@@ -187,7 +198,7 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
                         <p className="font-bold text-base text-gray-900 leading-tight mb-2 uppercase tracking-wide">{prod.nombre}</p>
                         <p className="text-[13px] text-gray-500 leading-relaxed mb-5 line-clamp-2">{prod.descripcion}</p>
                         <a
-                          href={prod.link_whatsapp}
+                          href={getSafeWhatsappUrl(prod.link_whatsapp)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#015f86] to-[#0d9488] hover:from-[#0d9488] hover:to-[#015f86] text-white text-[14px] font-bold py-3.5 rounded-2xl transition-all duration-500 shadow-md hover:shadow-xl active:scale-95"
@@ -208,7 +219,7 @@ const ChatbotScreen: React.FC<ChatbotScreenProps> = ({
               {/* Botón WhatsApp */}
               {(msg.tipo === 'texto' || msg.tipo === 'fin_flujo') && msg.link_whatsapp && (
                 <a
-                  href={msg.link_whatsapp}
+                  href={getSafeWhatsappUrl(msg.link_whatsapp)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-5 flex justify-center items-center gap-3 w-full text-center bg-[#25D366] hover:bg-[#20b858] text-white text-[15px] font-bold py-4 rounded-2xl transition-all duration-500 shadow-lg hover:shadow-[#25D366]/20 active:scale-95"
